@@ -1,6 +1,29 @@
+import React, { useEffect } from "react";
+import { Platform } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import * as SplashScreen from "expo-splash-screen";
+import { useFonts } from "expo-font";
 
-const RootLayout = () => {
+SplashScreen.preventAutoHideAsync();
+
+const InitialLayout = () => {
+  const [fontsLoaded, fontsError] = useFonts({
+    "Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.ttf"),
+    "Montserrat-Light": require("../assets/fonts/Montserrat-Light.ttf"),
+    "Montserrat-Medium": require("../assets/fonts/Montserrat-Medium.ttf"),
+    "Montserrat-Regular": require("../assets/fonts/Montserrat-Regular.ttf"),
+  });
+
+  useEffect(() => {
+    if (fontsLoaded || fontsError) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontsError]);
+
+  if (!fontsLoaded && !fontsError) return null;
+
   return (
     <Stack>
       <Stack.Screen 
@@ -108,6 +131,15 @@ const RootLayout = () => {
         }} 
       />
     </Stack>
+  );
+};
+
+const RootLayout = () => {
+  return (
+    <SafeAreaProvider>
+      <InitialLayout />
+      <StatusBar style={Platform.OS === "ios" ? "dark" : "light"} />
+    </SafeAreaProvider>
   );
 };
 
