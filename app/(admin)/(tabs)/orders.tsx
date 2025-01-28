@@ -1,13 +1,18 @@
 import { router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const Index = () => {
+const OrdersScreen = () => {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Welcome Screen</Text>
+      <Text>Orders Screen</Text>
+
       <View style={{ flexDirection: "column", gap: 10 }}>
-        <TouchableOpacity style={styles.button} onPress={() => { router.push("/sign-in"); }}>
-          <Text style={styles.buttonText}>Go to Sign In</Text>
+        <TouchableOpacity style={styles.button} onPress={() => { router.push("/(admin)/(modals)/edit-order"); }}>
+          <Text style={styles.buttonText}>Edit</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} onPress={() => { router.navigate("/(admin)/order/1"); }}>
+          <Text style={styles.buttonText}>Order Details</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -25,4 +30,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Index;
+export default OrdersScreen;
