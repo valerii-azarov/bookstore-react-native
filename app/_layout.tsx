@@ -1,10 +1,14 @@
 import React, { useEffect } from "react";
-import { Platform } from "react-native";
+import { router, Stack } from "expo-router";
+import { Platform, TouchableOpacity, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
+import Ionicons from "@expo/vector-icons/Ionicons";
+
+import { LanguageProvider } from "@/contexts/Language";
+import COLORS from "@/constants/colors";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -34,7 +38,24 @@ const InitialLayout = () => {
       {/* languages screen */}
       <Stack.Screen
         name="languages"
-        options={{ headerShown: false }}
+        options={{
+          animation: "fade",
+          animationDuration: 200,
+          headerLeft: () => (
+            <TouchableOpacity onPressOut={() => router.back()}>
+              <View
+                style={{
+                  backgroundColor: COLORS.GRAY,
+                  borderRadius: 100,
+                }}
+              >
+                <Ionicons name="close-outline" size={34} color={"black"} />
+              </View>
+            </TouchableOpacity>
+          ),
+          headerTransparent: true,
+          title: "",
+        }}
       />
 
       {/* admin screens */}
@@ -42,15 +63,15 @@ const InitialLayout = () => {
       <Stack.Screen
         name="(admin)/book/[id]"
         options={{
-          title: "Book Details",
           headerShown: true,
+          title: "Book Details",
         }}
       />
       <Stack.Screen
         name="(admin)/order/[id]"
         options={{
-          title: "Order Details",
           headerShown: true,
+          title: "Order Details",
         }}
       />
       <Stack.Screen
@@ -85,29 +106,29 @@ const InitialLayout = () => {
       <Stack.Screen
         name="(user)/book/[id]"
         options={{
+          headerShown: true,
           title: "Book Details",
-          headerShown: true,
-        }}
-      />
-      <Stack.Screen
-        name="(user)/profile"
-        options={{
-          title: "Profile",
-          headerShown: true,
         }}
       />
       <Stack.Screen
         name="(user)/favorites"
         options={{
-          title: "Favorites",
           headerShown: true,
+          title: "Favorites",
+        }}
+      />
+      <Stack.Screen
+        name="(user)/profile"
+        options={{
+          headerShown: true,
+          title: "Profile",
         }}
       />
       <Stack.Screen
         name="(user)/viewing-history"
         options={{
-          title: "Viewing History",
           headerShown: true,
+          title: "Viewing History",
         }}
       />
       <Stack.Screen
@@ -137,8 +158,10 @@ const InitialLayout = () => {
 const RootLayout = () => {
   return (
     <SafeAreaProvider>
-      <InitialLayout />
-      <StatusBar style={Platform.OS === "ios" ? "dark" : "light"} />
+      <LanguageProvider>
+        <InitialLayout />
+        <StatusBar style={Platform.OS === "ios" ? "dark" : "light"} />
+      </LanguageProvider>
     </SafeAreaProvider>
   );
 };

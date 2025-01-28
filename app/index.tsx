@@ -6,15 +6,19 @@ import { StyleSheet, FlatList, View, Text, TouchableOpacity, Platform } from "re
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 
+import { useLanguage } from "@/contexts/Language";
 import { wp, hp } from "@/helpers/common";
 import COLORS from "@/constants/colors";
 
+import flags from "@/data/flags";
 import images from "@/data/images";
 
 import ImageSkeleton from "@/components/ImageSkeleton";
+import LanguageSkeleton from "@/components/LanguageSkeleton";
 
 const Index = () => {
   const insets = useSafeAreaInsets();
+  const { language, t } = useLanguage();
 
   console.log(insets.top);
   console.log(insets.bottom);
@@ -55,6 +59,22 @@ const Index = () => {
         end={{ x: 0, y: 0 }}
       />
 
+      {/* Language Selector */}
+      <View
+        style={[
+          styles.languageContainer,
+          { top: insets.top + wp(1.5), right: wp(1.5) },
+        ]}
+      >
+        <Link href="/languages" asChild>
+          <TouchableOpacity activeOpacity={0.8} style={styles.languageButton}>
+            <LanguageSkeleton
+              source={flags.find((flag) => flag.lang === language)?.source}
+            />
+          </TouchableOpacity>
+        </Link>
+      </View>
+
       {/* Footer */}
       <Animated.View entering={FadeInDown.duration(800)} style={{ flex: 1 }}>
         <LinearGradient
@@ -80,10 +100,10 @@ const Index = () => {
           >
             <Text>
               <Text style={{ color: COLORS.ORANGE }}>
-                B
+                {t("screens.welcome.titleFirst")}
               </Text>
               <Text>
-                ookstore
+                {t("screens.welcome.titleRemaining")}
               </Text>
             </Text>
           </Animated.Text>
@@ -92,14 +112,14 @@ const Index = () => {
             entering={FadeInDown.delay(600).springify()}
             style={styles.subtitle}
           >
-            Books are available for order here
+            {t("screens.welcome.subtitle")}
           </Animated.Text>
 
           <Animated.View entering={FadeInDown.delay(800).springify()}>
             <Link href="/sign-in" asChild>
               <TouchableOpacity activeOpacity={0.8} style={styles.button}>
                 <Text style={styles.buttonText}>
-                  Get started
+                  {t("screens.welcome.button")}
                 </Text>
               </TouchableOpacity>
             </Link>
@@ -122,6 +142,18 @@ const styles = StyleSheet.create({
   },
   imageItem: {
     flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  languageContainer: {
+    right: wp(1.5),
+    position: "absolute",
+    zIndex: 5,
+  },
+  languageButton: {
+    backgroundColor: COLORS.GRAY,
+    borderRadius: 100,
+    padding: wp(1),
     justifyContent: "center",
     alignItems: "center",
   },
