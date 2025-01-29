@@ -4,12 +4,18 @@ export default {
   BLACK: "#000000",
   WHITE: "#FFFFFF",
 
+  RED: "#FF0000",
+
   GRAY: "#D3D3D3",
   GRAY_DARK: "#A9A9A9",
   GRAY_LIGHT: "#F0F0F0",
 
   GOLD: "#BE8F3C",
+
   AMBER: "#D99D29",
+
   CREAM: "#F2DCB1",
+  CREAM_LIGHT: "#FDFBF7",
+
   ORANGE: "#DC8920",
 };

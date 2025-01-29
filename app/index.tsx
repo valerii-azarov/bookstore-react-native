@@ -20,9 +20,6 @@ const Index = () => {
   const insets = useSafeAreaInsets();
   const { language, t } = useLanguage();
 
-  console.log(insets.top);
-  console.log(insets.bottom);
-
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
