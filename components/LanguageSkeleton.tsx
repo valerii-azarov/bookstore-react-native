@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Image, ImageSourcePropType, View } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
 
+import { COLORS } from "@/constants/colors";
 import { wp } from "@/helpers/common";
-import COLORS from "@/constants/colors";
 
 const IMAGE_SIZE = wp(8.5);
 
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   skeleton: {
     width: IMAGE_SIZE,
     height: IMAGE_SIZE,
-    backgroundColor: COLORS.GRAY_DARK,
+    backgroundColor: COLORS.GRAY,
     borderRadius: 100,
   },
   image: {

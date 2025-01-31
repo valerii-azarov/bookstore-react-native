@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Image, ImageSourcePropType, View } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
 
+import { COLORS } from "@/constants/colors";
 import { wp } from "@/helpers/common";
-import COLORS from "@/constants/colors";
 
 const SPACING = wp(1.5);
 const IMAGE_WIDTH = wp(30);
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     width: IMAGE_WIDTH,
     height: IMAGE_HEIGHT,
     margin: SPACING,
-    backgroundColor: COLORS.GRAY,
+    backgroundColor: COLORS.GRAY_TINT_5,
     borderRadius: 10,
   },
   image: {

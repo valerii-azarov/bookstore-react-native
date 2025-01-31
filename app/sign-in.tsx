@@ -5,9 +5,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet, Alert, View, Text, TextInput, TouchableOpacity } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
+import { COLORS } from "@/constants/colors";
 import { useLanguage } from "@/contexts/Language";
 import { wp, hp } from "@/helpers/common";
-import COLORS from "@/constants/colors";
 
 import Field from "@/components/Field";
 import Button from "@/components/Button";
@@ -18,21 +18,39 @@ const SignInScreen = () => {
   const insets = useSafeAreaInsets();
   const { t } = useLanguage();
 
-  const emailInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
 
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
-
   const [errors, setErrors] = useState({
     email: null,
     password: null,
   });
-
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   
+  const handleInputChange = useCallback((field: string, value: string) => {
+    setForm((prev) => {
+      const updatedForm = { ...prev, [field]: value };
+
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [field]: validateField(field, value),
+      }));
+  
+      return updatedForm;
+    });
+  }, []);
+
+  const handleSignIn = () => {
+    console.log("Signing in...");
+  };
+
+  const handleTrouble = () => {
+    Alert.alert(t("screens.signIn.troubleAlert"));
+  };
+
   const validateField = (field: string, value: string): string | null => {
     if (!value) return t(`validators.${field}Required`);
 
@@ -41,19 +59,6 @@ const SignInScreen = () => {
     }
 
     return null;
-  };
-
-  const handleInputChange = useCallback((field: string, value: string) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => ({ ...prev, [field]: validateField(field, value) }));
-  }, []);
-
-  const handleSignIn = () => {
-    console.log("Sign In");
-  };
-
-  const handleTrouble = () => {
-    Alert.alert(t("screens.signIn.troubleAlert"));
   };
 
   return (
@@ -87,29 +92,32 @@ const SignInScreen = () => {
       <Animated.View entering={FadeInDown.delay(400).springify()}>
         <View style={styles.formContainer}>
           <Field
-            label={t("screens.signIn.email")}
+            label={t("labels.email")}
             placeholder={t("placeholders.email")}
-            iconName="mail-outline"
             value={form.email}
             error={errors.email}
-            onChange={(value) => handleInputChange("email", value)} 
-            inputRef={emailInputRef}
+            iconName="mail-outline"
+            onChangeText={(value) => handleInputChange("email", value)}
             keyboardType="email-address"
+            textContentType="emailAddress"
+            returnKeyType="next"
             onSubmitEditing={() => passwordInputRef.current?.focus()}
           />
-          
+
           <Field
-            label={t("screens.signIn.password")}
+            label={t("labels.password")}
             placeholder={t("placeholders.password")}
-            iconName="lock-closed-outline"
             value={form.password}
             error={errors.password}
-            isPassword={true}
-            isPasswordVisible={isPasswordVisible}
-            onChange={(value) => handleInputChange("password", value)}
-            onTogglePassword={() => setIsPasswordVisible((prev) => !prev)}
+            iconName="lock-closed-outline"
+            onChangeText={(value) => handleInputChange("password", value)}
+            keyboardType="default"
+            textContentType="password"
+            returnKeyType="done"
             inputRef={passwordInputRef}
-            // onSubmitEditing={() => console.log("Continue")}
+            isPassword
+            isPasswordVisible={isPasswordVisible}
+            onTogglePassword={() => setIsPasswordVisible(!isPasswordVisible)}
           />
         </View>
       </Animated.View>
@@ -154,7 +162,7 @@ const SignInScreen = () => {
             onPress={() => console.log("Sign in with Google")}
             style={{
               backgroundColor: COLORS.WHITE,
-              borderColor: COLORS.GRAY,
+              borderColor: COLORS.GRAY_TINT_5,
               borderWidth: 1,
             }}
             textStyle={{
@@ -202,6 +210,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     marginBottom: hp(2),
+    marginHorizontal: wp(4),
   },
   signInContainer: {
     marginBottom: hp(1.5),
@@ -210,8 +219,8 @@ const styles = StyleSheet.create({
   registerContainer: {
     flexDirection: "row",
     justifyContent: "flex-end",
-    marginHorizontal: wp(4),
     alignItems: "center",
+    marginHorizontal: wp(4),
   },
   registerText: {
     fontSize: hp(1.5),
@@ -232,7 +241,7 @@ const styles = StyleSheet.create({
   orLine: {
     flex: 1,
     height: 1,
-    backgroundColor: COLORS.GRAY,
+    backgroundColor: COLORS.GRAY_TINT_5,
   },
   orText: {
     fontSize: hp(2),

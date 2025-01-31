@@ -4,9 +4,9 @@ import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
 
+import { COLORS } from "@/constants/colors";
 import { useLanguage } from "@/contexts/Language";
 import { wp, hp } from "@/helpers/common";
-import COLORS from "@/constants/colors";
 
 import flags from "@/data/flags";
 

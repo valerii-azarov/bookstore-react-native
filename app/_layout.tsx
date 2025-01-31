@@ -7,8 +7,8 @@ import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
+import { COLORS } from "@/constants/colors";
 import { LanguageProvider } from "@/contexts/Language";
-import COLORS from "@/constants/colors";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -39,13 +39,14 @@ const InitialLayout = () => {
       <Stack.Screen
         name="languages"
         options={{
+          title: "",
           animation: "fade",
           animationDuration: 200,
           headerLeft: () => (
             <TouchableOpacity onPressOut={() => router.back()}>
               <View
                 style={{
-                  backgroundColor: COLORS.GRAY,
+                  backgroundColor: COLORS.GRAY_TINT_5,
                   borderRadius: 100,
                 }}
               >
@@ -53,8 +54,8 @@ const InitialLayout = () => {
               </View>
             </TouchableOpacity>
           ),
+          // headerShown: false,
           headerTransparent: true,
-          title: "",
         }}
       />
 
@@ -147,8 +148,23 @@ const InitialLayout = () => {
       <Stack.Screen 
         name="sign-up" 
         options={{
-          headerShown: false,
+          title: "",
+          headerShown: true,
           presentation: "modal",
+          headerLeft: Platform.OS === "ios" ? () => (
+            <TouchableOpacity onPressOut={() => router.back()}>
+              <View 
+                style={{ 
+                  backgroundColor: COLORS.GRAY_TINT_5, 
+                  borderRadius: 100,
+                }}
+              >
+                <Ionicons name="close-outline" size={32} color="black" />
+              </View>
+            </TouchableOpacity>
+          ) : undefined,
+          headerTransparent: Platform.OS === "ios",
+          headerStyle: Platform.OS === "ios" ? { backgroundColor: COLORS.CREAM_LIGHT } : undefined,
         }} 
       />
     </Stack>

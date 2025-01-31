@@ -4,7 +4,7 @@ export type Translations = {
   [key: string]: TranslationValue | Translations;
 };
 
-const translations: Translations = {
+const translations: Translations = {  
   screens: {
     welcome: {
       titleFirst: {
@@ -53,14 +53,6 @@ const translations: Translations = {
         en: "Please sign in to your account",
         uk: "Будь ласка, увійдіть у ваш обліковий запис",
       },
-      email: {
-        en: "Email",
-        uk: "Електронна пошта",
-      },
-      password: {
-        en: "Password",
-        uk: "Пароль",
-      },
       signIn: {
         en: "Sign In",
         uk: "Увійти",
@@ -70,7 +62,7 @@ const translations: Translations = {
         uk: "Немає облікового запису?",
       },
       registerLink: {
-        en: "Register",
+        en: "Sign Up",
         uk: "Зареєструватися",
       },
       or: {
@@ -90,24 +82,147 @@ const translations: Translations = {
         uk: "Зв'яжіться з нами",
       },
       troubleAlert: {
-        en: "Write to us at support@bookstore.com (beta version, will change in the future)",
-        uk: "Напишіть нам на пошту: support@bookstore.com (бета-версія, зміниться в майбутньому)",
+        en: "This feature is still under development",
+        uk: "Функція знаходиться в розробці",
       },
+    },
+
+    signUp: {
+      step1: {
+        title: {
+          en: "Sign Up",
+          uk: "Реєстрація",
+        },
+        subtitle: {
+          en: "Please fill in all required fields",
+          uk: "Будь ласка, заповніть всі обов'язкові поля",
+        },
+        button: {
+          en: "Continue",
+          uk: "Продовжити",
+        },
+      },
+      step2: {
+        title: {
+          en: "Auto filling",
+          uk: "Автоматичне заповнення",
+        },
+        notificationTitle: {
+          en: "This feature is still under development",
+          uk: "Ця функція знаходиться в розробці",
+        },
+        notificationSubtitle: {
+          en: "Auto filling of data for receiving a package Nova Post",
+          uk: "Автоматичне заповнення даних для отримання посилки Нова Пошта",
+        },
+        button: {
+          en: "Continue",
+          uk: "Продовжити",
+        },
+      },
+      step3: {
+        successTitle: {
+          en: "Welcome!",
+          uk: "Вітаємо!",
+        },
+        successSubtitle: {
+          en: "Your account has been created! Proceed to the main page below.",
+          uk: "Ваш обліковий запис створений! Перейдіть на головну сторінку нижче.",
+        },
+        errorTitle: {
+          en: "Error",
+          uk: "Помилка",
+        },
+        errorSubtitle: {
+          en: "Please try again later",
+          uk: "Будь ласка, спробуйте ще раз пізніше",
+        },
+        button: {
+          en: "Finish",
+          uk: "Перейти",
+        },
+      }
+    },
+  },
+
+  labels: {
+    firstName: {
+      en: "First Name",
+      uk: "Ім'я",
+    },
+    lastName: {
+      en: "Last Name",
+      uk: "Прізвище",
+    },
+    email: {
+      en: "Email",
+      uk: "Електронна пошта",
+    },
+    password: {
+      en: "Password",
+      uk: "Пароль",
+    },
+    confirmPassword: {
+      en: "Confirm Password",
+      uk: "Підтвердіть пароль",
     },
   },
 
   placeholders: {
+    firstName: {
+      en: "Enter first name",
+      uk: "Введіть ім'я",
+    },
+    lastName: {
+      en: "Enter last name",
+      uk: "Введіть прізвище",
+    },
     email: {
-      en: "Enter your email",
+      en: "Enter email",
       uk: "Введіть електронну пошту",
     },
     password: {
-      en: "Enter your password",
+      en: "Enter password",
       uk: "Введіть пароль",
+    },
+    confirmPassword: {
+      en: "Confirm password",
+      uk: "Підтвердіть пароль",
+    },
+  },
+
+  checkmarks: {
+    atLeastCharacters: {
+      en: "At least 6 characters",
+      uk: "Принаймні 6 символів",
+    },
+    atLeastOneUppercase: {
+      en: "At least one uppercase, number, or special char",
+      uk: "Принаймні одна велика буква, цифра або спеціальний символ",
+    },
+    passwordMatch: {
+      en: "Passwords match",
+      uk: "Паролі співпадають",
     },
   },
 
   validators: {
+    firstNameRequired: {
+      en: "First name is required",
+      uk: "Ім'я обов'язково",
+    },
+    firstNameMinLength: {
+      en: "First name must be at least 2 characters",
+      uk: "Ім'я має бути не менше 2 символів",
+    },
+    lastNameRequired: {
+      en: "Last name is required",
+      uk: "Прізвище обов'язково",
+    },
+    lastNameMinLength: {
+      en: "Last name must be at least 2 characters",
+      uk: "Прізвище має бути не менше 2 символів",
+    },
     emailRequired: {
       en: "Email is required",
       uk: "Електронна пошта обов'язкова",
@@ -119,6 +234,18 @@ const translations: Translations = {
     passwordRequired: {
       en: "Password is required",
       uk: "Пароль обов'язковий",
+    },
+    passwordInvalid: {
+      en: "Password must be at least 6 characters and contain an uppercase letter, number, or special character",
+      uk: "Пароль має бути не менше 6 символів і містити велику букву, цифру або спеціальний символ",
+    },
+    confirmPasswordRequired: {
+      en: "Confirm password is required",
+      uk: "Підтвердіть пароль",
+    },
+    confirmPasswordMatch: {
+      en: "Passwords do not match",
+      uk: "Паролі не співпадають",
     },
   },
 };

@@ -1,8 +1,8 @@
 import React from "react";
 import { StyleSheet, Image, ImageSourcePropType, Text, TextStyle, TouchableOpacity, ViewStyle } from "react-native";
 
+import { COLORS } from "@/constants/colors";
 import { hp } from "@/helpers/common";
-import COLORS from "@/constants/colors";
 
 interface ButtonProps {
   title: string;
@@ -56,22 +56,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: hp(2),
     fontFamily: "Montserrat-Bold",
     color: COLORS.WHITE,
-    marginLeft: 8,
+    marginLeft: 10,
     textAlign: "center",
   },
   icon: {
-    width: 24,
-    height: 24,
+    width: hp(2.5),
+    height: hp(2.5),
   },
   disabledButton: {
-    backgroundColor: COLORS.GRAY,
+    backgroundColor: COLORS.GRAY_TINT_5,
     opacity: 0.6,
   },
   disabledButtonText: {
-    color: COLORS.GRAY_LIGHT,
+    color: COLORS.GRAY_TINT_9,
   },
 });
 

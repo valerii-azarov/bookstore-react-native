@@ -6,9 +6,9 @@ import { StyleSheet, FlatList, View, Text, TouchableOpacity, Platform } from "re
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 
+import { COLORS } from "@/constants/colors";
 import { useLanguage } from "@/contexts/Language";
 import { wp, hp } from "@/helpers/common";
-import COLORS from "@/constants/colors";
 
 import flags from "@/data/flags";
 import images from "@/data/images";
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     zIndex: 5,
   },
   languageButton: {
-    backgroundColor: COLORS.GRAY,
+    backgroundColor: COLORS.GRAY_TINT_5,
     borderRadius: 100,
     padding: wp(1),
     justifyContent: "center",
