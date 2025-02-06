@@ -26,6 +26,10 @@ const translations: Translations = {
     },
 
     languages: {
+      header: {
+        en: "Change language",
+        uk: "Зміна мови",
+      },
       title: {
         en: "Please select language",
         uk: "Будь ласка, виберіть мову",
@@ -88,18 +92,22 @@ const translations: Translations = {
     },
 
     signUp: {
+      header: {
+        en: "Sign Up",
+        uk: "Реєстрація",
+      },
+      buttonContinue: {
+        en: "Continue",
+        uk: "Продовжити",
+      },
+      buttonFinish: {
+        en: "Finish",
+        uk: "Перейти",
+      },
       step1: {
         title: {
-          en: "Sign Up",
-          uk: "Реєстрація",
-        },
-        subtitle: {
           en: "Please fill in all required fields",
           uk: "Будь ласка, заповніть всі обов'язкові поля",
-        },
-        button: {
-          en: "Continue",
-          uk: "Продовжити",
         },
       },
       step2: {
@@ -114,10 +122,6 @@ const translations: Translations = {
         notificationSubtitle: {
           en: "Auto filling of data for receiving a package Nova Post",
           uk: "Автоматичне заповнення даних для отримання посилки Нова Пошта",
-        },
-        button: {
-          en: "Continue",
-          uk: "Продовжити",
         },
       },
       step3: {
@@ -136,10 +140,6 @@ const translations: Translations = {
         errorSubtitle: {
           en: "Please try again later",
           uk: "Будь ласка, спробуйте ще раз пізніше",
-        },
-        button: {
-          en: "Finish",
-          uk: "Перейти",
         },
       }
     },
@@ -170,19 +170,19 @@ const translations: Translations = {
 
   placeholders: {
     firstName: {
-      en: "Enter first name",
+      en: "Enter your first name",
       uk: "Введіть ім'я",
     },
     lastName: {
-      en: "Enter last name",
+      en: "Enter your last name",
       uk: "Введіть прізвище",
     },
     email: {
-      en: "Enter email",
+      en: "Enter your email",
       uk: "Введіть електронну пошту",
     },
     password: {
-      en: "Enter password",
+      en: "Enter your password",
       uk: "Введіть пароль",
     },
     confirmPassword: {
