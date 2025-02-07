@@ -6,7 +6,8 @@ import { StatusBar } from "expo-status-bar";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
 
-import { LanguageProvider } from "@/contexts/Language";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -149,10 +150,12 @@ const InitialLayout = () => {
 const RootLayout = () => {
   return (
     <SafeAreaProvider>
-      <LanguageProvider>
-        <InitialLayout />
-        <StatusBar style={Platform.OS === "ios" ? "dark" : "light"} />
-      </LanguageProvider>
+      <AuthProvider>
+        <LanguageProvider>
+          <InitialLayout />
+          <StatusBar style={Platform.OS === "ios" ? "dark" : "light"} />
+        </LanguageProvider>
+      </AuthProvider>
     </SafeAreaProvider>
   );
 };

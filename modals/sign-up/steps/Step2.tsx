@@ -1,7 +1,7 @@
 import { View, StyleSheet } from "react-native";
 import Animated, { SlideInRight } from "react-native-reanimated";
 import { colors } from "@/constants/theme";
-import { useLanguageContext } from "@/contexts/Language";
+import { useLanguageContext } from "@/contexts/LanguageContext";
 
 import Typography from "@/components/Typography";
 

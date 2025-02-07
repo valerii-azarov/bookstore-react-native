@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from "react";
-import { useLanguageContext } from "@/contexts/Language";
+import authApi from "@/api/authApi";
+import { useLanguageContext } from "@/contexts/LanguageContext";
 import { emailRegex, passwordRegex } from "@/constants/regex";
-import { SignUpForm, SignUpErrors, SignUpVisibility, SignUpValidations } from "@/types";
+import { ResponseType, SignUpForm, SignUpErrors, SignUpVisibility, SignUpValidations } from "@/types";
 
 interface SignUpFormContextType {
   form: SignUpForm;
@@ -9,10 +10,13 @@ interface SignUpFormContextType {
   visibility: SignUpVisibility;
   validations: SignUpValidations;
   isIncomplete: boolean;
+  isLoading: boolean;
+  response: ResponseType | null;
   currentStep: number;
+  handleSubmit: () => void;
   handleInputChange: (field: keyof SignUpForm, value: string) => void;
   handleToggle: (field: keyof SignUpVisibility) => void;
-  handleNext: () => void;
+  handleContinue: () => void;
 }
 
 const SignUpFormContext = createContext<SignUpFormContextType>({} as SignUpFormContextType);
@@ -43,7 +47,35 @@ export const SignUpFormProvider = ({ children }: { children: React.ReactNode }) 
     uppercase: false,
     confirmMatch: false,
   });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [response, setResponse] = useState<ResponseType | null>(null);
   const [currentStep, setCurrentStep] = useState<number>(0);
+
+  const isIncomplete = useMemo(() => {
+    return Object.values(form).some((value) => !value) || Object.values(errors).some((error) => !!error);
+  }, [form, errors]);
+
+  const handleSubmit = useCallback(async () => {
+    setIsLoading(true);
+  
+    await authApi.signUp(form.firstName, form.lastName, form.email, form.password)
+      .then(() => {
+        setResponse({ status: "success" });
+      })
+      .catch((error) => {
+        let message = error.message;
+        
+        if (error.message.includes("auth/email-already-in-use")) {
+          message = t("errorMessages.emailInUse");
+        }
+        
+        setResponse({ status: "error", message });
+      })
+      .finally(() => {
+        setIsLoading(false);
+        setCurrentStep((prev) => prev + 1);
+      });
+  }, [form.firstName, form.lastName, form.email, form.password]);  
 
   const handleInputChange = useCallback((field: keyof SignUpForm, value: string) => {
     setForm((prev) => {
@@ -65,7 +97,9 @@ export const SignUpFormProvider = ({ children }: { children: React.ReactNode }) 
     }));
   }, []);
 
-  const handleNext = useCallback(() => setCurrentStep((prev) => prev + 1), []);
+  const handleContinue = useCallback(() => {
+    setCurrentStep((prev) => prev + 1);
+  }, []);
 
   const validateField = (field: string, value: string, formState: typeof form): string | null => {
     if (!value) return t(`validators.${field}Required`);
@@ -92,10 +126,6 @@ export const SignUpFormProvider = ({ children }: { children: React.ReactNode }) 
     return null;
   };
 
-  const isIncomplete = useMemo(() => {
-    return Object.values(form).some((value) => !value) || Object.values(errors).some((error) => !!error);
-  }, [form, errors]);
-
   useEffect(() => {
     const validations = {
       length: form.password.length >= 6,
@@ -112,14 +142,17 @@ export const SignUpFormProvider = ({ children }: { children: React.ReactNode }) 
     visibility,
     validations,
     isIncomplete,
+    isLoading,
+    response,
     currentStep,
-  }), [form, errors, visibility, validations, isIncomplete, currentStep]);
+  }), [form, errors, visibility, validations, isIncomplete, isLoading, response, currentStep]);
 
   const contextActions = useMemo(() => ({
+    handleSubmit,
     handleInputChange,
     handleToggle,
-    handleNext,
-  }), [handleInputChange, handleToggle, handleNext]);
+    handleContinue,
+  }), [handleSubmit, handleInputChange, handleToggle, handleContinue]);
 
   return (
     <SignUpFormContext.Provider value={{ ...contextValues, ...contextActions }}>

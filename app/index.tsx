@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { router } from "expo-router";
 import { View, StyleSheet } from "react-native";
 import Animated, { withRepeat, useSharedValue, useAnimatedStyle, withSpring } from "react-native-reanimated";
 import { colors } from "@/constants/theme";
@@ -17,10 +16,6 @@ const Index = () => {
       3,
       true
     );
-
-    setTimeout(() => {
-      router.replace("/welcome");
-    }, 2000);
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => {

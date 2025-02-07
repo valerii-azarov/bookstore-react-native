@@ -1,7 +1,12 @@
 import { router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import authApi from "@/api/authApi";
 
 const MenuScreen = () => {
+  const handleLogout = async () => {
+    await authApi.logout();
+  };
+
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Text>Menu User Screen</Text>
@@ -18,7 +23,7 @@ const MenuScreen = () => {
           <Text style={styles.buttonText}>Viewing History</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.button} onPress={() => { router.push("/"); }}>
+        <TouchableOpacity style={styles.button} onPress={handleLogout}>
           <Text style={styles.buttonText}>Logout</Text>
         </TouchableOpacity>
       </View>

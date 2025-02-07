@@ -1,10 +1,11 @@
+import { useEffect } from "react";
 import { Link } from "expo-router";
 import { Alert, View, Image, TouchableOpacity, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { Ionicons as Icon } from "@expo/vector-icons";
 import { colors } from "@/constants/theme";
 import { verticalScale } from "@/helpers/common";
-import { useLanguageContext } from "@/contexts/Language";
+import { useLanguageContext } from "@/contexts/LanguageContext";
 import { SignInFormProvider } from "./contexts/SignInForm";
 import { useSignInFormContext } from "./contexts/SignInForm";
 
@@ -15,11 +16,7 @@ import ScreenWrapper from "@/components/ScreenWrapper";
 
 const SignInScreen = () => {
   const { t } = useLanguageContext();
-  const { form, errors, isPasswordVisible, isIncomplete, handleInputChange, handleToggle } = useSignInFormContext();
-
-  const handleSignIn = () => {
-    console.log("Signing in...");
-  };
+  const { form, errors, isPasswordVisible, isIncomplete, isLoading, response, handleSubmit, handleInputChange, handleToggle } = useSignInFormContext();
 
   const handleGoogleSignIn = () => {
     console.log("Signing in with Google...");
@@ -28,6 +25,15 @@ const SignInScreen = () => {
   const handleTrouble = () => {
     Alert.alert(t("screens.signIn.troubleAlert"));
   };
+
+  useEffect(() => {
+    const isError = response?.status === "error";
+    const errorMessage = response?.message;
+
+    if (isError && errorMessage) {
+      Alert.alert(t("alerts.error.title"), response.message);
+    }
+  }, [response]);
 
   return (
     <ScreenWrapper statusBarStyle="dark">
@@ -80,7 +86,11 @@ const SignInScreen = () => {
         </Animated.View>
 
         <Animated.View entering={FadeInDown.delay(300).springify()} style={styles.signInContainer}>
-          <Button onPress={handleSignIn} disabled={isIncomplete}>
+          <Button 
+            onPress={handleSubmit} 
+            loading={isLoading}
+            disabled={isIncomplete}
+          >
             <Typography fontSize={16} fontWeight="bold" color={colors.white}>
               {t("screens.signIn.signIn")}
             </Typography>

@@ -15,6 +15,24 @@ export interface ImageFlag {
   source: ImageSourcePropType;
 }
 
+export type ResponseType = {
+  status: "success" | "error";
+  message?: string;
+};
+
+export enum Role {
+  User = 1,
+  Admin = 2,
+}
+
+export type UserType = {
+  uid?: string;
+  firstName: string;
+  lastName: string;
+  email?: string;
+  role?: Role;
+} | null;
+
 export interface SignInForm {
   email: string;
   password: string;

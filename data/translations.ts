@@ -104,6 +104,10 @@ const translations: Translations = {
         en: "Finish",
         uk: "Перейти",
       },
+      buttonBack: {
+        en: "Go back",
+        uk: "Вийти",
+      },      
       step1: {
         title: {
           en: "Please fill in all required fields",
@@ -140,6 +144,10 @@ const translations: Translations = {
         errorSubtitle: {
           en: "Please try again later",
           uk: "Будь ласка, спробуйте ще раз пізніше",
+        },
+        errorReason: {
+          en: "Reason",
+          uk: "Причина",
         },
       }
     },
@@ -248,6 +256,35 @@ const translations: Translations = {
       uk: "Паролі не співпадають",
     },
   },
+
+  alerts: {
+    error: {
+      title: {
+        en: "Error",
+        uk: "Помилка",
+      },
+    }, 
+  },
+  
+
+  errorMessages: {
+    invalidCredentials: {
+      en: "Invalid email or password",
+      uk: "Неправильний email або пароль"
+    },
+    userDisabled: {
+      en: "Your account has been disabled. Please contact support",
+      uk: "Ваш акаунт заблоковано. Зверніться до підтримки"
+    },
+    networkRequestFailed: {
+      en: "Network error. Please check your internet connection",
+      uk: "Помилка мережі. Перевірте підключення до Інтернету"
+    },
+    emailInUse: {
+      en: "This email is already in use",
+      uk: "Ця електронна пошта вже використовується"
+    },
+  },  
 };
 
 export default translations;

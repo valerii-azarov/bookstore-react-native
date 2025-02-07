@@ -6,7 +6,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons as Icon } from "@expo/vector-icons";
 import { colors } from "@/constants/theme";
-import { useLanguageContext } from "@/contexts/Language";
+import { useLanguageContext } from "@/contexts/LanguageContext";
 import { horizontalScale, verticalScale, widthPercentage, heightPercentage } from "@/helpers/common";
 import { ImageBook } from "@/types";
 

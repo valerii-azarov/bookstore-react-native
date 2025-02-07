@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 import { View, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { colors } from "@/constants/theme";
-import { useLanguageContext } from "@/contexts/Language";
+import { useLanguageContext } from "@/contexts/LanguageContext";
 import { verticalScale } from "@/helpers/common";
 import { ImageFlag, Language } from "@/types";
 

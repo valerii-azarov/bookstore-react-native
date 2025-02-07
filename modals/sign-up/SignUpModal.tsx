@@ -1,8 +1,9 @@
 import { View, ScrollView, KeyboardAvoidingView, StyleSheet, Platform } from "react-native";
 import { colors } from "@/constants/theme";
-import { useLanguageContext } from "@/contexts/Language";
+import { useLanguageContext } from "@/contexts/LanguageContext";
 import { SignUpFormProvider } from "./contexts/SignUpForm";
 import { useSignUpFormContext } from "./contexts/SignUpForm";
+import { useRouter } from "expo-router";
 
 import ModalWrapper from "@/components/ModalWrapper";
 import BackButton from "@/components/BackButton";
@@ -16,7 +17,8 @@ import Step3 from "./steps/Step3";
 
 const SignUpModal = () => {
   const { t } = useLanguageContext();
-  const { currentStep, isIncomplete, handleNext } = useSignUpFormContext();
+  const { currentStep, isIncomplete, isLoading, response, handleSubmit, handleContinue } = useSignUpFormContext();
+  const router = useRouter();
 
   const steps: Record<number, JSX.Element> = {
     0: <Step1 />,
@@ -26,14 +28,15 @@ const SignUpModal = () => {
 
   const isLastStep = currentStep === Object.keys(steps).length - 1;
   const isDisabled = currentStep === 0 && isIncomplete;
+  const isError = response?.status === "error";
 
   const handlePress = () => {
     if (isLastStep) {
-      console.log("Finished sign-up process...");
-    } else {
-      handleNext();
+      return isError ? router.back() : router.replace("/books");
     }
-  };
+  
+    currentStep === 1 ? handleSubmit() : handleContinue();
+  };  
 
   return (
     <ModalWrapper style={{ backgroundColor: colors.creamTint9 }}>
@@ -62,10 +65,11 @@ const SignUpModal = () => {
         <Button
           onPress={handlePress}
           style={styles.button}
+          loading={isLoading}
           disabled={isDisabled}
         >
           <Typography fontSize={16} fontWeight="bold" color={colors.white}>
-            {t(`screens.signUp.button${isLastStep ? "Finish" : "Continue"}`)}
+            {t(`screens.signUp.button${isError ? "Back" : isLastStep ? "Finish" : "Continue"}`)}
           </Typography>
         </Button>
       </View>

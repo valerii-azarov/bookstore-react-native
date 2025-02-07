@@ -1,7 +1,7 @@
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons as Icon } from "@expo/vector-icons";
 import { colors } from "@/constants/theme";
-import { useLanguageContext } from "@/contexts/Language";
+import { useLanguageContext } from "@/contexts/LanguageContext";
 import { useSignUpFormContext } from "../contexts/SignUpForm";
 
 import Field from "@/components/Field";
