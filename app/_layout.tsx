@@ -1,30 +1,48 @@
 import React, { useEffect } from "react";
 import { Stack } from "expo-router";
 import { Platform } from "react-native";
+import { useRouter, useSegments } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
 
 import { AuthProvider } from "@/contexts/AuthContext";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
 SplashScreen.preventAutoHideAsync();
 
 const InitialLayout = () => {
+  const router = useRouter();
+  const segments = useSegments();
+  const { isLoggedIn, isAdmin } = useAuthContext();
+  
   const [fontsLoaded, fontsError] = useFonts({
     "Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.ttf"),
     "Montserrat-Light": require("../assets/fonts/Montserrat-Light.ttf"),
     "Montserrat-Medium": require("../assets/fonts/Montserrat-Medium.ttf"),
     "Montserrat-Regular": require("../assets/fonts/Montserrat-Regular.ttf"),
   });
-
+  
   useEffect(() => {
-    if (fontsLoaded || fontsError) {
-      SplashScreen.hideAsync();
+    if (!fontsLoaded && !fontsError) return;
+  
+    SplashScreen.hideAsync();
+  
+    const isUserGroup = segments[0] === "(user)";
+    const isAdminGroup = segments[0] === "(admin)";
+  
+    if (isLoggedIn) {
+      const shouldRedirect = (isAdmin && !isAdminGroup) || (!isAdmin && !isUserGroup);
+      if (shouldRedirect) {
+        router.replace(isAdmin ? "/(admin)/(tabs)/books" : "/(user)/(tabs)/books");
+      }
+    } else {
+      router.replace("/welcome");
     }
-  }, [fontsLoaded, fontsError]);
-
+  }, [fontsLoaded, fontsError, isLoggedIn, isAdmin]);
+  
   if (!fontsLoaded && !fontsError) return null;
 
   return (
