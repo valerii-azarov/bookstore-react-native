@@ -4,7 +4,7 @@ export type Translations = {
   [key: string]: TranslationValue | Translations;
 };
 
-const translations: Translations = {  
+const translations: Translations = {
   screens: {
     welcome: {
       titleFirst: {
@@ -107,7 +107,7 @@ const translations: Translations = {
       buttonBack: {
         en: "Go back",
         uk: "Вийти",
-      },      
+      },
       step1: {
         title: {
           en: "Please fill in all required fields",
@@ -149,7 +149,52 @@ const translations: Translations = {
           en: "Reason",
           uk: "Причина",
         },
-      }
+      },
+    },
+
+    menu: {
+      balance: {
+        title: {
+          en: "Balance",
+          uk: "Ваш баланс",
+        },
+        bonuses: {
+          en: "bonuses",
+          uk: "бонуси",
+        },
+        offers: {
+          en: "offers",
+          uk: "пропозиції",
+        },
+      },
+      adminParameters: {
+        en: "Settings",
+        uk: "Параметри",
+      },
+      userParameters: {
+        en: "My books & settings",
+        uk: "Мої книги та параметри",
+      },      
+      profile: {
+        en: "Profile",
+        uk: "Профіль",
+      },
+      favorites: {
+        en: "Favorites",
+        uk: "Збережені книги",
+      },
+      viewingHistory: {
+        en: "Viewing History",
+        uk: "Переглянуті книги",
+      },
+      languages: {
+        en: "Language",
+        uk: "Мова",
+      },
+      logout: {
+        en: "Logout",
+        uk: "Вийти",
+      },
     },
   },
 
@@ -258,33 +303,50 @@ const translations: Translations = {
   },
 
   alerts: {
+    confirmLogout: {
+      title: {
+        en: "Confirm",
+        uk: "Підтвердження",
+      },
+      message: {
+        en: "Are you sure you want to log out?",
+        uk: "Ви впевнені, що хочете вийти?",
+      },
+      cancel: {
+        en: "Cancel",
+        uk: "Скасувати",
+      },
+      confirm: {
+        en: "Confirm",
+        uk: "Підтвердити",
+      },
+    },
     error: {
       title: {
         en: "Error",
         uk: "Помилка",
       },
-    }, 
+    },
   },
-  
 
   errorMessages: {
     invalidCredentials: {
       en: "Invalid email or password",
-      uk: "Неправильний email або пароль"
+      uk: "Неправильний email або пароль",
     },
     userDisabled: {
       en: "Your account has been disabled. Please contact support",
-      uk: "Ваш акаунт заблоковано. Зверніться до підтримки"
+      uk: "Ваш акаунт заблоковано. Зверніться до підтримки",
     },
     networkRequestFailed: {
       en: "Network error. Please check your internet connection",
-      uk: "Помилка мережі. Перевірте підключення до Інтернету"
+      uk: "Помилка мережі. Перевірте підключення до Інтернету",
     },
     emailInUse: {
       en: "This email is already in use",
-      uk: "Ця електронна пошта вже використовується"
+      uk: "Ця електронна пошта вже використовується",
     },
-  },  
+  },
 };
 
 export default translations;

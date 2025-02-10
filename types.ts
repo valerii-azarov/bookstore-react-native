@@ -69,3 +69,10 @@ export interface SignUpValidations {
   uppercase: boolean;
   confirmMatch: boolean;
 }
+
+export type MenuOptionsType = {
+  title: string;
+  icon: React.ReactElement;
+  route: any;
+  isVisible?: boolean;
+};
