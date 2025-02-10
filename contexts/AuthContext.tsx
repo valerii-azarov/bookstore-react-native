@@ -6,6 +6,7 @@ import { UserType, Role } from "@/types";
 
 type AuthContextType = {
   user: UserType;
+  setUser: (user: UserType) => void;
   isLoggedIn: boolean;
   isAdmin: boolean;
 };
@@ -40,7 +41,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   if (!initialized) return null;
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn, isAdmin }}>
+    <AuthContext.Provider value={{ user, setUser, isLoggedIn, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );

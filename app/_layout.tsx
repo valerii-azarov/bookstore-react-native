@@ -121,17 +121,21 @@ const InitialLayout = () => {
         }}
       />
       <Stack.Screen
+        name="(user)/profile"
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="(user)/(modals)/edit-profile/[field]"
+        options={{
+          headerShown: false,
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
         name="(user)/favorites"
         options={{
           headerShown: true,
           title: "Favorites",
-        }}
-      />
-      <Stack.Screen
-        name="(user)/profile"
-        options={{
-          headerShown: true,
-          title: "Profile",
         }}
       />
       <Stack.Screen

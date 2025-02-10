@@ -196,6 +196,66 @@ const translations: Translations = {
         uk: "Вийти",
       },
     },
+
+    profile: {
+      header: {
+        en: "Profile",
+        uk: "Профіль",
+      },
+      fields: {
+        firstName: {
+          en: "First Name",
+          uk: "Ім'я",
+        },
+        lastName: {
+          en: "Last Name",
+          uk: "Прізвище",
+        },
+      },
+      button: {
+        en: "Edit",
+        uk: "Змінити",
+      },
+    },
+
+    editProfile: {
+      header: {
+        firstName: {
+          en: "Change First Name",
+          uk: "Зміна імені",
+        },
+        lastName: {
+          en: "Change Last Name",
+          uk: "Зміна прізвища",          
+        },
+      },
+      fields: {
+        firstName: {
+          label: {
+            en: "New First Name",
+            uk: "Нове ім'я",
+          },
+          placeholder: {
+            en: "Enter your new first name",
+            uk: "Введіть нове ім'я",
+          },
+        },
+        lastName: {
+          label: {
+            en: "New Last Name",
+            uk: "Нове прізвище",
+          },
+          placeholder: {
+            en: "Enter your last name",
+            uk: "Введіть нове прізвище",
+          },
+        },
+      },
+      button: {
+        en: "Save",
+        uk: "Зберегти",
+      },
+    },
   },
 
   labels: {

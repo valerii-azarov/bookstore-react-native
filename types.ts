@@ -76,3 +76,8 @@ export type MenuOptionsType = {
   route: any;
   isVisible?: boolean;
 };
+
+export type EditFieldsType = {
+  firstName: string;
+  lastName: string;
+};
