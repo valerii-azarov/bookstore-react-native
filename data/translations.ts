@@ -211,6 +211,10 @@ const translations: Translations = {
           en: "Last Name",
           uk: "Прізвище",
         },
+        email: {
+          en: "Email",
+          uk: "Електронна пошта",
+        },
       },
       button: {
         en: "Edit",

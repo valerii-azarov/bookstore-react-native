@@ -46,6 +46,7 @@ const MenuScreen = () => {
       title: t("screens.menu.profile"),
       icon: <Icon name="person-circle" size={28} color={colors.orange} />,
       route: "/profile",
+      isVisible: !isAdmin,
     },
     {
       title: t("screens.menu.favorites"),

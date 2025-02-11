@@ -31,7 +31,7 @@ export type UserType = {
   lastName: string;
   email?: string;
   role?: Role;
-} | null;
+};
 
 export interface SignInForm {
   email: string;
@@ -77,7 +77,14 @@ export type MenuOptionsType = {
   isVisible?: boolean;
 };
 
-export type EditFieldsType = {
+export type EditFieldType = {
   firstName: string;
   lastName: string;
+};
+
+export type ProfileFieldType = {
+  label: string;
+  value: string;
+  field: keyof UserType;
+  editable: boolean;
 };

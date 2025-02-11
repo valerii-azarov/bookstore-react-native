@@ -5,7 +5,7 @@ import authApi from "@/api/authApi";
 import { UserType, Role } from "@/types";
 
 type AuthContextType = {
-  user: UserType;
+  user: UserType | null;
   setUser: (user: UserType) => void;
   isLoggedIn: boolean;
   isAdmin: boolean;
@@ -14,7 +14,7 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<UserType>(null);
+  const [user, setUser] = useState<UserType | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [initialized, setInitialized] = useState<boolean>(false);

@@ -1,10 +1,10 @@
 import { useEffect } from "react";
+import { Alert, View, ScrollView, Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, Platform, StyleSheet } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { Alert, View, StyleSheet } from "react-native";
 import { colors } from "@/constants/theme";
 import { useLanguageContext } from "@/contexts/LanguageContext";
 import { useEditProfile } from "./hooks/useEditProfile";
-import { EditFieldsType } from "@/types";
+import { EditFieldType } from "@/types";
 
 import ModalWrapper from "@/components/ModalWrapper";
 import BackButton from "@/components/BackButton";
@@ -15,14 +15,11 @@ import Typography from "@/components/Typography";
 
 const EditProfileModal = () => {
   const { t } = useLanguageContext();
-  const { field } = useLocalSearchParams<{ field: keyof EditFieldsType }>();
+  const { field } = useLocalSearchParams<{ field: keyof EditFieldType }>();
   const { newValue, setNewValue, isLoading, isDisabled, response, handleSubmit } = useEditProfile(field);
 
   useEffect(() => {
-    const isError = response?.status === "error";
-    const errorMessage = response?.message;
-
-    if (isError && errorMessage) {
+    if (response?.status === "error" && response?.message) {
       Alert.alert(t("alerts.error.title"), response.message);
     }
   }, [response]);
@@ -35,24 +32,32 @@ const EditProfileModal = () => {
         style={styles.headerContainer}
       />
 
-      <View style={styles.contentContainer}>
-        <Field
-          label={t(`screens.editProfile.fields.${field}.label`)}
-          value={newValue}
-          onChangeText={(value) => setNewValue(value)}
-          placeholder={t(`screens.editProfile.fields.${field}.placeholder`)}
-        />
-
-        <Button 
-          onPress={handleSubmit} 
-          loading={isLoading}
-          disabled={isDisabled}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.keyboardAvoidingView}
         >
-          <Typography fontSize={16} fontWeight="bold" color={colors.white}>
-            {t("screens.editProfile.button")}
-          </Typography>
-        </Button>
-      </View>
+          <ScrollView 
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={styles.scrollViewContainer}
+          >
+            <Field
+              label={t(`screens.editProfile.fields.${field}.label`)}
+              value={newValue}
+              onChangeText={setNewValue}
+              placeholder={t(`screens.editProfile.fields.${field}.placeholder`)}
+            />
+          </ScrollView>
+
+          <View style={styles.buttonContainer}>
+            <Button onPress={handleSubmit} loading={isLoading} disabled={isDisabled}>
+              <Typography fontSize={16} fontWeight="bold" color={colors.white}>
+                {t("screens.editProfile.button")}
+              </Typography>
+            </Button>
+          </View>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
     </ModalWrapper>
   );
 };
@@ -62,8 +67,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     marginBottom: 15,
   },
-  contentContainer: {
+  keyboardAvoidingView: {
     flex: 1,
+  },
+  scrollViewContainer: {
+    flexGrow: 1,
+    paddingHorizontal: 15,
+  },
+  buttonContainer: {
+    backgroundColor: colors.creamTint9,
+    paddingTop: 10,
     paddingHorizontal: 15,
   },
 });

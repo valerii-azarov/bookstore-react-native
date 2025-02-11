@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { useRouter } from "expo-router";
 import profileApi from "@/api/profileApi";
 import { useAuthContext } from "@/contexts/AuthContext";
-import { EditFieldsType, ResponseType } from "@/types";
+import { EditFieldType, ResponseType } from "@/types";
 
 type UseEditProfileReturn = {
   newValue: string | undefined;
@@ -13,7 +13,7 @@ type UseEditProfileReturn = {
   handleSubmit: () => Promise<void>;
 };
 
-export const useEditProfile = (field: keyof EditFieldsType): UseEditProfileReturn => {
+export const useEditProfile = (field: keyof EditFieldType): UseEditProfileReturn => {
   const router = useRouter();
   const { user, setUser } = useAuthContext();
 
