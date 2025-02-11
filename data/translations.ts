@@ -153,11 +153,13 @@ const translations: Translations = {
     },
 
     menu: {
-      balance: {
-        title: {
-          en: "Balance",
-          uk: "Ваш баланс",
+      header: {
+        welcome: {
+          en: "Hello",
+          uk: "Вітаю",
         },
+      },
+      balance: {
         bonuses: {
           en: "bonuses",
           uk: "бонуси",
@@ -167,14 +169,6 @@ const translations: Translations = {
           uk: "пропозиції",
         },
       },
-      adminParameters: {
-        en: "Settings",
-        uk: "Параметри",
-      },
-      userParameters: {
-        en: "My books & settings",
-        uk: "Мої книги та параметри",
-      },      
       profile: {
         en: "Profile",
         uk: "Профіль",
@@ -194,6 +188,10 @@ const translations: Translations = {
       logout: {
         en: "Logout",
         uk: "Вийти",
+      },
+      version: {
+        en: "Version",
+        uk: "Версія додатку",
       },
     },
 

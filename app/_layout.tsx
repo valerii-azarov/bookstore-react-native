@@ -62,8 +62,7 @@ const InitialLayout = () => {
       <Stack.Screen
         name="languages"
         options={{
-          animation: "fade",
-          animationDuration: 200,
+          ...(isLoggedIn ? {} : { animation: "fade", animationDuration: 200 }),
           headerShown: false,
         }}
       />

@@ -1,40 +1,60 @@
 import React from "react";
-import { View, ViewStyle, TextStyle, StyleSheet } from "react-native";
+import { View, ViewStyle, TextStyle, StyleSheet, StyleProp } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Typography from "./Typography";
 
 type HeaderProps = {
   title?: string;
-  style?: ViewStyle;
-  titleStyle?: TextStyle;
+  titleSize?: number;
+  style?: StyleProp<ViewStyle>;
+  titleStyle?: StyleProp<TextStyle>;
   iconLeft?: React.ReactElement;
   iconRight?: React.ReactElement;
+  enableTopInset?: boolean;
 };
 
-const Header = ({ title = "", iconLeft, iconRight, style, titleStyle }: HeaderProps) => {
+const Header = ({
+  title = "",
+  titleSize = 22,
+  iconLeft,
+  iconRight,
+  style,
+  titleStyle,
+  enableTopInset = false,
+}: HeaderProps) => {
+  const insets = useSafeAreaInsets();
+
   return (
-    <View 
+    <View
       style={[
         styles.container,
-        style
-      ]
-    }>
-      {iconLeft && <View style={styles.icon}>{iconLeft}</View>}
+        { 
+          paddingTop: enableTopInset ? insets.top : 0 
+        },
+        style,
+      ]}
+    >
+      <View style={styles.iconContainer}>{iconLeft}</View>
 
-      {title && (
-        <Typography 
-          fontSize={22} 
-          fontWeight="bold" 
-          style={[
-            styles.title, 
-            titleStyle
-          ]}
-        >
-          {title}
-        </Typography>
-      )}
-      
-      {iconRight && <View style={styles.icon}>{iconRight}</View>}
+      <View style={styles.titleContainer}>
+        {title && (
+          <Typography
+            fontSize={titleSize}
+            fontWeight="bold"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={[
+              styles.title,
+              titleStyle,
+            ]}
+          >
+            {title}
+          </Typography>
+        )}
+      </View>
+
+      <View style={styles.iconContainer}>{iconRight}</View>
     </View>
   );
 };
@@ -45,17 +65,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    paddingHorizontal: 16,
+  },
+  iconContainer: {
+    minWidth: "10%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  titleContainer: {
+    flex: 1,
+    alignItems: "center",
   },
   title: {
-    position: "absolute",
-    left: 0,
-    right: 0,
     textAlign: "center",
-    zIndex: 0,
-  },
-  icon: {
-    alignItems: "center",
-    zIndex: 5,
   },
 });
 
