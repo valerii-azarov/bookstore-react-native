@@ -4,6 +4,12 @@ export type Language = "en" | "uk";
 
 export type FontWeight = "light" | "regular" | "medium" | "bold";
 
+export type TabType = {
+  name: string;
+  label: string;
+  icon: React.ReactElement;
+};
+
 export interface ImageBook {
   id: string;
   source: ImageSourcePropType;

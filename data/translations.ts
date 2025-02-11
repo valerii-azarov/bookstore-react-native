@@ -5,6 +5,29 @@ export type Translations = {
 };
 
 const translations: Translations = {
+  tabs: {
+    books: {
+      en: "Books",
+      uk: "Книги",
+    },
+    search: {
+      en: "Search",
+      uk: "Пошук",
+    },
+    orders: {
+      en: "Orders",
+      uk: "Замовлення",
+    },
+    orderHistory: {
+      en: "Order History",
+      uk: "Історія замовлень",
+    },
+    menu: {
+      en: "Menu",
+      uk: "Меню",
+    },
+  },
+
   screens: {
     welcome: {
       titleFirst: {
