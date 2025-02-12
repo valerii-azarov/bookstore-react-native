@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { View, ViewStyle, StyleSheet } from "react-native";
+import { View, ViewStyle, StyleSheet, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "@/constants/theme";
 
@@ -18,7 +18,7 @@ const ScreenWrapper = ({ children, style, statusBarStyle = "auto", disableTopIns
       style={[
         styles.container,
         {
-          paddingTop: disableTopInset ? 0 : insets.top,
+          paddingTop: disableTopInset ? 0 : Platform.OS === "ios" ? insets.top : 15 + insets.top,
         },
         style,
       ]}
