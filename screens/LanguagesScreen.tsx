@@ -27,12 +27,14 @@ const LanguagesScreen = () => {
 
   return (
     <ScreenWrapper statusBarStyle="dark">
-      <View style={styles.container}>
-        <Header
-          title={t("screens.languages.header")}
-          iconLeft={<BackButton />}
-        />
+      <Header
+        title={t("screens.languages.header")}
+        iconLeft={
+          <BackButton />
+        }
+      />
 
+      <View style={styles.container}>
         <View style={styles.languageContainer}>
           <Typography fontSize={18} fontWeight="bold">
             {t("screens.languages.title")}

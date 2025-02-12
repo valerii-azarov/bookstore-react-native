@@ -38,57 +38,54 @@ const ProfileScreen = () => {
 
   return (
     <ScreenWrapper statusBarStyle="dark">
-      <View style={styles.container}>
-        <Header
-          title={t("screens.profile.header")}
-          iconLeft={<BackButton />}
-          style={styles.headerContainer}
-        />
+      <Header
+        title={t("screens.profile.header")}
+        iconLeft={
+          <BackButton />
+        }
+        style={styles.headerContainer}
+      />
 
-        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-          {profileFields.map(({ field, label, value, editable }, index) => (
-            <Animated.View 
-              key={index}
-              entering={FadeInDown.delay(index * 100)} 
-              style={styles.profileField}
-            >
-              <Typography fontSize={14} fontWeight="medium" color={colors.blackTint5}>
-                {label}
+      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        {profileFields.map(({ field, label, value, editable }, index) => (
+          <Animated.View 
+            key={index}
+            entering={FadeInDown.delay(index * 100)} 
+            style={styles.profileField}
+          >
+            <Typography fontSize={14} fontWeight="medium" color={colors.blackTint5}>
+              {label}
+            </Typography>
+
+            <View style={styles.profileAction}>
+              <Typography fontSize={16} fontWeight="bold">
+                {value}
               </Typography>
 
-              <View style={styles.profileAction}>
-                <Typography fontSize={16} fontWeight="bold">
-                  {value}
-                </Typography>
-
-                {editable && (
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={() =>
-                      router.push({
-                        pathname: "/(user)/(modals)/edit-profile/[field]",
-                        params: { field },
-                      })
-                    }
-                  >
-                    <Typography fontSize={16} fontWeight="bold" style={styles.linkText}>
-                      {t("screens.profile.button")}
-                    </Typography>
-                  </TouchableOpacity>
-                )}
-              </View>
-            </Animated.View>
-          ))}
-        </ScrollView>
-      </View>
+              {editable && (
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/(user)/(modals)/edit-profile/[field]",
+                      params: { field },
+                    })
+                  }
+                >
+                  <Typography fontSize={16} fontWeight="bold" style={styles.linkText}>
+                    {t("screens.profile.button")}
+                  </Typography>
+                </TouchableOpacity>
+              )}
+            </View>
+          </Animated.View>
+        ))}
+      </ScrollView>
     </ScreenWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   headerContainer: {
     paddingHorizontal: 15,
     marginBottom: 15,
