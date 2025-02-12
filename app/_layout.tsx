@@ -127,7 +127,7 @@ const InitialLayout = () => {
         name="(user)/(modals)/edit-profile/[field]"
         options={{
           headerShown: false,
-          presentation: "modal",
+          presentation: "transparentModal",
         }}
       />
       <Stack.Screen
@@ -161,7 +161,7 @@ const InitialLayout = () => {
         name="sign-up" 
         options={{
           headerShown: false,
-          presentation: "modal",
+          presentation: "transparentModal",
         }} 
       />
     </Stack>
