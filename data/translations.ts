@@ -283,6 +283,19 @@ const translations: Translations = {
     },
   },
 
+  modals: {
+    createBook: {
+      header: {
+        en: "Create Book",
+        uk: "Створення книги",
+      },
+      button: {
+        en: "Create",
+        uk: "Створити",
+      },
+    },
+  },
+
   labels: {
     firstName: {
       en: "First Name",
