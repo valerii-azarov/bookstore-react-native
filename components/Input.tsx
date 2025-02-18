@@ -1,22 +1,34 @@
 import React from "react";
 import { View, ViewStyle, TextStyle, TextInput, TextInputProps, StyleSheet } from "react-native";
 import { colors } from "@/constants/theme";
-import { verticalScale, getFontSize, getFontFamily } from "@/helpers/common";
+import { verticalScale } from "@/helpers/common";
 
 type InputProps = TextInputProps & {
   iconLeft?: React.ReactElement;
   iconRight?: React.ReactElement;
   containerStyle?: ViewStyle;
   inputStyle?: TextStyle;
+  isSquared?: boolean;
   inputRef?: React.Ref<TextInput>;
 };
 
-const Input = ({ iconLeft, iconRight, containerStyle, inputStyle, inputRef, ...props }: InputProps) => {
+const Input = ({
+  iconLeft,
+  iconRight,
+  containerStyle,
+  inputStyle,
+  isSquared = false,
+  inputRef,
+  ...props
+}: InputProps) => {
   return (
     <View 
       style={[
         styles.container,
-        containerStyle
+        {
+          borderRadius: isSquared ? 0 : 16,
+        },
+        containerStyle,
       ]}
     >
       {iconLeft && <View style={styles.iconLeft}>{iconLeft}</View>}
@@ -42,7 +54,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderColor: colors.grayTint3,
     borderWidth: 1,
-    borderRadius: 16,
     paddingHorizontal: 15,
     flexDirection: "row",
     alignItems: "center",

@@ -87,7 +87,7 @@ const InitialLayout = () => {
         name="(admin)/(modals)/create-book"
         options={{
           headerShown: false,
-          presentation: "modal",
+          presentation: "transparentModal",
         }}
       />
       <Stack.Screen

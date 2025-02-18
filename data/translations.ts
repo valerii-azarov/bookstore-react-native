@@ -289,9 +289,299 @@ const translations: Translations = {
         en: "Create Book",
         uk: "Створення книги",
       },
-      button: {
+      buttonBack: {
+        en: "Back",
+        uk: "Назад",
+      },
+      buttonContinue: {
+        en: "Continue",
+        uk: "Продовжити",
+      },
+      buttonCreate: {
         en: "Create",
         uk: "Створити",
+      },
+      buttonComplete: {
+        en: "Complete",
+        uk: "Завершити",
+      },
+      buttonExit: {
+        en: "Go back",
+        uk: "Вийти",
+      },
+      step1: {
+        title: {
+          en: "Title",
+          uk: "Назва",
+        },
+        hint: {
+          en: "Enter the title of the book",
+          uk: "Введіть назву книги",
+        },
+        placeholder: {
+          en: "e.g. Murder on the Orient Express",
+          uk: "Наприклад, Вбивство в «Східному експресі»",
+        },
+      },
+      step2: {
+        title: {
+          en: "Authors",
+          uk: "Автори",
+        },
+        hint: {
+          en: "Enter authors separated by commas",
+          uk: "Введіть авторів, розділяючи комами",
+        },
+        placeholder: {
+          en: "e.g. Agatha Christie",
+          uk: "Наприклад, Агата Крісті",
+        },
+      },     
+      step3: {
+        title: {
+          en: "Description",
+          uk: "Опис",
+        },
+        hint: {
+          en: "Provide a brief description of the book",
+          uk: "Напишіть короткий опис книги",
+        },
+        placeholder: {
+          en: "e.g. A detective novel involving the famous detective Hercule Poirot...",
+          uk: "Наприклад, Детективний роман про знаменитого детектива Еркюля Пуаро...",
+        },
+      },    
+      step4: {
+        title: {
+          en: "Genres",
+          uk: "Жанри",
+        },
+        hint: {
+          en: "Select the genres that best describe the book",
+          uk: "Виберіть жанри, які найкраще описують книгу",
+        },
+        select: {
+          en: "Select genres",
+          uk: "Виберіть жанри",
+        },
+        search: {
+          en: "Search...",
+          uk: "Пошук...",
+        },
+      },
+      step5: {
+        title: {
+          en: "Language",
+          uk: "Мова",
+        },
+        hint: {
+          en: "Select the language of the book",
+          uk: "Виберіть мову книги",
+        },
+        select: {
+          en: "Select language",
+          uk: "Виберіть мову",
+        },
+      },
+      step6: {
+        title: {
+          en: "Publisher",
+          uk: "Видавництво",
+        },
+        hint: {
+          en: "Enter the publisher's name",
+          uk: "Введіть назву видавництва",
+        },
+        placeholder: {
+          en: "e.g. Collins Crime Club",
+          uk: "Наприклад, Коллінс Крайм Клаб",
+        },
+      },
+      step7: {
+        title: {
+          en: "Publication Year",
+          uk: "Рік публікації",
+        },
+        hint: {
+          en: "Enter the year the book was published",
+          uk: "Введіть рік публікації книги",
+        },
+        placeholder: {
+          en: "e.g. 1938",
+          uk: "Наприклад, 1938",
+        },
+      },
+      step8: {
+        title: {
+          en: "ISBN",
+          uk: "ISBN",
+        },
+        hint: {
+          en: "Enter the book's ISBN number",
+          uk: "Введіть ISBN книги",
+        },
+        placeholder: {
+          en: "e.g. 978-617-12-9854-5",
+          uk: "Наприклад, 978-617-12-9854-5",
+        },
+      },
+      step9: {
+        title: {
+          en: "Page Count",
+          uk: "Кількість сторінок",
+        },
+        hint: {
+          en: "Enter the number of pages in the book",
+          uk: "Введіть кількість сторінок",
+        },
+        placeholder: {
+          en: "e.g. 288",
+          uk: "Наприклад, 288",
+        },
+      },
+      step10: {
+        title: {
+          en: "Cover Type",
+          uk: "Тип обкладинки",
+        },
+        hint: {
+          en: "Select the type of cover",
+          uk: "Виберіть тип обкладинки",
+        },
+        select: {
+          en: "Select cover type",
+          uk: "Виберіть тип обкладинки",
+        },
+      },
+      step11: {
+        title: {
+          en: "Book Type",
+          uk: "Тип книги",
+        },
+        hint: {
+          en: "Select the book type",
+          uk: "Виберіть тип книги",
+        },
+        select: {
+          en: "Select book type",
+          uk: "Виберіть тип книги",
+        },
+      },
+      step12: {
+        title: {
+          en: "Paper Type",
+          uk: "Тип паперу",
+        },
+        hint: {
+          en: "Select the paper type",
+          uk: "Виберіть тип паперу",
+        },
+        select: {
+          en: "Select paper type",
+          uk: "Виберіть тип паперу",
+        },
+      },
+      step13: {
+        title: {
+          en: "Size",
+          uk: "Розмір",
+        },
+        hint: {
+          en: "Enter the dimensions of the book",
+          uk: "Введіть розміри книги",
+        },
+        placeholder: {
+          en: "e.g. 170 x 123 x 25 mm",
+          uk: "Наприклад, 170 x 123 x 25 мм",
+        },
+      },
+      step14: {
+        title: {
+          en: "Weight",
+          uk: "Вага",
+        },
+        hint: {
+          en: "Enter the weight of the book",
+          uk: "Введіть вагу книги",
+        },
+        placeholder: {
+          en: "e.g. 210 grams",
+          uk: "Наприклад, 210 грам",
+        },
+      },
+      step15: {
+        title: {
+          en: "Illustrations",
+          uk: "Ілюстрації",
+        },
+        hint: {
+          en: "Does the book contain illustrations?",
+          uk: "Чи містить книга ілюстрації?",
+        },
+        label: {
+          en: "Contains Illustrations",
+          uk: "Містить ілюстрації",
+        },
+      },
+      step16: {
+        title: {
+          en: "Cover Image",
+          uk: "Зображення обкладинки",
+        },
+        hint: {
+          en: "Upload the book cover image",
+          uk: "Завантажте зображення обкладинки книги",
+        },
+        placeholder: {
+          en: "Upload Image",
+          uk: "Завантажте зображення",
+        },
+      },
+      step17: {
+        title: {
+          en: "Price",
+          uk: "Ціна",
+        },
+        hint: {
+          en: "Enter the price of the book",
+          uk: "Введіть ціну книги",
+        },
+        placeholder: {
+          en: "e.g. 249.99",
+          uk: "Наприклад, 249.99",
+        },
+      },
+      step18: {
+        title: {
+          en: "Article",
+          uk: "Артикул",
+        },
+        hint: {
+          en: "Enter the article of the book",
+          uk: "Введіть артикул книги",
+        },
+        placeholder: {
+          en: "e.g. 825751754618",
+          uk: "Наприклад, 825751754618",
+        },
+      },  
+      step19: {
+        successTitle: {
+          en: "Book has been added",
+          uk: "Книгу додано",
+        },
+        successSubtitle: {
+          en: "Successfully added to the book list",
+          uk: "Успішно додано до списку книг",
+        },
+        errorTitle: {
+          en: "Error",
+          uk: "Помилка",
+        },
+        errorSubtitle: {
+          en: "Please try again later",
+          uk: "Будь ласка, спробуйте ще раз пізніше",
+        },
       },
     },
   },
@@ -443,6 +733,187 @@ const translations: Translations = {
     emailInUse: {
       en: "This email is already in use",
       uk: "Ця електронна пошта вже використовується",
+    },
+    image: {
+      invalidImageObject: {
+        en: "Invalid image object",
+        uk: "Невірний об'єкт зображення",
+      },
+      noSecureUrl: {
+        en: "Secure URL not found in response",
+        uk: "URL не знайдено у відповіді",
+      },
+    },
+    books: {
+      uploadFailed: {
+        en: "Failed to upload image",
+        uk: "Не вдалося завантажити зображення",
+      },
+    },
+  },
+
+  genres: {
+    fantasy: {
+      en: "Fantasy",
+      uk: "Фентезі",
+    },
+    detective: {
+      en: "Detective",
+      uk: "Детектив",
+    },
+    novel: {
+      en: "Novel",
+      uk: "Роман",
+    },
+    science: {
+      en: "Science",
+      uk: "Наука",
+    },
+    history: {
+      en: "History",
+      uk: "Історія",
+    },
+    philosophy: {
+      en: "Philosophy",
+      uk: "Філософія",
+    },
+    horror: {
+      en: "Horror",
+      uk: "Жахи",
+    },
+    romance: {
+      en: "Romance",
+      uk: "Романтика",
+    },
+    thriller: {
+      en: "Thriller",
+      uk: "Трилер",
+    },
+    biography: {
+      en: "Biography",
+      uk: "Біографія",
+    },
+    poetry: {
+      en: "Poetry",
+      uk: "Поезія",
+    },
+    classic: {
+      en: "Classic",
+      uk: "Класика",
+    },
+    crime: {
+      en: "Crime",
+      uk: "Кримінальний",
+    },
+    drama: {
+      en: "Drama",
+      uk: "Драма",
+    },
+    nonFiction: {
+      en: "Non-fiction",
+      uk: "Документальна література",
+    },
+    cookbooks: {
+      en: "Cookbooks",
+      uk: "Кулінарні книги",
+    },
+    art: {
+      en: "Art",
+      uk: "Мистецтво",
+    },
+    childrens: {
+      en: "Children's",
+      uk: "Дитяча література",
+    },
+    sciFi: {
+      en: "Sci-Fi",
+      uk: "Наукова фантастика",
+    },
+    comic: {
+      en: "Comic",
+      uk: "Комікс",
+    },
+  },
+
+  languages: {
+    english: {
+      en: "English",
+      uk: "Англійська",
+    },
+    ukrainian: {
+      en: "Ukrainian",
+      uk: "Українська",
+    },
+    french: {
+      en: "French",
+      uk: "Французька",
+    },
+    german: {
+      en: "German",
+      uk: "Німецька",
+    },
+    spanish: {
+      en: "Spanish",
+      uk: "Іспанська",
+    },
+  },
+
+  formats: {
+    paper: {
+      en: "Paper",
+      uk: "Паперова",
+    },
+    audiobook: {
+      en: "Audiobook",
+      uk: "Аудіокнига",
+    },
+  },
+
+  coverTypes: {
+    soft: {
+      en: "Softcover",
+      uk: "М'яка обкладинка",
+    },
+    hard: {
+      en: "Hardcover",
+      uk: "Тверда обкладинка",
+    },
+  },
+
+  bookTypes: {
+    paper: {
+      en: "Paper Book",
+      uk: "Паперова книга",
+    },
+    digital: {
+      en: "Digital Book",
+      uk: "Цифрова книга",
+    },
+  },
+
+  paperTypes: {
+    offset: {
+      en: "Offset",
+      uk: "Офсетний",
+    },
+    coated: {
+      en: "Coated",
+      uk: "Крейдований",
+    },
+    newsprint: {
+      en: "Newsprint",
+      uk: "Газетний",
+    },
+  },
+
+  illustrationTypes: {
+    yes: {
+      en: "Yes",
+      uk: "Так",
+    },
+    no: {
+      en: "No",
+      uk: "Ні",
     },
   },
 };

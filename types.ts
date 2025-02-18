@@ -10,6 +10,11 @@ export type TabType = {
   icon: React.ReactElement;
 };
 
+export type ItemType = {
+  label: string;
+  value: string;
+};
+
 export interface ImageBook {
   id: string;
   source: ImageSourcePropType;
@@ -94,3 +99,26 @@ export type ProfileFieldType = {
   field: keyof UserType;
   editable: boolean;
 };
+
+export type CreateBookType = {
+  title: string;
+  authors: string[];
+  description: string;
+  genres: string[];
+  language: string;
+  publisher: string;
+  publicationYear: string;
+  isbn: string;
+  pageCount: string;
+  coverType: string;
+  bookType: string;
+  paperType: string;
+  size: string;
+  weight: string;
+  illustrations: boolean;
+  coverImage: string | null;
+  price: string;
+  sku: string;
+};
+
+export type DirectionType = "forward" | "backward";
