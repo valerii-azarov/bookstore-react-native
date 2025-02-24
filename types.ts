@@ -122,3 +122,38 @@ export type CreateBookType = {
 };
 
 export type DirectionType = "forward" | "backward";
+
+export type BookType = {
+  id: string;
+  title: string;
+  authors: string[];
+  price: string;
+  originalPrice: string;
+  discount: number;
+  coverImage: string;
+  additionalImages?: string[];
+  backgroundColor?: string;
+  description: string;
+  genres: string[];
+  language: string;
+  publisher: string;
+  publicationYear: string;
+  isbn: string;
+  pageCount: string;
+  coverType: string;
+  bookType: string;
+  paperType: string;
+  size: string;
+  weight: string;
+  illustrations: boolean;
+  quantity: number;
+  sku: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type SearchKey = keyof BookType;
+
+export type ModeType = "list" | "grid" | "horizontal";
+
+export type HeightType = "small" | "medium" | "large";

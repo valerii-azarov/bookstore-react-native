@@ -1,13 +1,16 @@
 import React from "react";
-import { View, ViewStyle, TextStyle, TextInput, TextInputProps, StyleSheet } from "react-native";
+import { View, ViewStyle, TextStyle, TextInput, TextInputProps, StyleSheet, Platform } from "react-native";
 import { colors } from "@/constants/theme";
+import { Height } from "@/constants/common";
 import { verticalScale } from "@/helpers/common";
+import { HeightType } from "@/types";
 
 type InputProps = TextInputProps & {
   iconLeft?: React.ReactElement;
   iconRight?: React.ReactElement;
   containerStyle?: ViewStyle;
   inputStyle?: TextStyle;
+  inputHeight?: HeightType;
   isSquared?: boolean;
   inputRef?: React.Ref<TextInput>;
 };
@@ -17,6 +20,7 @@ const Input = ({
   iconRight,
   containerStyle,
   inputStyle,
+  inputHeight = "large",
   isSquared = false,
   inputRef,
   ...props
@@ -27,6 +31,7 @@ const Input = ({
         styles.container,
         {
           borderRadius: isSquared ? 0 : 16,
+          height: verticalScale(Height[inputHeight]),
         },
         containerStyle,
       ]}
@@ -36,6 +41,10 @@ const Input = ({
       <TextInput
         style={[
           styles.input, 
+          Platform.OS === "android" && {
+            includeFontPadding: false,
+            paddingVertical: 0,
+          },
           inputStyle
         ]}
         placeholderTextColor={colors.grayTint2}
@@ -50,7 +59,6 @@ const Input = ({
 
 const styles = StyleSheet.create({
   container: {
-    height: verticalScale(55),
     backgroundColor: colors.white,
     borderColor: colors.grayTint3,
     borderWidth: 1,

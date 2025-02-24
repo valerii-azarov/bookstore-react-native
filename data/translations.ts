@@ -5,6 +5,27 @@ export type Translations = {
 };
 
 const translations: Translations = {
+  components: {
+    bookItem: {
+      available: {
+        en: "Quantity",
+        uk: "Кількість",
+      },
+      unavailable: {
+        en: "Not Available",
+        uk: "Відсутні",
+      },
+      article: {
+        en: "Article",
+        uk: "Артикул",
+      },
+      details: {
+        en: "Details",
+        uk: "Деталі",
+      },
+    },
+  },  
+  
   tabs: {
     books: {
       en: "Books",
@@ -280,6 +301,51 @@ const translations: Translations = {
         en: "Save",
         uk: "Зберегти",
       },
+    },
+
+    books: {
+      header: {
+        text: {
+          en: "Books",
+          uk: "Книги",
+        },
+      },
+      search: {
+        placeholder: {
+          en: "Search by title or article...",
+          uk: "Пошук за назвою чи артикулом...",
+        },
+      },      
+      messages: {
+        empty: {
+          text: {
+            en: "No books found",
+            uk: "Книги не знайдено",
+          },
+          subText: {
+            en: "Try refining your search",
+            uk: "Спробуйте змінити запит",
+          },
+        },
+        error: {
+          text: {
+            en: "An error occurred",
+            uk: "Виникла помилка",
+          },
+          subText: {
+            en: "Something went wrong. Please try again.",
+            uk: "Щось пішло не так. Спробуйте ще раз.",
+          },
+        },
+      },
+      buttons: {
+        error: {
+          text: {
+            en: "Retry",
+            uk: "Повторіть спробу",
+          },
+        },
+      },     
     },
   },
 
@@ -833,6 +899,10 @@ const translations: Translations = {
       en: "Comic",
       uk: "Комікс",
     },
+    others: {
+      en: "and others",
+      uk: "та інші",
+    }
   },
 
   languages: {
