@@ -1,4 +1,5 @@
 import { Dimensions, PixelRatio } from "react-native";
+import { FontWeightEnum } from "@/constants/common";
 import { FontWeight } from "@/types";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -42,7 +43,7 @@ export const getFontSize = (baseSize: number): number => {
 };
 
 export const getFontFamily = (fontWeight: FontWeight): string => {
-  return `Montserrat-${fontWeight[0].toUpperCase()}${fontWeight.slice(1)}`;
+  return FontWeightEnum[fontWeight] || FontWeightEnum.regular;
 }
 
 export const horizontalScale = (size: number): number => scale(size, BASE_WIDTH, SCREEN_WIDTH);
@@ -50,13 +51,3 @@ export const verticalScale = (size: number): number => scale(size, BASE_HEIGHT, 
 
 export const widthPercentage = (percentage: number): number => Math.round((SCREEN_WIDTH * percentage) / 100);
 export const heightPercentage = (percentage: number): number => Math.round((SCREEN_HEIGHT * percentage) / 100);
-
-//
-export const wp = (percentage: number) => {
-  return Math.round((SCREEN_WIDTH * percentage) / 100);
-};
-
-//
-export const hp = (percentage: number) => {
-  return Math.round((SCREEN_HEIGHT * percentage) / 100);
-};

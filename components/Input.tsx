@@ -1,7 +1,7 @@
 import React from "react";
 import { View, ViewStyle, TextStyle, TextInput, TextInputProps, StyleSheet, Platform } from "react-native";
 import { colors } from "@/constants/theme";
-import { Height } from "@/constants/common";
+import { HeightEnum } from "@/constants/common";
 import { verticalScale } from "@/helpers/common";
 import { HeightType } from "@/types";
 
@@ -31,7 +31,7 @@ const Input = ({
         styles.container,
         {
           borderRadius: isSquared ? 0 : 16,
-          height: verticalScale(Height[inputHeight]),
+          height: verticalScale(HeightEnum[inputHeight]),
         },
         containerStyle,
       ]}

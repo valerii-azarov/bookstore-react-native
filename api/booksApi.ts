@@ -1,7 +1,7 @@
 import { doc, getDocs, setDoc, collection } from "@firebase/firestore";
 import { db } from "./firebase";
-import Fuse from "fuse.js";
 import imagesApi from "./imagesApi";
+import { fuseSearch } from "@/helpers/fuseSearch";
 import { CreateBookType, BookType, SearchKey } from "@/types";
 
 const booksApi = {
@@ -31,16 +31,8 @@ const booksApi = {
       return books.slice(offset, offset + limit);
     }
     
-    const fuse = new Fuse(books, {
-      keys,
-      includeScore: true,
-      threshold: 0.4,
-      minMatchCharLength: 2,
-      shouldSort: true,
-      ignoreLocation: true,
-      useExtendedSearch: true,
-    });
-
+    const fuse = fuseSearch<BookType>(books, keys);
+    
     const result = fuse.search(searchQuery.trim()).map(item => item.item);
     return result.slice(offset, offset + limit);
   },

@@ -1,7 +1,7 @@
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons as Icon } from "@expo/vector-icons";
 import { colors } from "@/constants/theme";
-import { Height } from "@/constants/common";
+import { HeightEnum } from "@/constants/common";
 import { verticalScale } from "@/helpers/common";
 import { ModeType, HeightType } from "@/types";
 
@@ -25,7 +25,7 @@ const SearchBar = ({
   onToggleMode,
 }: SearchBarProps) => {
   const showButton = mode !== undefined && onToggleMode !== undefined;
-  const iconSize = Math.min(Height[size] * 0.5, 24);
+  const iconSize = Math.min(HeightEnum[size] * 0.5, 24);
 
   return (
     <View style={styles.container}>
@@ -60,7 +60,7 @@ const SearchBar = ({
           style={[
             styles.toggleButton,
             { 
-              height: verticalScale(Height[size]),
+              height: verticalScale(HeightEnum[size]),
             },
           ]}
           onPress={onToggleMode}
