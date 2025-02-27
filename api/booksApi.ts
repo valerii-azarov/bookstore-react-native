@@ -1,4 +1,4 @@
-import { doc, getDocs, setDoc, collection } from "@firebase/firestore";
+import { doc, getDoc, getDocs, setDoc, collection } from "@firebase/firestore";
 import { db } from "./firebase";
 import imagesApi from "./imagesApi";
 import { fuseSearch } from "@/helpers/fuseSearch";
@@ -22,6 +22,11 @@ const booksApi = {
   getBooks: async (): Promise<BookType[]> => {
     const snapshot = await getDocs(collection(db, "books"));
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as BookType);
+  },
+  
+  getBookById: async (uid: string): Promise<BookType | null> => {
+    const bookDoc = await getDoc(doc(db, "books", uid));
+    return bookDoc.exists() ? (bookDoc.data() as BookType) : null;
   },
 
   searchBooks: async (searchQuery: string, limit: number = 5, offset: number = 0, keys: SearchKey[]): Promise<BookType[]> => {

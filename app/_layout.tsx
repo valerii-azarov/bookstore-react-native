@@ -70,11 +70,8 @@ const InitialLayout = () => {
       {/* admin screens */}
       <Stack.Screen name="(admin)/(tabs)" options={{ headerShown: false }} />
       <Stack.Screen
-        name="(admin)/book/[id]"
-        options={{
-          headerShown: true,
-          title: "Book Details",
-        }}
+        name="(admin)/book/[bookId]"
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="(admin)/order/[id]"
@@ -91,10 +88,10 @@ const InitialLayout = () => {
         }}
       />
       <Stack.Screen
-        name="(admin)/(modals)/edit-book"
-        options={{
+        name="(admin)/(modals)/edit-book/[field]"
+        options={{ 
           headerShown: false,
-          presentation: "modal",
+          presentation: "transparentModal",
         }}
       />
       <Stack.Screen
@@ -113,11 +110,8 @@ const InitialLayout = () => {
         }}
       />
       <Stack.Screen
-        name="(user)/book/[id]"
-        options={{
-          headerShown: true,
-          title: "Book Details",
-        }}
+        name="(user)/book/[bookId]"
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="(user)/profile"

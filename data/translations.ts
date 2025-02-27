@@ -347,6 +347,189 @@ const translations: Translations = {
         },
       },     
     },
+
+    bookDetails: {
+      titles: {
+        editing: {
+          en: "Editing",
+          uk: "Редагування",
+        },
+        genres: {
+          en: "Genres",
+          uk: "Жанри",
+        },
+        parameters: {
+          en: "Parameters",
+          uk: "Параметри",
+        },
+        about: {
+          en: "About the Book",
+          uk: "Про книжку",
+        },
+      },
+      labels: {
+        pageCount: {
+          en: "Page Count",
+          uk: "Кількість сторінок",
+        },
+        publisher: {
+          en: "Publisher",
+          uk: "Видавництво",
+        },
+        coverType: {
+          en: "Cover Type",
+          uk: "Обкладинка",
+        },
+        publicationYear: {
+          en: "Publication Year",
+          uk: "Рік видання",
+        },
+        language: {
+          en: "Language",
+          uk: "Мова",
+        },
+        size: {
+          en: "Size",
+          uk: "Розмір",
+        },
+        weight: {
+          en: "Weight",
+          uk: "Вага",
+        },
+        illustrations: {
+          en: "Illustrations",
+          uk: "Ілюстрації",
+        },
+        bookType: {
+          en: "Book Type",
+          uk: "Тип книжки",
+        },
+        paperType: {
+          en: "Paper Type",
+          uk: "Тип паперу",
+        },
+        isbn: {
+          en: "ISBN",
+          uk: "ISBN",
+        },
+        sku: {
+          en: "SKU",
+          uk: "Артикул",
+        },
+        quantity: {
+          en: "Quantity",
+          uk: "Кількість",
+        },
+        createdAt: {
+          en: "Created At",
+          uk: "Дата створення",
+        },
+        updatedAt: {
+          en: "Updated At",
+          uk: "Дата оновлення",
+        },
+        images: {
+          en: "Images",
+          uk: "Зображення",
+        },
+        backgroundColor: {
+          en: "Background Color",
+          uk: "Колір фону",
+        },
+        title: {
+          en: "Title",
+          uk: "Назва",
+        },
+        authors: {
+          en: "Authors",
+          uk: "Автори",
+        },
+      },
+      values: {
+        illustrations: {
+          contains: {
+            en: "Contains illustrations",
+            uk: "Містить ілюстрації",
+          },
+          notContains: {
+            en: "No illustrations",
+            uk: "Без ілюстрацій",
+          },
+        },
+      },
+      messages: {
+        empty: {
+          text: {
+            en: "Book not found",
+            uk: "Книгу не знайдено",
+          },
+          subText: {
+            en: "This book does not exist or has been removed.",
+            uk: "Ця книга не існує або була видалена.",
+          },
+        },
+        error: {
+          text: {
+            en: "Failed to load book",
+            uk: "Не вдалося завантажити дані про книгу",
+          },
+          subText: {
+            en: "Something went wrong. Please try again.",
+            uk: "Щось пішло не так. Спробуйте ще раз.",
+          },
+        },
+      },
+      buttons: {
+        buy: {
+          text: {
+            en: "Buy",
+            uk: "Купити",
+          },
+        },
+        expand: {
+          text: {
+            en: "Expand",
+            uk: "Розгорнути",
+          },
+        },
+        collapse: {
+          text: {
+            en: "Collapse",
+            uk: "Згорнути",
+          },
+        },
+        edit: {
+          text: {
+            en: "Edit",
+            uk: "Змінити",
+          },
+        },
+        adminEdit: {
+          text: {
+            en: "Edit",
+            uk: "Редагувати",
+          },
+        },
+        back: {
+          text: {
+            en: "Back",
+            uk: "Повернутись",
+          },
+        },        
+        error: {
+          text: {
+            en: "Retry",
+            uk: "Повторити",
+          },
+        },
+      },
+      static: {
+        outOfStock: {
+          en: "Out of stock",
+          uk: "Немає в наявності",
+        },
+      },
+    },
   },
 
   modals: {

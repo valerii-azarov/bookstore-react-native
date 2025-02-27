@@ -1,11 +1,11 @@
 import { StatusBar } from "expo-status-bar";
-import { View, ViewStyle, StyleSheet, Platform } from "react-native";
+import { View, ViewStyle, StyleProp, StyleSheet, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "@/constants/theme";
 
 type ScreenWrapperProps = {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   statusBarStyle?: "auto" | "inverted" | "light" | "dark";
   disableTopInset?: boolean;
 };
