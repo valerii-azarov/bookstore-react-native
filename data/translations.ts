@@ -1470,12 +1470,28 @@ const translations: Translations = {
         en: "Secure URL not found in response",
         uk: "URL не знайдено у відповіді",
       },
+      invalidUrl: {
+        en: "Invalid image URL or unable to extract public_id",
+        uk: "Невірний URL зображення або неможливо отримати public_id"
+      },
+      deleteFailed: {
+        en: "Failed to delete image from Cloudinary",
+        uk: "Не вдалося видалити зображення з Cloudinary"
+      }
     },
     books: {
       uploadFailed: {
         en: "Failed to upload image",
         uk: "Не вдалося завантажити зображення",
       },
+      uploadAdditionalFailed: {
+        en: "Failed to upload additional image",
+        uk: "Не вдалося завантажити додаткове зображення"
+      },
+      bookNotFound: {
+        en: "Book not found",
+        uk: "Книгу не знайдено"
+      }
     },
   },
 

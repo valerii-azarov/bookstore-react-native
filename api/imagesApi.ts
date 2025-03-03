@@ -1,8 +1,9 @@
 import axios from "axios";
+import { crypto } from "@/helpers/crypto";
+import { cloudinaryConfig } from "@/config/cloudinary";
 
-const CLOUD_NAME = "dzpmzxss6";
-const UPLOAD_PRESET = "images";
-const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
+const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`;
+const CLOUDINARY_DESTROY_URL = `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/destroy`;
 
 const imagesApi = {
   uploadFileToCloudinary: async (file: { uri?: string }, folderName: string): Promise<string> => {
@@ -11,12 +12,15 @@ const imagesApi = {
     }
 
     const formData = new FormData();
-
-    formData.append("file", { uri: file.uri, name: file.uri.split("/").pop() || "file.jpg", type: "image/jpeg" } as any);
-    formData.append("upload_preset", UPLOAD_PRESET);
+    formData.append("file", { 
+      uri: file.uri, 
+      name: file.uri.split("/").pop() || "file.jpg", 
+      type: "image/jpeg" 
+    } as any);
+    formData.append("upload_preset", cloudinaryConfig.uploadPreset);
     formData.append("folder", folderName);
 
-    const response = await axios.post(CLOUDINARY_URL, formData, {
+    const response = await axios.post(CLOUDINARY_UPLOAD_URL, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -27,6 +31,32 @@ const imagesApi = {
     }
 
     return response.data.secure_url;
+  },
+
+  deleteFileFromCloudinary: async (imageUrl: string): Promise<void> => {
+    const publicId = crypto.extractPublicIdFromUrl(imageUrl);
+    if (!publicId) {
+      throw new Error("ImageError: Invalid image URL or unable to extract public_id (image/invalid-url).");
+    }
+
+    const timestamp = Math.floor(Date.now() / 1000).toString();
+    const signature = await crypto.generateSignature(publicId, timestamp, cloudinaryConfig.apiSecret);
+
+    const formData = new FormData();
+    formData.append("public_id", publicId);
+    formData.append("api_key", cloudinaryConfig.apiKey);
+    formData.append("signature", signature);
+    formData.append("timestamp", timestamp);
+
+    const response = await axios.post(CLOUDINARY_DESTROY_URL, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    if (response.data.result !== "ok") {
+      throw new Error("ImageError: Failed to delete image from Cloudinary (image/delete-failed).");
+    }
   },
 };
 

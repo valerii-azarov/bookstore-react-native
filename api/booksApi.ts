@@ -2,7 +2,7 @@ import { doc, getDoc, getDocs, setDoc, updateDoc, collection } from "@firebase/f
 import { db } from "./firebase";
 import imagesApi from "./imagesApi";
 import { fuseSearch } from "@/helpers/fuseSearch";
-import { CreateBookType, BookType, BookPriceType, EditBookFieldType, EditBookValueType, SearchKey } from "@/types";
+import { CreateBookType, BookType, BookPriceType, BoookImagesType, EditBookFieldType, EditBookValueType, SearchKey } from "@/types";
 
 const booksApi = {
   createBook: async (bookData: CreateBookType) => {
@@ -37,22 +37,67 @@ const booksApi = {
     }
 
     if (field === "images") {
-      if (value && Array.isArray(value)) {
-        const [coverImage, ...additionalImages] = value as string[];
+      if (value && typeof value === "object" && !Array.isArray(value)) {
+        const { coverImage, additionalImages } = value as BoookImagesType;
+
+        const currentBook = await booksApi.getBookById(bookId);
+        if (!currentBook) {
+          throw new Error("BooksError: Book not found (books/book-not-found)");
+        }
+
+        const oldCoverImage = currentBook.coverImage || "";
+        const oldAdditionalImages = currentBook.additionalImages || [];
+        
+        const uploadedCoverImage = coverImage && coverImage !== oldCoverImage
+          ? await imagesApi.uploadFileToCloudinary({ uri: coverImage }, "books") || ""
+          : oldCoverImage;
+
+        if (coverImage && coverImage !== oldCoverImage && !uploadedCoverImage) {
+          throw new Error("BooksError: Failed to upload cover image (books/upload-failed).");
+        }
+        
+        if (oldCoverImage && oldCoverImage !== uploadedCoverImage && oldCoverImage !== coverImage) {
+          await imagesApi.deleteFileFromCloudinary(oldCoverImage).catch((error) => {
+            console.error(`Failed to delete old cover image ${oldCoverImage}:`, error);
+          });
+        }
+        
+        const newAdditionalImagesSet = new Set(additionalImages || []);
+        const imagesToDelete = oldAdditionalImages.filter(img => !newAdditionalImagesSet.has(img));
+
+        const uploadedAdditionalImages = await Promise.all(
+          (additionalImages || []).map(async (imageUri) => {
+            if (oldAdditionalImages.includes(imageUri)) return imageUri;
+            const secureUrl = await imagesApi.uploadFileToCloudinary({ uri: imageUri }, "books");
+            if (!secureUrl) {
+              throw new Error("BooksError: Failed to upload additional image (books/upload-additional-failed).");
+            }
+            return secureUrl;
+          })
+        );
+        
+        await Promise.all(
+          imagesToDelete.map(async (imageUrl) => {
+            await imagesApi.deleteFileFromCloudinary(imageUrl).catch((error) => {
+              console.error(`Failed to delete additional image ${imageUrl}:`, error);
+            });
+          })
+        );
+
         await updateDoc(bookRef, {
-          coverImage: coverImage || "",
-          additionalImages: additionalImages.length > 0 ? additionalImages : [],
+          coverImage: uploadedCoverImage,
+          additionalImages: uploadedAdditionalImages,
           updatedAt,
         });
       }
       return;
     }
-    
+
     await updateDoc(bookRef, {
       [field]: value,
       updatedAt,
     });
-  },  
+  },
 
   getBooks: async (): Promise<BookType[]> => {
     const snapshot = await getDocs(collection(db, "books"));
