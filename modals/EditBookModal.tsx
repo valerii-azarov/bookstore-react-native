@@ -17,6 +17,7 @@ import ColorChanger from "@/components/ColorChanger";
 import Typography from "@/components/Typography";
 
 import BookField from "@/components/BookField";
+import BookImages from "@/components/BookImages";
 import BookPricing from "@/components/BookPricing";
 import BookSelectField from "@/components/BookSelectField";
 import BookTagsField from "@/components/BookTagsField";
@@ -213,11 +214,13 @@ const EditBookModal = () => {
             )}        
 
             {typedField === "images" && (
-              <View style={{ flex: 1 }}>
-                <Typography fontSize={18} fontWeight="bold" color={colors.white}>
-                  {t("modals.editBook.static.comingSoon")} 
-                </Typography>
-              </View>
+              <BookImages
+                initialValue={{
+                  coverImage: bookData?.coverImage || "",
+                  additionalImages: bookData?.additionalImages || [],
+                }}
+                onChange={(value) => setEditedValue(value)}
+              />
             )}
           </ScrollView>
 

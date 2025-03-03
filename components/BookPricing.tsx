@@ -131,13 +131,13 @@ const BookPricing = ({ initialPrice = 0, initialOriginalPrice, initialDiscount, 
     <View style={styles.container}>
       <View style={styles.field}>
         <Typography fontSize={14} color={colors.white} style={styles.label}>
-          {t("components.bookPricing.labels.price")}
+          {t("components.pricing.labels.price")}
         </Typography>
         
         <Field
           value={values.price}
           onChangeText={(value) => handleChange("price", value)}
-          placeholder={t(`components.bookPricing.${manual ? "placeholders.price" : "static.calculated"}`)}
+          placeholder={t(`components.pricing.${manual ? "placeholders.price" : "static.calculated"}`)}
           editable={manual}
           style={
             !manual ? { color: colors.gray } : undefined
@@ -148,26 +148,26 @@ const BookPricing = ({ initialPrice = 0, initialOriginalPrice, initialDiscount, 
 
       <View style={styles.field}>
         <Typography fontSize={14} color={colors.white} style={styles.label}>
-          {t("components.bookPricing.labels.originalPrice")}
+          {t("components.pricing.labels.originalPrice")}
         </Typography>
 
         <Field
           value={values.originalPrice}
           onChangeText={(value) => handleChange("originalPrice", value)}
-          placeholder={t("components.bookPricing.placeholders.originalPrice")}
+          placeholder={t("components.pricing.placeholders.originalPrice")}
           isSquared
         />
       </View>
 
       <View style={styles.field}>  
         <Typography fontSize={14} color={colors.white} style={styles.label}>
-          {t("components.bookPricing.labels.discount")}
+          {t("components.pricing.labels.discount")}
         </Typography>
 
         <Field
           value={values.discount}
           onChangeText={(value) => handleChange("discount", value)}
-          placeholder={t("components.bookPricing.placeholders.discount")}
+          placeholder={t("components.pricing.placeholders.discount")}
           isSquared
         />
       </View>
@@ -175,7 +175,7 @@ const BookPricing = ({ initialPrice = 0, initialOriginalPrice, initialDiscount, 
       <View style={styles.checkbox}>
         <Checkbox checked={manual} onPress={() => setManual(!manual)} />
         <Typography fontSize={16} color={colors.white} style={styles.checkboxText}>
-          {t("components.bookPricing.checkbox.text")}
+          {t("components.pricing.checkbox.text")}
         </Typography>
       </View>
     </View>

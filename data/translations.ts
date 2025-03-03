@@ -325,7 +325,7 @@ const translations: Translations = {
       },
     },
 
-    bookPricing: {
+    pricing: {
       labels: {
         price: {
           en: "Price",
@@ -367,6 +367,41 @@ const translations: Translations = {
         },
       },
     },
+
+    images: {
+      coverImage: {
+        label: {
+          en: "Cover Image",
+          uk: "Обкладинка",
+        },
+        tapToSelect: {
+          en: "Tap to select cover image",
+          uk: "Натисніть, щоб вибрати обкладинку",
+        },
+      },
+      additionalImages: {
+        label: {
+          en: "Additional Images",
+          uk: "Додаткові зображення",
+        },
+        tapToAdd: {
+          en: "Tap to add image",
+          uk: "Натисніть, щоб додати зображення",
+        },
+      },
+      messages: {
+        denied: {
+          text: {
+            en: "Permission denied",
+            uk: "Дозвіл відхилено",
+          },
+          subText: {
+            en: "We need camera roll permissions to select images.",
+            uk: "Нам потрібні дозволи на доступ до галереї для вибору зображень.",
+          },
+        },
+      },
+    }
   },  
   
   tabs: {
