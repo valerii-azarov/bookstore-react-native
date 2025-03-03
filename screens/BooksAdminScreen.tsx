@@ -3,13 +3,12 @@ import { View, FlatList, StyleSheet, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons as Icon } from "@expo/vector-icons";
 import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useBooksList } from "@/hooks/useBooksList";
+import { useListMode } from "@/hooks/useListMode";
 import { colors } from "@/constants/theme";
 import { booksAdminPageSize } from "@/constants/settings";
 import { verticalScale } from "@/helpers/common";
 import { BookType } from "@/types";
-
-import { useBooksList } from "./hooks/useBooksList";
-import { useListMode } from "./hooks/useListMode";
 
 import ScreenWrapper from "@/components/ScreenWrapper";
 import Header from "@/components/Header";
@@ -22,10 +21,10 @@ import ErrorWithRetry from "@/components/ErrorWithRetry";
 import FloatingActionButton from "@/components/FloatingButton";
 
 const BooksAdminScreen = () => {
-  const router = useRouter();
   const { t } = useLanguageContext();
   const { mode, toggleMode } = useListMode();
   const { data, isLoading, isFetching, isRefreshing, response, searchText, setSearchText, refresh, loadMore } = useBooksList();
+  const router = useRouter();
 
   const renderItem = useCallback(({ item }: { item: BookType | undefined }) => {
     if (isLoading || !item) {

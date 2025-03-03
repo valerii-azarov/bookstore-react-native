@@ -11,8 +11,8 @@ export interface BooksListReturn {
   response: ResponseType | null;
   searchText: string;
   setSearchText: (text: string) => void;
-  refresh: () => void;
-  loadMore: () => void; 
+  refresh: () => Promise<void>;
+  loadMore: () => void;
 }
 
 export const useBooksList = (initialQuery: string = ""): BooksListReturn => {
@@ -30,12 +30,12 @@ export const useBooksList = (initialQuery: string = ""): BooksListReturn => {
 
     await booksApi.searchBooks(query, booksAdminPageSize, currentOffset, ["title", "sku"])
       .then((books) => {
-        setData(reset ? books : [...data, ...books]);
+        setData((prev) => (reset ? books : [...prev, ...books]));
         setHasMore(books.length === booksAdminPageSize);
         setResponse({ status: "success" });
       })
       .catch((error) => {
-        setData(reset ? [] : data);
+        setData((prev) => (reset ? [] : prev));
         setHasMore(false);
         setResponse({ status: "error", message: error.message });
       })
@@ -44,13 +44,13 @@ export const useBooksList = (initialQuery: string = ""): BooksListReturn => {
         setIsFetching(false);
         setIsRefreshing(false);
       });
-  }, [data]);
+  }, []);
 
-  const refresh = useCallback(() => {
+  const refresh = useCallback(async () => {
     setIsRefreshing(true);
     setOffset(0);
-    loadBooks(searchText, 0, true);
-  }, [searchText]);
+    await loadBooks(searchText, 0, true);
+  }, [searchText, loadBooks]);
 
   const loadMore = useCallback(() => {
     if (hasMore && !isLoading && !isFetching && !isRefreshing) {
@@ -64,9 +64,10 @@ export const useBooksList = (initialQuery: string = ""): BooksListReturn => {
     const timer = setTimeout(() => {
       setOffset(0);
       loadBooks(searchText, 0, true);
-    }, 300);
+    }, 500);
+
     return () => clearTimeout(timer);
-  }, [searchText]);
+  }, [searchText, loadBooks]);
 
   return {
     data,

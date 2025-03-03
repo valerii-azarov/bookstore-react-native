@@ -4,12 +4,12 @@ import { Dropdown } from "react-native-element-dropdown";
 import { Ionicons as Icon } from "@expo/vector-icons";
 import { colors } from "@/constants/theme";
 import { verticalScale } from "@/helpers/common";
-import { ItemType } from "@/types";
+import { OptionType } from "@/types";
 
 import Input from "./Input";
 
 type DropdownProps = {
-  data: ItemType[];
+  data: OptionType[];
   selectedValue: string;
   setSelectedValue: (value: string) => void;
   style?: StyleProp<ViewStyle>;

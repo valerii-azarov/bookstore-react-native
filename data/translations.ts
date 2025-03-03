@@ -24,6 +24,349 @@ const translations: Translations = {
         uk: "Деталі",
       },
     },
+
+    fields: {
+      title: {
+        label: {
+          en: "Title",
+          uk: "Назва",
+        },
+        placeholder: {
+          en: "Enter title",
+          uk: "Введіть назву",
+        },
+        hintLabel: {
+          en: "Enter the title of the book",
+          uk: "Введіть назву книги",
+        },
+        hintPlaceholder: {
+          en: "e.g. Murder on the Orient Express",
+          uk: "Наприклад, Вбивство в «Східному експресі»",
+          
+        },
+      },
+      pageCount: {
+        label: {
+          en: "Page count",
+          uk: "Кількість сторінок",
+        },
+        placeholder: {
+          en: "Enter page count",
+          uk: "Введіть кількість сторінок",
+        },
+        hintLabel: {
+          en: "Enter the number of pages in the book",
+          uk: "Введіть кількість сторінок",
+        },
+        hintPlaceholder: {
+          en: "e.g. 288",
+          uk: "Наприклад, 288",
+        },
+      },
+      publisher: {
+        label: {
+          en: "Publisher",
+          uk: "Видавництво",
+        },
+        placeholder: {
+          en: "Enter publisher",
+          uk: "Введіть видавництво",
+        },
+        hintLabel: {
+          en: "Enter the title of the book",
+          uk: "Введіть назву книги",
+        },
+        hintPlaceholder: {
+          en: "e.g. Murder on the Orient Express",
+          uk: "Наприклад, Вбивство в «Східному експресі»",
+        },
+      },
+      publicationYear: {
+        label: {
+          en: "Publication year",
+          uk: "Рік видання",
+        },
+        placeholder: {
+          en: "Enter publication year",
+          uk: "Введіть рік видання",
+        },
+        hintLabel: {
+          en: "Enter the year the book was published",
+          uk: "Введіть рік публікації книги",
+        },
+        hintPlaceholder: {
+          en: "e.g. 1938",
+          uk: "Наприклад, 1938",
+        },
+      },
+      size: {
+        label: {
+          en: "Size",
+          uk: "Розмір",
+        },
+        placeholder: {
+          en: "Enter size",
+          uk: "Введіть розмір",
+        },
+        hintLabel: {
+          en: "Enter the dimensions of the book",
+          uk: "Введіть розміри книги",
+        },
+        hintPlaceholder: {
+          en: "e.g. 170 x 123 x 25 mm",
+          uk: "Наприклад, 170 x 123 x 25 мм",
+        },
+      },
+      weight: {
+        label: {
+          en: "Weight",
+          uk: "Вага",
+        },
+        placeholder: {
+          en: "Enter weight",
+          uk: "Введіть вагу",
+        },
+        hintLabel: {
+          en: "Enter the weight of the book",
+          uk: "Введіть вагу книги",
+        },
+        hintPlaceholder: {
+          en: "e.g. 210 grams",
+          uk: "Наприклад, 210 грам",
+        },
+      },
+      isbn: {
+        label: {
+          en: "ISBN",
+          uk: "ISBN",
+        },
+        placeholder: {
+          en: "Enter ISBN",
+          uk: "Введіть ISBN",
+        },
+        hintLabel: {
+          en: "Enter the book's ISBN number",
+          uk: "Введіть ISBN книги",
+        },
+        hintPlaceholder: {
+          en: "e.g. 978-617-12-9854-5",
+          uk: "Наприклад, 978-617-12-9854-5",
+        },
+      },
+      sku: {
+        label: {
+          en: "Article",
+          uk: "Артикул",
+        },
+        placeholder: {
+          en: "Enter article",
+          uk: "Введіть артикул",
+        },
+        hintLabel: {
+          en: "Enter the article of the book",
+          uk: "Введіть артикул книги",
+        },
+        hintPlaceholder: {
+          en: "e.g. 825751754618",
+          uk: "Наприклад, 825751754618",
+        },
+      },
+      quantity: {
+        label: {
+          en: "Quantity",
+          uk: "Кількість",
+        },
+        placeholder: {
+          en: "Enter quantity",
+          uk: "Введіть кількість",
+        },
+        hintLabel: {
+          en: "Enter quantity of books",
+          uk: "Введіть кількість книг",
+        },
+        hintPlaceholder: {
+          en: "e.g. 10",
+          uk: "Наприклад, 10",
+        },
+      },
+    },
+
+    textareaFields: {
+      description: {
+        label: {
+          en: "Description",
+          uk: "Опис",
+        },
+        placeholder: {
+          en: "Enter description",
+          uk: "Введіть опис",
+        },
+        hintLabel: {
+          en: "Provide a brief description of the book",
+          uk: "Напишіть короткий опис книги",
+        },
+        hintPlaceholder: {
+          en: "e.g. A detective novel involving the famous detective Hercule Poirot...",
+          uk: "Наприклад, Детективний роман про знаменитого детектива Еркюля Пуаро...",
+        },
+      },
+    },
+
+    tagsFields: {
+      authors: {
+        label: {
+          en: "Authors",
+          uk: "Автори",
+        },
+        placeholder: {
+          en: "Enter authors (separated by commas)",
+          uk: "Введіть авторів (розділяючи комами)",
+        },
+        hintLabel: {
+          en: "Enter authors separated by commas",
+          uk: "Введіть авторів, розділяючи комами",
+        },
+        hintPlaceholder: {
+          en: "e.g. Agatha Christie",
+          uk: "Наприклад, Агата Крісті",
+        },
+      },
+    }, 
+    
+    checkboxFields: {
+      illustrations: {
+        label: {
+          en: "Does the book contain illustrations?",
+          uk: "Чи містить книга ілюстрації?",
+        },
+        text: {
+          en: "Contains Illustrations",
+          uk: "Містить ілюстрації",
+        },
+      },
+    },
+    
+    selectFields: {
+      genres: {
+        label: {
+          en: "Genres",
+          uk: "Жанри",
+        },
+        hintLabel: {
+          en: "Select the genres that best describe the book",
+          uk: "Виберіть жанри, які найкраще описують книгу",
+        },
+        option: {
+          en: "Select genres",
+          uk: "Виберіть жанри",
+        },
+      },
+      language: {
+        label: {
+          en: "Language",
+          uk: "Мова",
+        },
+        hintLabel: {
+          en: "Select the language of the book",
+          uk: "Виберіть мову книги",
+        },
+        option: {
+          en: "Select language",
+          uk: "Виберіть мову",
+        },
+      },
+      coverType: {
+        label: {
+          en: "Cover type",
+          uk: "Тип обкладинки",
+        },
+        hintLabel: {
+          en: "Select the type of cover",
+          uk: "Виберіть тип обкладинки",
+        },
+        option: {
+          en: "Select cover type",
+          uk: "Виберіть тип обкладинки",
+        },
+      },
+      bookType: {
+        label: {
+          en: "Book type",
+          uk: "Тип книги",
+        },
+        hintLabel: {
+          en: "Select the book type",
+          uk: "Виберіть тип книги",
+        },
+        option: {
+          en: "Select book type",
+          uk: "Виберіть тип книги",
+        },
+      },
+      paperType: {
+        label: {
+          en: "Paper Type",
+          uk: "Тип паперу",
+        },
+        hintLabel: {
+          en: "Select the paper type",
+          uk: "Виберіть тип паперу",
+        },
+        option: {
+          en: "Select paper type",
+          uk: "Виберіть тип паперу",
+        },
+      },
+      static: {
+        search: {
+          en: "Search...",
+          uk: "Пошук...",
+        },
+      },
+    },
+
+    bookPricing: {
+      labels: {
+        price: {
+          en: "Price",
+          uk: "Ціна",
+        },
+        originalPrice: {
+          en: "Original price",
+          uk: "Початкова ціна",
+        },
+        discount: {
+          en: "Discount (%)",
+          uk: "Знижка (%)",
+        },
+      },
+      placeholders: {
+        price: {
+          en: "Enter price",
+          uk: "Введіть ціну",
+        },
+        originalPrice: {
+          en: "Enter original price",
+          uk: "Введіть початкову ціну",
+        },
+        discount: {
+          en: "Enter percents",
+          uk: "Введіть відсотки",
+        },
+      },
+      checkbox: {
+        text: {
+          en: "Manual Mode (disable calculator)",
+          uk: "Ручний режим (вимкнути калькулятор)",
+        },
+      },
+      static: {
+        calculated: {
+          en: "Calculated automatically",
+          uk: "Розраховується автоматично",
+        },
+      },
+    },
   },  
   
   tabs: {
@@ -833,6 +1176,106 @@ const translations: Translations = {
         },
       },
     },
+
+    editBook: {
+      header: {
+        images: {
+          en: "Change images",
+          uk: "Зміна зображень",
+        },
+        backgroundColor: {
+          en: "Change background color",
+          uk: "Зміна кольору фону",
+        },
+        title: {
+          en: "Change title",
+          uk: "Зміна назви",
+        },
+        authors: {
+          en: "Change authors",
+          uk: "Зміна авторів",
+        },
+        pricing: {
+          en: "Change price",
+          uk: "Зміна ціни",
+        },
+        genres: {
+          en: "Change genres",
+          uk: "Зміна жанрів",
+        },
+        language: {
+          en: "Change language",
+          uk: "Зміна мови",
+        },
+        publisher: {
+          en: "Change publisher",
+          uk: "Зміна видавця",
+        },
+        publicationYear: {
+          en: "Change publication year",
+          uk: "Зміна року публікації",
+        },
+        pageCount: {
+          en: "Change page count",
+          uk: "Зміна кількості сторінок",
+        },
+        illustrations: {
+          en: "Change illustrations",
+          uk: "Зміна ілюстрацій",
+        },
+        coverType: {
+          en: "Change cover type",
+          uk: "Зміна типу обкладинки",
+        },
+        bookType: {
+          en: "Change book type",
+          uk: "Зміна типу книги",
+        },
+        paperType: {
+          en: "Change paper type",
+          uk: "Зміна типу паперу",
+        },
+        size: {
+          en: "Change size",
+          uk: "Зміна розміру",
+        },
+        weight: {
+          en: "Change weight",
+          uk: "Зміна ваги",
+        },
+        isbn: {
+          en: "Change ISBN",
+          uk: "Зміна ISBN",
+        },
+        sku: {
+          en: "Change article",
+          uk: "Зміна артикулу",
+        },
+        quantity: {
+          en: "Change quantity",
+          uk: "Зміна кількості",
+        },
+        description: {
+          en: "Change description",
+          uk: "Зміна опису",
+        },
+      },
+      buttons: {
+        save: {
+          text: {
+            en: "Save",
+            uk: "Зберегти",
+          },
+        },
+      },
+      static: {
+        comingSoon: {
+          en: "Coming soon...",
+          uk: "Незабаром...",
+        },
+      },
+    },   
+    
   },
 
   labels: {

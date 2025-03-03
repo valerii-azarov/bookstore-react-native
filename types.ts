@@ -10,7 +10,7 @@ export type TabType = {
   icon: React.ReactElement;
 };
 
-export type ItemType = {
+export type OptionType = {
   label: string;
   value: string;
 };
@@ -127,12 +127,12 @@ export type BookType = {
   id: string;
   title: string;
   authors: string[];
-  price: string;
-  originalPrice: string;
+  price: number;
+  originalPrice: number;
   discount: number;
   coverImage: string;
-  additionalImages?: string[];
-  backgroundColor?: string;
+  additionalImages: string[];
+  backgroundColor: string;
   description: string;
   genres: string[];
   language: string;
@@ -151,6 +151,24 @@ export type BookType = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type BookPriceType = {
+  price: number;
+  originalPrice?: number;
+  discount?: number;
+};
+
+export type BoookImagesType = {
+  coverImage: string;
+  additionalImages: string[];
+};
+
+export type EditBookFieldType =
+  | keyof Omit<BookType, "price" | "originalPrice" | "discount" | "coverImage" | "additionalImages" | "createdAt" | "updatedAt">
+  | "images"
+  | "pricing";
+
+export type EditBookValueType = string | string[] | boolean | BookPriceType | BoookImagesType | null;
 
 export type SearchKey = keyof BookType;
 

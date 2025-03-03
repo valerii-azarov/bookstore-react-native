@@ -1,6 +1,7 @@
 import { View, ViewStyle, TouchableWithoutFeedback, StyleProp, StyleSheet } from "react-native";
 import { Ionicons as Icon } from "@expo/vector-icons";
 import { colors } from "@/constants/theme";
+import { colorConverter } from "@/helpers/colorConverter";
 import { verticalScale } from "@/helpers/common";
 
 import Typography from "./Typography";
@@ -9,26 +10,57 @@ type CheckboxProps = {
   checked: boolean;
   onPress: () => void;
   label?: string;
+  labelSize?: number;
+  labelColor?: string;
+  iconSize?: number;
+  iconColor?: string;
+  isDarkerColor?: boolean;
   style?: StyleProp<ViewStyle>;
-  size?: number;
 };
-const Checkbox = ({ checked, onPress, label, style, size = 18 }: CheckboxProps) => {
+
+const Checkbox = ({
+  checked,
+  onPress,
+  label,
+  labelSize = 14,
+  labelColor = colors.black,
+  iconSize = 18,
+  iconColor = colors.orange,
+  isDarkerColor = false,
+  style,
+}: CheckboxProps) => {
+  const backgroundColor = checked ? isDarkerColor ? colorConverter.darkerHexColor(iconColor) : iconColor : colors.white;
+
   return (
     <TouchableWithoutFeedback onPress={onPress}>
       <View 
         style={[
-          styles.container,
+          styles.container, 
           style,
         ]}
       >
-        <View style={[
-          styles.checkbox,
-          checked ? styles.checked : styles.unchecked,
-        ]}>
-          {checked && <Icon name="checkmark" size={size} color={colors.white} />}
+        <View
+          style={[
+            styles.checkbox,
+            {
+              width: verticalScale(iconSize + 7),
+              height: verticalScale(iconSize + 7),
+              backgroundColor,
+              borderColor: backgroundColor,
+            },
+          ]}
+        >
+          {checked && (
+            <Icon name="checkmark" size={iconSize} color={colors.white} />
+          )}
         </View>
         {label && (
-          <Typography fontWeight="medium" style={styles.label}>
+          <Typography
+            fontSize={labelSize}
+            fontWeight="medium"
+            color={labelColor}
+            style={styles.label}
+          >
             {label}
           </Typography>
         )}
@@ -36,29 +68,22 @@ const Checkbox = ({ checked, onPress, label, style, size = 18 }: CheckboxProps) 
     </TouchableWithoutFeedback>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
   },
   checkbox: {
-    width: verticalScale(25),
-    height: verticalScale(25),
+    borderColor: colors.grayTint3,
     borderRadius: 6,
+    borderWidth: 1,
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: colors.grayTint3,
-  },
-  checked: {
-    backgroundColor: colors.orange,
-    borderColor: colors.orange,
-  },
-  unchecked: {
-    backgroundColor: colors.white,
   },
   label: {
     marginLeft: 10,
   },
 });
+
 export default Checkbox;

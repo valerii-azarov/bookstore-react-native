@@ -1,4 +1,4 @@
-import { ViewStyle, StyleProp } from "react-native";
+import { ViewStyle, StyleProp, Platform } from "react-native";
 import { colors } from "@/constants/theme";
 import { colorConverter } from "@/helpers/colorConverter";
 
@@ -10,10 +10,10 @@ interface BookDetailsWrapperProps {
   children: React.ReactNode;
   backgroundColor?: string;
   style?: StyleProp<ViewStyle>;
-  enableHeader?: boolean;
+  showHeader?: boolean;
 }
 
-const BookDetailsWrapper = ({ children, backgroundColor, style, enableHeader = true }: BookDetailsWrapperProps) => {
+const BookDetailsWrapper = ({ children, backgroundColor, style, showHeader = true }: BookDetailsWrapperProps) => {
   return (
     <ScreenWrapper 
       statusBarStyle="dark" 
@@ -24,7 +24,7 @@ const BookDetailsWrapper = ({ children, backgroundColor, style, enableHeader = t
         }
       ]}
     >
-      {enableHeader && (
+      {showHeader && (
         <Header
           iconLeft={
             <BackButton 
@@ -35,6 +35,7 @@ const BookDetailsWrapper = ({ children, backgroundColor, style, enableHeader = t
           }
           enableAbsolutePosition
           style={{ 
+            paddingTop: Platform.OS === "android" ? 15 : 0,
             paddingHorizontal: 15, 
             backgroundColor: "transparent",
           }}

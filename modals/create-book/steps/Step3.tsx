@@ -14,7 +14,6 @@ const Step3 = () => {
         value={form.description}
         onChangeText={(text) => updateForm("description", text)} 
         placeholder={t("modals.createBook.step3.placeholder")}
-        autoGrow={true}
         isSquared
       />
     </Step>

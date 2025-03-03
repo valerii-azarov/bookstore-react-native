@@ -1,1 +1,1 @@
-export { default } from "@/screens/admin/books/BooksScreen";
+export { default } from "@/screens/BooksAdminScreen";

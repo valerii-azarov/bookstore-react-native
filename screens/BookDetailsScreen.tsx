@@ -6,7 +6,7 @@ import { Ionicons as Icon } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useLanguageContext } from "@/contexts/LanguageContext";
-import { useBookDetails } from "./hooks/useBookDetails";
+import { useBook } from "@/hooks/useBook";
 import { colors } from "@/constants/theme";
 import { colorConverter } from "@/helpers/colorConverter";
 
@@ -14,6 +14,7 @@ import BookDetailsWrapper from "@/components/BookDetailsWrapper";
 import SkeletonBookDetails from "@/components/SkeletonBookDetails";
 import Header from "@/components/Header";
 import BackButton from "@/components/BackButton";
+import RefreshButton from "@/components/RefreshButton";
 import Typography from "@/components/Typography";
 import Empty from "@/components/Empty";
 import ErrorWithRetry from "@/components/ErrorWithRetry";
@@ -25,7 +26,7 @@ const BookDetailsScreen = () => {
   const { isAdmin } = useAuthContext();
 
   const { bookId } = useLocalSearchParams<{ bookId: string }>();
-  const { data, isLoading, response, refresh } = useBookDetails(bookId);
+  const { data, isLoading, response, refresh } = useBook(bookId);
 
   const scrollY = useSharedValue(0);
   const titleBlockRef = useRef<View>(null);
@@ -34,10 +35,17 @@ const BookDetailsScreen = () => {
 
   const [titleBlockTop, setTitleBlockTop] = useState<number | null>(null);
   const [priceBlockTop, setPriceBlockTop] = useState<number | null>(null);
+  const [isPulling, setIsPulling] = useState<boolean>(false);
   const [isExpandedParams, setIsExpandedParams] = useState<boolean>(false);
   const [isExpandedDescription, setIsExpandedDescription] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const pullToRefresh = () => {
+    refresh()
+      .then(() => setIsPulling(true))
+      .finally(() => setIsPulling(false));
+  };
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
@@ -79,7 +87,7 @@ const BookDetailsScreen = () => {
     return {
       transform: [
         {
-          translateY: withTiming(isPriceBlockVisible ? 0 : insets.bottom + 75, { duration: 300 }),
+          translateY: withTiming(!isEditing && isPriceBlockVisible ? 0 : insets.bottom + 75, { duration: 300 }),
         },
       ],
     };
@@ -219,6 +227,11 @@ const BookDetailsScreen = () => {
     ]
   }, [t]);
 
+  const dynamicPaddingBottom = useMemo(() => {
+    const basePadding = Platform.OS === "ios" ? insets.bottom : insets.bottom + 10;
+    return basePadding + (isEditing ? 15 : 75);
+  }, [isEditing, insets.bottom]);
+
   if (isLoading) {
     return (
       <BookDetailsWrapper>
@@ -254,11 +267,11 @@ const BookDetailsScreen = () => {
       </BookDetailsWrapper>
     );
   }
-  
+
   return (
     <BookDetailsWrapper 
       backgroundColor={data.backgroundColor || colors.grayTint6}
-      enableHeader={false}
+      showHeader={false}
     >
       <Animated.View
         style={[
@@ -270,9 +283,19 @@ const BookDetailsScreen = () => {
           iconLeft={
             <BackButton 
               style={{
-                backgroundColor: colorConverter.lighterHexColor(data.backgroundColor) || colors.grayTint4,
+                backgroundColor: data.backgroundColor ? colorConverter.lighterHexColor(data.backgroundColor) : colors.grayTint4,
               }}
             />
+          }
+          iconRight={
+            isAdmin && !isPulling && !isEditing ? (
+              <RefreshButton 
+                onRefresh={pullToRefresh}
+                style={{
+                  backgroundColor: "transport",
+                }}
+              />
+            ) : undefined
           }
           enableAbsolutePosition
           style={{
@@ -290,7 +313,7 @@ const BookDetailsScreen = () => {
           contentContainerStyle={[
             styles.scrollViewContainer,
             {
-              paddingBottom: Platform.OS === "ios" ? insets.bottom + 75 : 10 + insets.bottom + 75,
+              paddingBottom: dynamicPaddingBottom, // Platform.OS === "ios" ? insets.bottom + 75 : 10 + insets.bottom + 75,
             },
           ]}
         >
@@ -356,7 +379,7 @@ const BookDetailsScreen = () => {
                 style={[
                   styles.sectionContainer,
                   { 
-                    backgroundColor: colorConverter.darkerHexColor(data.backgroundColor) || colors.grayTint2,
+                    backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
                   },
                 ]}
               >
@@ -383,7 +406,7 @@ const BookDetailsScreen = () => {
                           onPressIn={() =>
                             router.push({
                               pathname: "/(admin)/(modals)/edit-book/[field]",
-                              params: { field: field || "defaultField" },
+                              params: { field: field || "defaultField", data: JSON.stringify(data) },
                             })
                           }
                         >
@@ -414,7 +437,7 @@ const BookDetailsScreen = () => {
               style={[
                 styles.sectionContainer,
                 { 
-                  backgroundColor: colorConverter.darkerHexColor(data.backgroundColor) || colors.grayTint2,
+                  backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
                 },
               ]}
             >
@@ -518,7 +541,7 @@ const BookDetailsScreen = () => {
                     onPressIn={() =>
                       router.push({
                         pathname: "/(admin)/(modals)/edit-book/[field]",
-                        params: { field: "price" },
+                        params: { field: "pricing", data: JSON.stringify(data) },
                       })
                     }
                   >
@@ -534,7 +557,7 @@ const BookDetailsScreen = () => {
               style={[
                 styles.sectionContainer,
                 { 
-                  backgroundColor: colorConverter.darkerHexColor(data.backgroundColor) || colors.grayTint2,
+                  backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
                 },
               ]}
             >
@@ -552,7 +575,7 @@ const BookDetailsScreen = () => {
                     onPressIn={() =>
                       router.push({
                         pathname: "/(admin)/(modals)/edit-book/[field]",
-                        params: { field: "genres" },
+                        params: { field: "genres", data: JSON.stringify(data) },
                       })
                     }
                   >
@@ -568,7 +591,7 @@ const BookDetailsScreen = () => {
               style={[
                 styles.sectionContainer,
                 { 
-                  backgroundColor: colorConverter.darkerHexColor(data.backgroundColor) || colors.grayTint2,
+                  backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
                 },
               ]}
             >
@@ -622,7 +645,7 @@ const BookDetailsScreen = () => {
                             onPressIn={() =>
                               router.push({
                                 pathname: "/(admin)/(modals)/edit-book/[field]",
-                                params: { field: field || "defaultField" },
+                                params: { field: field || "defaultField", data: JSON.stringify(data) },
                               })
                             }
                           >
@@ -660,7 +683,7 @@ const BookDetailsScreen = () => {
               style={[
                 styles.sectionContainer,
                 { 
-                  backgroundColor: colorConverter.darkerHexColor(data.backgroundColor) || colors.grayTint2,
+                  backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
                 },
               ]}
             >
@@ -678,7 +701,7 @@ const BookDetailsScreen = () => {
                     isEditing
                       ? router.push({
                           pathname: "/(admin)/(modals)/edit-book/[field]",
-                          params: { field: "description" },
+                          params: { field: "description", data: JSON.stringify(data) },
                         })
                       : setIsExpandedDescription(!isExpandedDescription)
                   }
@@ -695,7 +718,7 @@ const BookDetailsScreen = () => {
                 style={[
                   styles.sectionContainer,
                   { 
-                    backgroundColor: colorConverter.darkerHexColor(data.backgroundColor) || colors.grayTint2,
+                    backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
                   },
                 ]}
               >
@@ -715,8 +738,8 @@ const BookDetailsScreen = () => {
           style={[
             styles.footerContainer,
             {
-              backgroundColor: colorConverter.darkerHexColor(data.backgroundColor) || colors.grayTint2,
-              borderTopColor: colorConverter.lighterHexColor(data.backgroundColor) || colors.grayTint6,
+              backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
+              borderTopColor: data.backgroundColor ? colorConverter.lighterHexColor(data.backgroundColor) : colors.grayTint6,
               paddingBottom: Platform.OS === "ios" ? insets.bottom : 10 + insets.bottom,
             },
             footerAnimatedStyle,

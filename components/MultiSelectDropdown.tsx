@@ -4,13 +4,13 @@ import { MultiSelect } from "react-native-element-dropdown";
 import { Ionicons as Icon } from "@expo/vector-icons";
 import { colors } from "@/constants/theme";
 import { verticalScale } from "@/helpers/common";
-import { ItemType } from "@/types";
+import { OptionType } from "@/types";
 
 import Input from "./Input";
 import Typography from "./Typography";
 
 type MultiSelectDropdownProps = {
-  data: ItemType[];
+  data: OptionType[];
   selectedValues: string[];
   setSelectedValues: (values: string[]) => void;
   style?: StyleProp<ViewStyle>;

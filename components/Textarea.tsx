@@ -7,16 +7,18 @@ type TextareaProps = TextInputProps & {
   containerStyle?: ViewStyle;
   inputStyle?: TextStyle;
   inputRef?: React.Ref<TextInput>;
+  minHeight?: number;
+  maxHeight?: number;
   isSquared?: boolean;
-  autoGrow?: boolean;
 };
 
 const Textarea = ({
   containerStyle,
   inputStyle,
   inputRef,
+  minHeight = 100,
+  maxHeight = 200,
   isSquared = false,
-  autoGrow = false,
   ...props
 }: TextareaProps) => {
   return (
@@ -25,9 +27,10 @@ const Textarea = ({
         style={[
           styles.input,
           {
+            minHeight,
+            maxHeight,
             borderRadius: isSquared ? 0 : 16,
           },
-          autoGrow && styles.autoGrow,
           inputStyle,
         ]}
         placeholderTextColor={colors.grayTint2}
@@ -42,7 +45,6 @@ const Textarea = ({
 
 const styles = StyleSheet.create({
   container: {
-    minHeight: verticalScale(100),
     backgroundColor: colors.white,
     borderColor: colors.grayTint3,
     borderWidth: 1,
@@ -50,13 +52,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   input: {
-    flex: 1,
     fontSize: verticalScale(14),
+    lineHeight: verticalScale(20),
     color: colors.black,
-  },
-  autoGrow: {
-    minHeight: verticalScale(100),
-    maxHeight: verticalScale(200),
   },
 });
 

@@ -1,0 +1,50 @@
+import { useState } from "react";
+import { View, StyleSheet } from "react-native";
+import { useLanguageContext } from "@/contexts/LanguageContext";
+import { colors } from "@/constants/theme";
+
+import Field from "@/components/Field";
+import Typography from "@/components/Typography";
+
+type BookFieldProps = {
+  field: string;
+  initialValue: string;
+  onChange: (value: string) => void;
+  isEditing?: boolean;
+};
+
+const BookField = ({ field, initialValue, onChange, isEditing = false }: BookFieldProps) => {
+  const { t } = useLanguageContext();
+  const [inputValue, setInputValue] = useState(initialValue);
+
+  const handleChange = (text: string) => {
+    setInputValue(text);
+    onChange?.(text);
+  };
+
+  return (
+    <View style={styles.container}>
+      <Typography fontSize={14} color={colors.white} style={styles.label}>
+        {t(`components.fields.${field}.${isEditing ? "hintLabel" : "label"}`)}
+      </Typography>
+
+      <Field
+        value={inputValue}
+        onChangeText={handleChange}
+        placeholder={t(`components.fields.${field}.${isEditing ? "hintPlaceholder" : "placeholder"}`)}
+        isSquared
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  label: {
+    marginBottom: 5,
+  },
+});
+
+export default BookField;
