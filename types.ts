@@ -137,19 +137,19 @@ export type BookType = {
   genres: string[];
   language: string;
   publisher: string;
-  publicationYear: string;
+  publicationYear: number;
   isbn: string;
-  pageCount: string;
-  coverType: string;
-  bookType: string;
-  paperType: string;
+  pageCount: number;
+  coverType: "soft" | "hard";
+  bookType: "paper" | "digital";
+  paperType: "offset" | "coated" | "newsprint";
   size: string;
-  weight: string;
+  weight: number;
   illustrations: boolean;
   quantity: number;
   sku: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type BookPriceType = {
@@ -168,7 +168,7 @@ export type EditBookFieldType =
   | "images"
   | "pricing";
 
-export type EditBookValueType = string | string[] | boolean | BookPriceType | BoookImagesType | null;
+export type EditBookValueType = string | string[] | number | boolean | BookPriceType | BoookImagesType | null;
 
 export type SearchKey = keyof BookType;
 

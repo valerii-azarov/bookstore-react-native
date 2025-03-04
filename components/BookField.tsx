@@ -10,10 +10,11 @@ type BookFieldProps = {
   field: string;
   initialValue: string;
   onChange: (value: string) => void;
+  isNumeric?: boolean;
   isEditing?: boolean;
 };
 
-const BookField = ({ field, initialValue, onChange, isEditing = false }: BookFieldProps) => {
+const BookField = ({ field, initialValue, onChange, isNumeric = false, isEditing = false }: BookFieldProps) => {
   const { t } = useLanguageContext();
   const [inputValue, setInputValue] = useState(initialValue);
 
@@ -32,6 +33,7 @@ const BookField = ({ field, initialValue, onChange, isEditing = false }: BookFie
         value={inputValue}
         onChangeText={handleChange}
         placeholder={t(`components.fields.${field}.${isEditing ? "hintPlaceholder" : "placeholder"}`)}
+        keyboardType={isNumeric ? "numeric" : "default"}
         isSquared
       />
     </View>

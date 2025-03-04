@@ -1,5 +1,5 @@
-import React, { useState, useRef, useMemo } from "react";
-import { View, Image, TouchableOpacity, Platform, StyleSheet } from "react-native";
+import { useRef, useState, useMemo, useEffect } from "react";
+import { View, Image, TouchableOpacity, RefreshControl, Platform, ScrollView, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { useSharedValue, useAnimatedScrollHandler, useAnimatedStyle, withTiming } from "react-native-reanimated";
 import { Ionicons as Icon } from "@expo/vector-icons";
@@ -14,7 +14,6 @@ import BookDetailsWrapper from "@/components/BookDetailsWrapper";
 import SkeletonBookDetails from "@/components/SkeletonBookDetails";
 import Header from "@/components/Header";
 import BackButton from "@/components/BackButton";
-import RefreshButton from "@/components/RefreshButton";
 import Typography from "@/components/Typography";
 import Empty from "@/components/Empty";
 import ErrorWithRetry from "@/components/ErrorWithRetry";
@@ -24,17 +23,22 @@ const BookDetailsScreen = () => {
 
   const { t } = useLanguageContext();
   const { isAdmin } = useAuthContext();
-
+    
   const { bookId } = useLocalSearchParams<{ bookId: string }>();
   const { data, isLoading, response, refresh } = useBook(bookId);
 
-  const scrollY = useSharedValue(0);
+  const scrollViewRef = useRef<Animated.ScrollView>(null);
+  const imagesBlockRef = useRef<View>(null);
   const titleBlockRef = useRef<View>(null);
   const priceBlockRef = useRef<View>(null);
-  const scrollViewRef = useRef<Animated.ScrollView>(null);
-
-  const [titleBlockTop, setTitleBlockTop] = useState<number | null>(null);
-  const [priceBlockTop, setPriceBlockTop] = useState<number | null>(null);
+  const footerRef = useRef<View>(null);
+  
+  const scrollY = useSharedValue(0);
+  const imagesBlockPosition = useSharedValue(0);
+  const titleBlockPosition = useSharedValue(0);
+  const priceBlockPosition = useSharedValue(0);
+  const footerHeight = useSharedValue(0);
+  
   const [isPulling, setIsPulling] = useState<boolean>(false);
   const [isExpandedParams, setIsExpandedParams] = useState<boolean>(false);
   const [isExpandedDescription, setIsExpandedDescription] = useState<boolean>(false);
@@ -47,51 +51,114 @@ const BookDetailsScreen = () => {
       .finally(() => setIsPulling(false));
   };
 
+  const toggleEdit = () => {
+    setIsEditing(prev => !prev);
+    if (!isEditing) {
+      scrollToTitleBlock();
+    }
+  };  
+
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
       scrollY.value = event.contentOffset.y;
     },
   });
 
+  const scrollToTitleBlock = () => {
+    if (titleBlockPosition.value > 0 && scrollViewRef.current) {
+      const scrollPosition = titleBlockPosition.value - insets.top;
+      scrollViewRef.current.scrollTo({ y: scrollPosition, animated: true });
+    }
+  };
+  
+  const measureImagesBlockPosition = () => {
+    imagesBlockRef.current?.measureInWindow((_x, y, _width, height) => {
+      imagesBlockPosition.value = y + height + scrollY.value;
+    });
+  };
+
   const measureTitleBlockPosition = () => {
-    titleBlockRef.current?.measureInWindow((_x, y) => {
-      setTitleBlockTop(y);
+    titleBlockRef.current?.measureInWindow((_x, y, _width, height) => {
+      titleBlockPosition.value = y + scrollY.value;
     });
   };
 
   const measurePriceBlockPosition = () => {
     priceBlockRef.current?.measureInWindow((_x, y, _width, height) => {
-      setPriceBlockTop(y + height);
+      priceBlockPosition.value = y + height + scrollY.value;
+    });
+  };
+
+  const measureFooterHeight = () => {
+    footerRef.current?.measureInWindow((_x, _y, _width, height) => {
+      footerHeight.value = height;
     });
   };
 
   const headerAnimatedStyle = useAnimatedStyle(() => {
-    if (titleBlockTop === null) {
+    if (!imagesBlockPosition.value) {
       return {
         opacity: withTiming(1, { duration: 200 }),
       };
     }
-    const isTitleBlockVisible = scrollY.value < titleBlockTop - insets.top;
+    const isTitleBlockVisible = scrollY.value < imagesBlockPosition.value - insets.top - 15;
     return {
       opacity: withTiming(isTitleBlockVisible ? 1 : 0, { duration: 200 }),
     };
   });
 
   const footerAnimatedStyle = useAnimatedStyle(() => {
-    if (priceBlockTop === null) {
+    // console.log("scrollY:", scrollY.value, "priceBlockPosition:", priceBlockPosition.value, "isEditing:", isEditing);
+    
+    if (!priceBlockPosition.value || !footerHeight.value) {
       return {
-        transform: [{ translateY: withTiming(insets.bottom + 75, { duration: 300 }) }],
+        transform: [
+          { 
+            translateY: withTiming(footerHeight.value || 75, { duration: 300 }),
+          }
+        ],
       };
     }
-    const isPriceBlockVisible = scrollY.value >= priceBlockTop - insets.top;
+    const isPriceBlockOutOfView = scrollY.value >= priceBlockPosition.value - insets.top;
     return {
       transform: [
         {
-          translateY: withTiming(!isEditing && isPriceBlockVisible ? 0 : insets.bottom + 75, { duration: 300 }),
+          translateY: withTiming(
+            !isEditing && isPriceBlockOutOfView ? 0 : footerHeight.value + insets.bottom,
+            { duration: 300 }
+          ),
         },
       ],
     };
   });
+
+  const spacerAnimatedStyle = useAnimatedStyle(() => {
+    const isBlock4Visible = scrollY.value < priceBlockPosition.value;
+    return {
+      height: withTiming(isEditing || isBlock4Visible ? 0 : footerHeight.value, { duration: 100 }),
+    };
+  });
+
+  const memoizedParameters = useMemo(() => {
+    return [
+      { 
+        field: "images",
+        label: t("screens.bookDetails.labels.images"),
+      },
+      { 
+        field: "backgroundColor",
+        label: t("screens.bookDetails.labels.backgroundColor"),
+      },
+      { 
+        field: "title",
+        label: t("screens.bookDetails.labels.title"),
+      },
+      { 
+        field: "authors",
+        label: t("screens.bookDetails.labels.authors"),
+      },
+    ]
+  }, [t]);
 
   const memoizedGenres = useMemo(() => {
     return data?.genres ? data.genres.map((key) => t(`genres.${key}`)) : [];
@@ -206,31 +273,13 @@ const BookDetailsScreen = () => {
     ]
   }, [t, data, isAdmin]);
 
-  const memoizedParameters = useMemo(() => {
-    return [
-      { 
-        field: "images",
-        label: t("screens.bookDetails.labels.images"),
-      },
-      { 
-        field: "backgroundColor",
-        label: t("screens.bookDetails.labels.backgroundColor"),
-      },
-      { 
-        field: "title",
-        label: t("screens.bookDetails.labels.title"),
-      },
-      { 
-        field: "authors",
-        label: t("screens.bookDetails.labels.authors"),
-      },
-    ]
-  }, [t]);
-
-  const dynamicPaddingBottom = useMemo(() => {
-    const basePadding = Platform.OS === "ios" ? insets.bottom : insets.bottom + 10;
-    return basePadding + (isEditing ? 15 : 75);
-  }, [isEditing, insets.bottom]);
+  useEffect(() => {
+    if (!isEditing) {
+      setTimeout(() => {
+        measurePriceBlockPosition();
+      }, 100);
+    }
+  }, [isEditing]);
 
   if (isLoading) {
     return (
@@ -287,16 +336,6 @@ const BookDetailsScreen = () => {
               }}
             />
           }
-          iconRight={
-            isAdmin && !isPulling && !isEditing ? (
-              <RefreshButton 
-                onRefresh={pullToRefresh}
-                style={{
-                  backgroundColor: "transport",
-                }}
-              />
-            ) : undefined
-          }
           enableAbsolutePosition
           style={{
             paddingHorizontal: 15,
@@ -304,104 +343,311 @@ const BookDetailsScreen = () => {
           }}
         />
       </Animated.View>
-
-      <View style={styles.contentContainer}>
-        <Animated.ScrollView
-          ref={scrollViewRef}
-          onScroll={scrollHandler}
-          scrollEventThrottle={16}
-          contentContainerStyle={[
-            styles.scrollViewContainer,
-            {
-              paddingBottom: dynamicPaddingBottom, // Platform.OS === "ios" ? insets.bottom + 75 : 10 + insets.bottom + 75,
-            },
-          ]}
-        >
-          <View style={styles.imageContainer}>
+      
+      <Animated.ScrollView
+        ref={scrollViewRef}
+        onScroll={scrollHandler}
+        scrollEventThrottle={16}
+        contentContainerStyle={[
+          styles.scrollViewContainer,
+          { 
+            paddingBottom: Platform.OS === "ios" ? insets.bottom : insets.bottom + 10,
+          },
+        ]}
+        refreshControl={
+          <RefreshControl
+            refreshing={isPulling}
+            onRefresh={pullToRefresh}
+          />
+        }
+      >
+        <View ref={imagesBlockRef} onLayout={measureImagesBlockPosition} style={styles.imagesContainer}>
+          <View style={styles.coverImageContainer}>
             <Image
               style={styles.coverImage}
               source={{ uri: selectedImage || data.coverImage }}
               resizeMode="cover"
             />
           </View>
-
           {(data.additionalImages || []).length > 0 && (
             <View style={styles.additionalImagesContainer}>
-              <Animated.ScrollView 
-                horizontal 
-                showsHorizontalScrollIndicator={false}
-              >
-                {[data.coverImage, ...(data.additionalImages || [])].map((imageUri, index) => {
-                  const allImages = [data.coverImage, ...(data.additionalImages || [])];
-                  const displayedImage = imageUri === (selectedImage || data.coverImage);
-
-                  return (
-                    <TouchableOpacity
-                      key={index}
-                      onPressIn={() => setSelectedImage(imageUri)}
-                    >
-                      <Image
-                        style={[
-                          styles.thumbnailImage,
-                          {
-                            borderColor: displayedImage ? colors.white : colors.gray,
-                            borderWidth: displayedImage ? 2 : 1,
-                            marginRight: index < allImages.length - 1 ? 10 : 0,
-                          },
-                        ]}
-                        source={{ uri: imageUri }}
-                        resizeMode="cover"
-                      />
-                    </TouchableOpacity>
-                  );
-                })}
-              </Animated.ScrollView>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {[data.coverImage, ...(data.additionalImages || [])].map((imageUri, index) => (
+                  <TouchableOpacity key={index} onPressIn={() => setSelectedImage(imageUri)}>
+                    <Image
+                      style={[
+                        styles.thumbnailImage,
+                        {
+                          borderColor: imageUri === (selectedImage || data.coverImage) ? colors.white : colors.gray,
+                          borderWidth: imageUri === (selectedImage || data.coverImage) ? 2 : 1,
+                          marginRight: index < [data.coverImage, ...(data.additionalImages || [])].length - 1 ? 10 : 0,
+                        },
+                      ]}
+                      source={{ uri: imageUri }}
+                      resizeMode="cover"
+                    />
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
             </View>
           )}
+        </View>
 
-          <View style={styles.contentWrapper}>
+        <View ref={titleBlockRef} onLayout={measureTitleBlockPosition} style={styles.titleContainer}>
+          <Typography fontSize={14} fontWeight="bold" color={colors.whiteTint1} numberOfLines={1}>
+            {data.authors.join(", ")}
+          </Typography>
+
+          <Typography fontSize={24} fontWeight="bold" color={colors.white} numberOfLines={1} style={styles.titleText}>
+            {data.title}
+          </Typography>
+        </View>
+
+        <View style={styles.contentContainer}> 
+          {isEditing && (
             <View
-              ref={titleBlockRef}
-              onLayout={measureTitleBlockPosition}
-              style={styles.titleContainer}
+              style={[
+                styles.blockContainer,
+                {
+                  backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
+                },
+              ]}
             >
-              <Typography fontSize={14} fontWeight="bold" color={colors.whiteTint1} numberOfLines={1}>
-                {data.authors.join(", ")}
+              <Typography fontSize={20} fontWeight="bold" color={colors.white} style={styles.blockTitle}>
+                {t("screens.bookDetails.titles.editing")}
               </Typography>
+            
+              <View style={styles.parametersContainer}>
+                {memoizedParameters.map(({ field, label }, index) => (
+                  <View key={index} style={styles.parameterRow}>
+                    <View style={{ width: "68%" }}>
+                      <Typography fontSize={16} fontWeight="medium" color={colors.white} numberOfLines={1}>
+                        {label}
+                      </Typography>
+                    </View>
+            
+                    <View style={{ width: "28%" }}>
+                      <View style={{ alignItems: "flex-end" }}>
+                        <TouchableOpacity
+                          onPressIn={() =>
+                            router.push({
+                              pathname: "/(admin)/(modals)/edit-book/[field]",
+                              params: { field: field || "defaultField", data: JSON.stringify(data) },
+                            })
+                          }
+                        >
+                          <Typography fontSize={16} fontWeight="bold" color={colors.white} style={{ textDecorationLine: "underline" }}>
+                            {t("screens.bookDetails.buttons.edit.text")}
+                          </Typography>
+                        </TouchableOpacity>
+                      </View>  
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>            
+          )}
+          
+          <View
+            ref={priceBlockRef}
+            onLayout={measurePriceBlockPosition}
+            style={[
+              styles.blockContainer,
+              { 
+                backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.priceContainer,
+                {
+                  marginBottom: !isAdmin && data.quantity === 0 ? 0 : isAdmin && !isEditing ? 0 : 15,
+                },
+              ]}
+            >
+              <View style={styles.priceRow}>
+                <Typography fontSize={28} fontWeight="bold" color={data.discount > 0 ? colors.red : colors.white}>
+                  {`${data.price}₴`}
+                </Typography>
 
-              <Typography fontSize={24} fontWeight="bold" color={colors.white} numberOfLines={1} style={styles.titleText}>
-                {data.title}
-              </Typography>
+                {data.discount > 0 && (
+                  <Typography fontSize={18} color={colors.grayTint5} style={styles.originalPrice}>
+                    {data.originalPrice}
+                  </Typography>
+                )}
+              </View>
+
+              {data.discount > 0 && (
+                <View
+                  style={[
+                    styles.discountBadge,
+                    {
+                      paddingVertical: 3,
+                      paddingHorizontal: 6,
+                    }
+                  ]} 
+                >
+                  <Typography fontSize={16} fontWeight="bold" color={colors.white}>
+                    {`-${data.discount}%`}
+                  </Typography>
+                </View>
+              )}
             </View>
 
-            {isEditing && (  
-              <View
-                style={[
-                  styles.sectionContainer,
-                  { 
-                    backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
-                  },
-                ]}
-              >
-                <Typography fontSize={20} fontWeight="bold" color={colors.white} style={styles.sectionTitle}>
-                  {t("screens.bookDetails.titles.editing")}
-                </Typography>
-              
-                <View style={styles.sectionWrapper}>
-                  {memoizedParameters.map(({ field, label }, index) => (
-                    <View key={index} style={styles.parameterRow}>
-                      <View 
-                        style={{ 
-                          width: "74%", 
-                          marginRight: "4%",
-                        }}
-                      >
-                        <Typography fontSize={16} fontWeight="medium" color={colors.white} numberOfLines={1}>
-                          {label}
-                        </Typography>
-                      </View>
-              
-                      <View style={{ width: "22%", alignItems: "flex-end" }}>
+            {!isAdmin && data.quantity === 0 && (
+              <Typography fontSize={16} fontWeight="bold" color={colors.grayTint5}>
+                {t("screens.bookDetails.static.outOfStock")}
+              </Typography>
+            )}
+            
+            {!isAdmin && data.quantity > 0 && (
+              <View style={styles.actionButtonsContainer}>
+                <TouchableOpacity
+                  onPressIn={() => {}}
+                  style={[
+                    styles.actionButton,
+                    {
+                      flex: 1,
+                      backgroundColor: colors.white,
+                      borderColor: colors.black,
+                      borderRadius: 25,
+                      borderWidth: 1.5,
+                      marginRight: 10,
+                    },
+                  ]}
+                >
+                  <Typography fontSize={18} fontWeight="bold" color={colors.black}>
+                    {t("screens.bookDetails.buttons.buy.text")}
+                  </Typography>
+                </TouchableOpacity>
+
+                <View style={styles.actionButtonsRow}>
+                  <TouchableOpacity
+                    onPressIn={() => {}}
+                    style={[
+                      styles.actionButton,
+                      {
+                        backgroundColor: colors.black,
+                        borderRadius: 30,
+                      },
+                    ]}
+                  >
+                    <Icon name="bag-add-outline" size={24} color={colors.white} />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPressIn={() => {}}
+                    style={[
+                      styles.actionButton,
+                      {
+                        backgroundColor: colors.black,
+                        borderRadius: 30,
+                      },
+                    ]}
+                  >
+                    <Icon name="heart-outline" size={24} color={colors.white} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+
+            {isEditing && (
+              <View style={{ alignItems: "flex-start" }}>
+                <TouchableOpacity
+                  onPressIn={() =>
+                    router.push({
+                      pathname: "/(admin)/(modals)/edit-book/[field]",
+                      params: { field: "pricing", data: JSON.stringify(data) },
+                    })
+                  }
+                >
+                  <Typography fontSize={16} fontWeight="bold" color={colors.white} style={styles.link}>
+                    {t("screens.bookDetails.buttons.edit.text")}
+                  </Typography>
+                </TouchableOpacity>
+              </View>  
+            )}
+          </View>
+
+          <View
+            style={[
+              styles.blockContainer,
+              { 
+                backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
+              },
+            ]}
+          >
+            <Typography fontSize={20} fontWeight="bold" color={colors.white} style={styles.blockTitle}>
+              {t("screens.bookDetails.titles.genres")}
+            </Typography>
+
+            <Typography fontSize={16} fontWeight="medium" color={colors.white}>
+              {memoizedGenres.join(", ")}
+            </Typography>
+
+            {isEditing && (
+              <View style={{ alignItems: "flex-start", marginTop: 15 }}>
+                <TouchableOpacity
+                  onPressIn={() =>
+                    router.push({
+                      pathname: "/(admin)/(modals)/edit-book/[field]",
+                      params: { field: "genres", data: JSON.stringify(data) },
+                    })
+                  }
+                >
+                  <Typography fontSize={16} fontWeight="bold" color={colors.white} style={styles.link}>
+                    {t("screens.bookDetails.buttons.edit.text")}
+                  </Typography>
+                </TouchableOpacity>
+              </View>
+            )} 
+          </View>
+
+          <View
+            style={[
+              styles.blockContainer,
+              { 
+                backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
+              },
+            ]}
+          >
+            <Typography fontSize={20} fontWeight="bold" color={colors.white} style={styles.blockTitle}>
+              {t("screens.bookDetails.titles.parameters")}
+            </Typography>
+             
+            <View style={styles.detailsContainer}>
+              {!isEditing && (isExpandedParams ? memoizedDetails : memoizedDetails.slice(0, 5)).map((detail, index) => detail.isVisible !== false && (
+                <View key={index} style={styles.detailRow}>
+                  <View style={{ width: "48%" }}>
+                    <Typography fontSize={16} fontWeight="medium" color={colors.grayTint5} numberOfLines={1}>
+                      {detail.label}
+                    </Typography>
+                  </View>
+
+                  <View style={{ width: "48%" }}>
+                    <Typography fontSize={16} fontWeight="bold" color={colors.white} numberOfLines={1} style={{ textAlign: "left" }}>
+                      {detail.value}
+                    </Typography>
+                  </View>
+                </View>
+              ))}
+
+              {isEditing && (memoizedDetails.map(({ field, label, value, isEditable }, index) => (
+                <View key={index} style={{ flexDirection: "column" }}>
+                  <Typography fontSize={14} fontWeight="medium" color={colors.grayTint5}>
+                    {label}
+                  </Typography>
+          
+                  <View style={styles.detailRow}>
+                    <View style={{ width: isEditable ? "74%" : "100%" }}>
+                      <Typography fontSize={16} fontWeight="bold" color={colors.white} numberOfLines={1}>
+                        {value}
+                      </Typography>
+                    </View>
+
+                    {isEditable && (
+                      <View style={{ alignItems: "flex-end", width: "22%" }}>
                         <TouchableOpacity
                           onPressIn={() =>
                             router.push({
@@ -416,394 +662,158 @@ const BookDetailsScreen = () => {
                             color={colors.white} 
                             style={[
                               styles.link,
-                              {
+                              { 
                                 textAlign: "right",
-                              },
+                              }, 
                             ]}
                           >
                             {t("screens.bookDetails.buttons.edit.text")}
                           </Typography>
                         </TouchableOpacity>
-                      </View>
-                    </View>
-                  ))}
-                </View>
-              </View>            
-            )}
-
-            <View
-              ref={priceBlockRef}
-              onLayout={measurePriceBlockPosition}
-              style={[
-                styles.sectionContainer,
-                { 
-                  backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
-                },
-              ]}
-            >
-              <View
-                style={[
-                  styles.priceContainer,
-                  {
-                    marginBottom: !isAdmin && data.quantity === 0 ? 0 : isAdmin && !isEditing ? 0 : 15,
-                  },
-                ]}
-              >
-                <View style={styles.priceWrapper}>
-                  <Typography fontSize={28} fontWeight="bold" color={data.discount > 0 ? colors.red : colors.white}>
-                    {`${data.price}₴`}
-                  </Typography>
-
-                  {data.discount > 0 && (
-                    <Typography fontSize={18} color={colors.grayTint5} style={styles.originalPrice}>
-                      {data.originalPrice}
-                    </Typography>
-                  )}
-                </View>
-
-                {data.discount > 0 && (
-                  <View
-                    style={[
-                      styles.discountBadge,
-                      {
-                        paddingVertical: 3,
-                        paddingHorizontal: 6,
-                      }
-                    ]} 
-                  >
-                    <Typography fontSize={16} fontWeight="bold" color={colors.white}>
-                      {`-${data.discount}%`}
-                    </Typography>
-                  </View>
-                )}
-              </View>
-
-              {!isAdmin && data.quantity === 0 && (
-                <Typography fontSize={16} fontWeight="bold" color={colors.grayTint5}>
-                  {t("screens.bookDetails.static.outOfStock")}
-                </Typography>
-              )}
-              
-              {!isAdmin && data.quantity > 0 && (
-                <View style={styles.actionContainer}>
-                  <TouchableOpacity
-                    onPressIn={() => {}}
-                    style={[
-                      styles.actionButton,
-                      {
-                        flex: 1,
-                        backgroundColor: colors.white,
-                        borderColor: colors.black,
-                        borderRadius: 25,
-                        borderWidth: 1.5,
-                        marginRight: 10,
-                      },
-                    ]}
-                  >
-                    <Typography fontSize={18} fontWeight="bold" color={colors.black}>
-                      {t("screens.bookDetails.buttons.buy.text")}
-                    </Typography>
-                  </TouchableOpacity>
-
-                  <View style={styles.actionButtons}>
-                    <TouchableOpacity
-                      onPressIn={() => {}}
-                      style={[
-                        styles.actionButton,
-                        {
-                          backgroundColor: colors.black,
-                          borderRadius: 30,
-                        },
-                      ]}
-                    >
-                      <Icon name="bag-add-outline" size={24} color={colors.white} />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      onPressIn={() => {}}
-                      style={[
-                        styles.actionButton,
-                        {
-                          backgroundColor: colors.black,
-                          borderRadius: 30,
-                        },
-                      ]}
-                    >
-                      <Icon name="heart-outline" size={24} color={colors.white} />
-                    </TouchableOpacity>
+                      </View>  
+                    )}  
                   </View>
                 </View>
-              )}
+              )))}
 
-              {isEditing && (
-                <View style={{ alignItems: "flex-start" }}>
-                  <TouchableOpacity
-                    onPressIn={() =>
-                      router.push({
-                        pathname: "/(admin)/(modals)/edit-book/[field]",
-                        params: { field: "pricing", data: JSON.stringify(data) },
-                      })
-                    }
-                  >
-                    <Typography fontSize={16} fontWeight="bold" color={colors.white} style={styles.link}>
-                      {t("screens.bookDetails.buttons.edit.text")}
-                    </Typography>
-                  </TouchableOpacity>
-                </View>  
-              )}
-            </View>
-
-            <View
-              style={[
-                styles.sectionContainer,
-                { 
-                  backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
-                },
-              ]}
-            >
-              <Typography fontSize={20} fontWeight="bold" color={colors.white} style={styles.sectionTitle}>
-                {t("screens.bookDetails.titles.genres")}
-              </Typography>
-
-              <View style={styles.sectionWrapper}>
-                <Typography fontSize={16} fontWeight="medium" color={colors.white}>
-                  {memoizedGenres.join(", ")}
-                </Typography>
-
-                {isEditing && (
-                  <TouchableOpacity
-                    onPressIn={() =>
-                      router.push({
-                        pathname: "/(admin)/(modals)/edit-book/[field]",
-                        params: { field: "genres", data: JSON.stringify(data) },
-                      })
-                    }
-                  >
-                    <Typography fontSize={16} fontWeight="bold" color={colors.white} style={styles.link}>
-                      {t("screens.bookDetails.buttons.edit.text")}
-                    </Typography>
-                  </TouchableOpacity>
-                )}
-              </View>  
-            </View>
-
-            <View
-              style={[
-                styles.sectionContainer,
-                { 
-                  backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
-                },
-              ]}
-            >
-              <Typography fontSize={20} fontWeight="bold" color={colors.white} style={styles.sectionTitle}>
-                {t("screens.bookDetails.titles.parameters")}
-              </Typography>
-
-              <View style={styles.sectionWrapper}> 
-                {!isEditing && (isExpandedParams ? memoizedDetails : memoizedDetails.slice(0, 5)).map((detail, index) => detail.isVisible !== false && (
-                  <View key={index} style={styles.detailContainer}>
-                    <View 
-                      style={{ 
-                        width: "48%",
-                        marginRight: "4%",
-                       }}
-                      >
-                      <Typography fontSize={16} fontWeight="medium" color={colors.grayTint5} numberOfLines={1}>
-                        {detail.label}
-                      </Typography>
-                    </View>
-
-                    <View style={{ width: "48%" }}>
-                      <Typography fontSize={16} fontWeight="bold" color={colors.white} numberOfLines={1} style={{ textAlign: "left" }}>
-                        {detail.value}
-                      </Typography>
-                    </View>
-                  </View>
-                ))}
-
-                {isEditing && (memoizedDetails.map(({ field, label, value, isEditable }, index) => (
-                  <View key={index} style={styles.detailEditContainer}>
-                    <Typography fontSize={14} fontWeight="medium" color={colors.grayTint5}>
-                      {label}
-                    </Typography>
-          
-                    <View style={styles.detailEditRow}>
-                      <View 
-                        style={{ 
-                          width: isEditable ? "74%" : "100%", 
-                          marginRight: isEditable ? "4%" : 0,
-                        }}
-                      >
-                        <Typography fontSize={16} fontWeight="bold" color={colors.white} numberOfLines={1}>
-                          {value}
-                        </Typography>
-                      </View>
-
-                      {isEditable && (
-                        <View style={{ width: "22%", alignItems: "flex-end" }}>
-                          <TouchableOpacity
-                            onPressIn={() =>
-                              router.push({
-                                pathname: "/(admin)/(modals)/edit-book/[field]",
-                                params: { field: field || "defaultField", data: JSON.stringify(data) },
-                              })
-                            }
-                          >
-                            <Typography 
-                              fontSize={16} 
-                              fontWeight="bold" 
-                              color={colors.white} 
-                              style={[
-                                styles.link,
-                                { 
-                                  textAlign: "right",
-                                }, 
-                              ]}
-                            >
-                              {t("screens.bookDetails.buttons.edit.text")}
-                            </Typography>
-                          </TouchableOpacity>
-                        </View>  
-                      )}  
-                    </View>
-                  </View>
-                )))}
-
-                {!isEditing && (
-                  <TouchableOpacity onPressIn={() => setIsExpandedParams(!isExpandedParams)}>
-                    <Typography fontSize={16} fontWeight="bold" color={colors.white} style={styles.link}>
-                      {t(`screens.bookDetails.buttons.${isExpandedParams ? "collapse" : "expand"}.text`)}
-                    </Typography>
-                  </TouchableOpacity>
-                )}
-              </View>  
-            </View>
-
-            <View
-              style={[
-                styles.sectionContainer,
-                { 
-                  backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
-                },
-              ]}
-            >
-              <Typography fontSize={20} fontWeight="bold" color={colors.white} style={styles.sectionTitle}>
-                {t("screens.bookDetails.titles.about")}
-              </Typography>
-
-              <View style={styles.sectionWrapper}>
-                <Typography fontSize={16} fontWeight="medium" color={colors.white} numberOfLines={isEditing ? 5 : isExpandedDescription ? undefined : 5}>
-                  {data.description}
-                </Typography>
-
-                <TouchableOpacity
-                  onPressIn={() =>
-                    isEditing
-                      ? router.push({
-                          pathname: "/(admin)/(modals)/edit-book/[field]",
-                          params: { field: "description", data: JSON.stringify(data) },
-                        })
-                      : setIsExpandedDescription(!isExpandedDescription)
-                  }
-                >
+              {!isEditing && (
+                <TouchableOpacity onPressIn={() => setIsExpandedParams(!isExpandedParams)}>
                   <Typography fontSize={16} fontWeight="bold" color={colors.white} style={styles.link}>
-                    {t(`screens.bookDetails.buttons.${isEditing ? "edit" : isExpandedDescription ? "collapse" : "expand"}.text`)}
+                    {t(`screens.bookDetails.buttons.${isExpandedParams ? "collapse" : "expand"}.text`)}
                   </Typography>
                 </TouchableOpacity>
-              </View>
-            </View>
-
-            {isAdmin && (
-              <View
-                style={[
-                  styles.sectionContainer,
-                  { 
-                    backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
-                  },
-                ]}
-              >
-                <View style={styles.sectionWrapper}>
-                  <TouchableOpacity onPressIn={() => setIsEditing(!isEditing)}>
-                    <Typography fontSize={16} fontWeight="bold" color={colors.white} style={{ textDecorationLine: "underline" }}>
-                      {t(`screens.bookDetails.buttons.${isEditing ? "back" : "adminEdit"}.text`)}
-                    </Typography>
-                  </TouchableOpacity>
-                </View>  
-              </View>
-            )}
+              )}
+            </View>  
           </View>
-        </Animated.ScrollView>
 
-        <Animated.View
-          style={[
-            styles.footerContainer,
-            {
-              backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
-              borderTopColor: data.backgroundColor ? colorConverter.lighterHexColor(data.backgroundColor) : colors.grayTint6,
-              paddingBottom: Platform.OS === "ios" ? insets.bottom : 10 + insets.bottom,
-            },
-            footerAnimatedStyle,
-          ]}
-        >
-          <View style={styles.footerPriceContainer}>
-            <Typography fontSize={data.discount > 0 ? 24 : 32} fontWeight="bold" color={data.discount > 0 ? colors.red : colors.white}>
-              {`${data.price}₴`}
+          <View
+            style={[
+              styles.blockContainer,
+              { 
+                backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
+              },
+            ]}
+          >
+            <Typography fontSize={20} fontWeight="bold" color={colors.white} style={styles.blockTitle}>
+              {t("screens.bookDetails.titles.about")}
             </Typography>
 
-            {data.discount > 0 && (
-              <View style={styles.footerDiscountContainer}>
-                <Typography fontSize={18} color={colors.grayTint5} style={{ textDecorationLine: "line-through" }}>
-                  {data.originalPrice}
+            <Typography fontSize={16} fontWeight="medium" color={colors.white} numberOfLines={isEditing ? 5 : isExpandedDescription ? undefined : 5}>
+              {data.description}
+            </Typography>
+
+            <View style={{ alignItems: "flex-start", marginTop: 15 }}>
+              <TouchableOpacity
+                onPressIn={() =>
+                  isEditing
+                    ? router.push({
+                        pathname: "/(admin)/(modals)/edit-book/[field]",
+                        params: { field: "description", data: JSON.stringify(data) },
+                      })
+                    : setIsExpandedDescription(!isExpandedDescription)
+                }
+              >
+                <Typography fontSize={16} fontWeight="bold" color={colors.white} style={styles.link}>
+                  {t(`screens.bookDetails.buttons.${isEditing ? "edit" : isExpandedDescription ? "collapse" : "expand"}.text`)}
                 </Typography>
-
-                <View 
-                  style={[
-                    styles.discountBadge,
-                    {
-                      paddingVertical: 1,
-                      paddingHorizontal: 4,
-                    }
-                  ]}
-                >
-                  <Typography fontSize={16} fontWeight="bold" color={colors.white}>
-                    {`-${data.discount}%`}
-                  </Typography>
-                </View>
-              </View>
-            )}
-          </View>
-
-          {!isAdmin && (  
-            <View style={styles.actionButtons}>
-              <TouchableOpacity
-                onPressIn={() => {}}
-                style={[
-                  styles.actionButton,
-                  {
-                    backgroundColor: colors.black,
-                    borderRadius: 30,
-                  },
-                ]}
-              >
-                <Icon name="bag-add-outline" size={24} color={colors.white} />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPressIn={() => {}}
-                style={[
-                  styles.actionButton,
-                  {
-                    backgroundColor: colors.black,
-                    borderRadius: 30,
-                  },
-                ]}
-              >
-                <Icon name="heart-outline" size={24} color={colors.white} />
               </TouchableOpacity>
             </View>
-          )}  
-        </Animated.View>
-      </View>
+          </View>
+
+          {isAdmin && (
+            <View
+              style={[
+                styles.blockContainer,
+                { 
+                  backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
+                },
+              ]}
+            >
+              <View style={{ alignItems: "flex-start" }}>
+                <TouchableOpacity onPressIn={toggleEdit}>
+                  <Typography fontSize={16} fontWeight="bold" color={colors.white} style={{ textDecorationLine: "underline" }}>
+                    {t(`screens.bookDetails.buttons.${isEditing ? "back" : "adminEdit"}.text`)}
+                  </Typography>
+                </TouchableOpacity>
+              </View>  
+            </View>
+          )}
+        </View>
+
+        <Animated.View style={spacerAnimatedStyle} />
+      </Animated.ScrollView>
+
+      <Animated.View
+        ref={footerRef}
+        onLayout={measureFooterHeight}
+        style={[
+          styles.footerContainer,
+          {
+            backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
+            borderTopColor: data.backgroundColor ? colorConverter.lighterHexColor(data.backgroundColor) : colors.grayTint6,
+            paddingBottom: Platform.OS === "ios" ? insets.bottom : 10 + insets.bottom,
+          },
+          footerAnimatedStyle,
+        ]}
+      >
+        <View style={styles.footerPriceContainer}>
+          <Typography fontSize={data.discount > 0 ? 24 : 32} fontWeight="bold" color={data.discount > 0 ? colors.red : colors.white}>
+            {`${data.price}₴`}
+          </Typography>
+
+          {data.discount > 0 && (
+            <View style={styles.footerDiscountContainer}>
+              <Typography fontSize={18} color={colors.grayTint5} style={{ textDecorationLine: "line-through" }}>
+                {data.originalPrice}
+              </Typography>
+
+              <View 
+                style={[
+                  styles.discountBadge,
+                  {
+                    paddingVertical: 1,
+                    paddingHorizontal: 4,
+                  }
+                ]}
+              >
+                <Typography fontSize={16} fontWeight="bold" color={colors.white}>
+                  {`-${data.discount}%`}
+                </Typography>
+              </View>
+            </View>
+          )}
+        </View>
+
+        {!isAdmin && (  
+          <View style={styles.actionButtonsRow}>
+            <TouchableOpacity
+              onPressIn={() => {}}
+              style={[
+                styles.actionButton,
+                {
+                  backgroundColor: colors.black,
+                  borderRadius: 30,
+                },
+              ]}
+            >
+              <Icon name="bag-add-outline" size={24} color={colors.white} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPressIn={() => {}}
+              style={[
+                styles.actionButton,
+                {
+                  backgroundColor: colors.black,
+                  borderRadius: 30,
+                },
+              ]}
+            >
+              <Icon name="heart-outline" size={24} color={colors.white} />
+            </TouchableOpacity>
+          </View>
+        )}
+      </Animated.View>
     </BookDetailsWrapper>
   );
 };
@@ -813,7 +823,7 @@ const styles = StyleSheet.create({
     flex: 1, 
     justifyContent: "center", 
     alignItems: "center",
-  },  
+  },
   headerContainer: { 
     position: "absolute", 
     top: Platform.OS === "android" ? 15 : 0, 
@@ -821,17 +831,17 @@ const styles = StyleSheet.create({
     right: 0, 
     zIndex: 10,
   },
-  contentContainer: { 
-    flex: 1,
-  },  
   scrollViewContainer: {
     flexGrow: 1, 
     paddingTop: 35, 
     paddingHorizontal: 15,
-  }, 
-  imageContainer: { 
-    paddingVertical: 20, 
-    paddingHorizontal: 15, 
+  },
+  imagesContainer: {
+    flexDirection: "column",
+    marginBottom: 15,
+  },
+  coverImageContainer: { 
+    paddingVertical: 15,
     alignItems: "center",
   },
   coverImage: { 
@@ -845,17 +855,12 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   additionalImagesContainer: { 
-    paddingVertical: 10, 
-    marginBottom: 20, 
+    paddingVertical: 10,
     alignItems: "center",
   },
   thumbnailImage: { 
     width: 60, 
     height: 88,
-  },
-  contentWrapper: {
-    flex: 1, 
-    gap: 15,
   },
   titleContainer: { 
     justifyContent: "center", 
@@ -864,24 +869,28 @@ const styles = StyleSheet.create({
   titleText: { 
     marginBottom: 15,
   },
-  sectionContainer: { 
+  contentContainer: {
+    flexDirection: "column",
+    gap: 15,
+  },
+  blockContainer: { 
     borderRadius: 15, 
     paddingVertical: 20, 
     paddingHorizontal: 15,
   },
-  sectionWrapper: {
-    flexDirection: "column",
-    alignItems: "flex-start",
-    gap: 15,
-  },
-  sectionTitle: { 
+  blockTitle: { 
     marginBottom: 15,
   },
   link: {
     textDecorationLine: "underline",
   },
-  parameterRow: { 
-    flexDirection: "row", 
+  parametersContainer: {
+    flexDirection: "column",
+    gap: 15,
+  },
+  parameterRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "baseline",
   },
   priceContainer: {
@@ -889,7 +898,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  priceWrapper: {
+  priceRow: {
     flexDirection: "row",
     alignItems: "baseline",
     gap: 5,
@@ -901,12 +910,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.red,
     borderRadius: 4,
   },
-  actionContainer: {
+  actionButtonsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
-  actionButtons: {
+  actionButtonsRow: {
     flexDirection: "row", 
     gap: 10,
   },
@@ -916,26 +925,25 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  detailContainer: {
-    flexDirection: "row",
-  },
-  detailEditContainer: {
+  detailsContainer: {
     flexDirection: "column",
+    gap: 15,
   },
-  detailEditRow: {
+  detailRow: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "baseline",
   },
-  footerContainer: { 
-    position: "absolute", 
-    bottom: 0, 
-    left: 0, 
-    right: 0, 
-    borderTopWidth: 1, 
-    paddingTop: 10, 
-    paddingHorizontal: 15, 
-    flexDirection: "row", 
-    justifyContent: "space-between", 
+  footerContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopWidth: 1,
+    paddingTop: 10,
+    paddingHorizontal: 15,
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
   },
   footerPriceContainer: { 

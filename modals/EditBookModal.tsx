@@ -5,6 +5,7 @@ import { useLanguageContext } from "@/contexts/LanguageContext";
 import { useBook } from "@/hooks/useBook";
 import { useMemoizedOptions } from "@/hooks/useMemoizedOptions";
 import { colors } from "@/constants/theme";
+import { converter } from "@/helpers/converter";
 import { colorConverter } from "@/helpers/colorConverter";
 import { genresKeys, languageKeys, coverTypeKeys, bookTypeKeys, paperTypeKeys } from "@/constants/book";
 import { BookPriceType, EditBookFieldType, EditBookValueType } from "@/types";
@@ -37,11 +38,13 @@ const EditBookModal = () => {
   const initialValue = bookData && typedField ? bookData[typedField] : null;
   const [editedValue, setEditedValue] = useState<EditBookValueType>(initialValue);
 
-  const memoizedGenres = useMemoizedOptions(genresKeys, "genres");
-  const memoizedLanguages = useMemoizedOptions(languageKeys, "languages");
-  const memoizedCoverTypes = useMemoizedOptions(coverTypeKeys, "coverTypes");
-  const memoizedBookTypes = useMemoizedOptions(bookTypeKeys, "bookTypes");
-  const memoizedPaperTypes = useMemoizedOptions(paperTypeKeys, "paperTypes");
+  const memoizedOptions = {
+    genres: useMemoizedOptions(genresKeys, "genres"),
+    languages: useMemoizedOptions(languageKeys, "languages"),
+    coverTypes: useMemoizedOptions(coverTypeKeys, "coverTypes"),
+    bookTypes: useMemoizedOptions(bookTypeKeys, "bookTypes"),
+    paperTypes: useMemoizedOptions(paperTypeKeys, "paperTypes"),
+  };
 
   const handleSave = () => {
     if (!typedField) return;
@@ -112,14 +115,25 @@ const EditBookModal = () => {
             }}
             keyboardShouldPersistTaps="handled"
           >
-            {typedField && ["title", "pageCount", "publisher", "publicationYear", "size", "weight", "isbn", "sku", "quantity"].includes(typedField) && (
-              <BookField 
-                field={typedField} 
-                initialValue={bookData[typedField]} 
-                onChange={(value) => setEditedValue(value)} 
+            {typedField && ["title", "publisher", "size", "isbn", "sku"].includes(typedField) && (
+              <BookField
+                field={typedField}
+                initialValue={bookData[typedField]}
+                onChange={(value) => setEditedValue(value)}
+                isEditing
               />
             )}
-            
+
+            {typedField && ["pageCount", "publicationYear", "weight", "quantity"].includes(typedField) && (
+              <BookField
+                field={typedField}
+                initialValue={String(bookData[typedField] || "")}
+                onChange={(value) => setEditedValue(converter.toNumericValue(value))}
+                isNumeric
+                isEditing
+              />
+            )}
+
             {typedField === "pricing" && (
               <BookPricing
                 initialPrice={bookData.price}
@@ -133,7 +147,7 @@ const EditBookModal = () => {
               <BookSelectField
                 field={typedField}
                 type="multiple"
-                options={memoizedGenres}
+                options={memoizedOptions.genres}
                 initialValue={bookData[typedField]}
                 onChange={(value) => setEditedValue(value)}
                 showSearch
@@ -145,7 +159,7 @@ const EditBookModal = () => {
               <BookSelectField
                 field={typedField}
                 type="single"
-                options={memoizedLanguages}
+                options={memoizedOptions.languages}
                 initialValue={bookData[typedField]}
                 onChange={(value) => setEditedValue(value)}
               />
@@ -155,7 +169,7 @@ const EditBookModal = () => {
               <BookSelectField
                 field={typedField}
                 type="single"
-                options={memoizedCoverTypes}
+                options={memoizedOptions.coverTypes}
                 initialValue={bookData[typedField]}
                 onChange={(value) => setEditedValue(value)}
               />
@@ -165,7 +179,7 @@ const EditBookModal = () => {
               <BookSelectField
                 field={typedField}
                 type="single"
-                options={memoizedBookTypes}
+                options={memoizedOptions.bookTypes}
                 initialValue={bookData[typedField]}
                 onChange={(value) => setEditedValue(value)}
               />
@@ -175,7 +189,7 @@ const EditBookModal = () => {
               <BookSelectField
                 field={typedField}
                 type="single"
-                options={memoizedPaperTypes}
+                options={memoizedOptions.paperTypes}
                 initialValue={bookData[typedField]}
                 onChange={(value) => setEditedValue(value)}
               />
