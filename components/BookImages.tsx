@@ -11,9 +11,16 @@ import Typography from "@/components/Typography";
 type BookImagesProps = {
   initialValue: BoookImagesType;
   onChange: (value: BoookImagesType) => void;
+  isLabelColorWhite?: boolean;
+  isBorderColorWhite?: boolean;
 };
 
-const BookImages = ({ initialValue, onChange }: BookImagesProps) => {
+const BookImages = ({ 
+  initialValue, 
+  onChange, 
+  isLabelColorWhite = false,
+  isBorderColorWhite = false,
+}: BookImagesProps) => {
   const { t } = useLanguageContext();
   const [images, setImages] = useState<BoookImagesType>(initialValue);
 
@@ -67,7 +74,7 @@ const BookImages = ({ initialValue, onChange }: BookImagesProps) => {
   return (
     <View style={styles.container}>
       <View style={styles.imageSection}>
-        <Typography fontSize={14} color={colors.white} style={styles.label}>
+        <Typography fontSize={14} color={isLabelColorWhite ? colors.white : colors.black} style={styles.label}>
           {t("components.images.coverImage.label")}
         </Typography>
 
@@ -77,7 +84,8 @@ const BookImages = ({ initialValue, onChange }: BookImagesProps) => {
               styles.imageButton, 
               { 
                 width: 250,
-                height: 367, 
+                height: 367,
+                borderColor: isBorderColorWhite ? colors.white : colors.black, 
                 borderRadius: 10,
               },
             ]}
@@ -114,7 +122,7 @@ const BookImages = ({ initialValue, onChange }: BookImagesProps) => {
                 </TouchableOpacity>
               </>
             ) : (
-              <Typography fontSize={16} fontWeight="medium" color={colors.white} style={{ textAlign: "center"}}>
+              <Typography fontSize={16} fontWeight="medium" color={isLabelColorWhite ? colors.white : colors.black} style={{ textAlign: "center"}}>
                 {t("components.images.coverImage.tapToSelect")}
               </Typography>
             )}
@@ -123,7 +131,7 @@ const BookImages = ({ initialValue, onChange }: BookImagesProps) => {
       </View>
 
       <View style={styles.imageSection}>
-        <Typography fontSize={14} color={colors.white} style={styles.label}>
+        <Typography fontSize={14} color={isLabelColorWhite ? colors.white : colors.black} style={styles.label}>
           {t("components.images.additionalImages.label")}
         </Typography>
         
@@ -155,7 +163,7 @@ const BookImages = ({ initialValue, onChange }: BookImagesProps) => {
                     styles.imageButton, 
                     { 
                       width: 100, 
-                      height: 147, 
+                      height: 147,
                       borderRadius: 5,
                     },
                   ]}
@@ -185,12 +193,13 @@ const BookImages = ({ initialValue, onChange }: BookImagesProps) => {
               styles.imageButton, 
               { 
                 width: 100, 
-                height: 147, 
+                height: 147,
+                borderColor: isBorderColorWhite ? colors.white : colors.black, 
                 borderRadius: 5,
               },
             ]}
           >
-            <Typography fontSize={10} fontWeight="medium" color={colors.white} style={{ textAlign: "center"}}>
+            <Typography fontSize={10} fontWeight="medium" color={isLabelColorWhite ? colors.white : colors.black} style={{ textAlign: "center"}}>
               {t("components.images.additionalImages.tapToAdd")}
             </Typography>
           </TouchableOpacity>

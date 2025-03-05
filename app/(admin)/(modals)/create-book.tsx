@@ -1,1 +1,1 @@
-export { default } from "@/modals/create-book/CreateBookModal";
+export { default } from "@/modals/CreateBookModal";

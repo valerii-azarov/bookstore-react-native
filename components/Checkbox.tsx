@@ -14,7 +14,7 @@ type CheckboxProps = {
   labelColor?: string;
   iconSize?: number;
   iconColor?: string;
-  isDarkerColor?: boolean;
+  isColorDarker?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -26,11 +26,9 @@ const Checkbox = ({
   labelColor = colors.black,
   iconSize = 18,
   iconColor = colors.orange,
-  isDarkerColor = false,
+  isColorDarker = false,
   style,
 }: CheckboxProps) => {
-  const backgroundColor = checked ? isDarkerColor ? colorConverter.darkerHexColor(iconColor) : iconColor : colors.white;
-
   return (
     <TouchableWithoutFeedback onPress={onPress}>
       <View 
@@ -45,8 +43,7 @@ const Checkbox = ({
             {
               width: verticalScale(iconSize + 7),
               height: verticalScale(iconSize + 7),
-              backgroundColor,
-              borderColor: backgroundColor,
+              backgroundColor: checked ? isColorDarker ? colorConverter.darkerHexColor(iconColor) : iconColor : colors.white,
             },
           ]}
         >

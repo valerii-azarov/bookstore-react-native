@@ -10,10 +10,17 @@ type BookTextareaFieldProps = {
   field: string;
   initialValue: string;
   onChange: (value: string) => void;
+  isLabelColorWhite?: boolean;
   isEditing?: boolean;
 };
 
-const BookTextareaField = ({ field, initialValue, onChange, isEditing = false }: BookTextareaFieldProps) => {
+const BookTextareaField = ({ 
+  field, 
+  initialValue, 
+  onChange, 
+  isLabelColorWhite = false, 
+  isEditing = false,
+}: BookTextareaFieldProps) => {
   const { t } = useLanguageContext();
   const [inputValue, setInputValue] = useState(initialValue);
 
@@ -24,14 +31,14 @@ const BookTextareaField = ({ field, initialValue, onChange, isEditing = false }:
 
   return (
     <View style={styles.container}>
-      <Typography fontSize={14} color={colors.white} style={styles.label}>
-        {t(`components.textareaFields.${field}.${isEditing ? "hintLabel" : "label"}`)}
+      <Typography fontSize={14} color={isLabelColorWhite ? colors.white : colors.black} style={styles.label}>
+        {t(`components.textareaFields.${field}.${isEditing ? "label" : "hintLabel"}`)}
       </Typography>
 
       <Textarea
         value={inputValue}
         onChangeText={handleChange} 
-        placeholder={t(`components.textareaFields.${field}.${isEditing ? "hintPlaceholder" : "placeholder"}`)}
+        placeholder={t(`components.textareaFields.${field}.${isEditing ? "placeholder" : "hintPlaceholder"}`)}
         minHeight={100}
         maxHeight={400}
         isSquared

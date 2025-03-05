@@ -1,22 +1,25 @@
 import { useState, useCallback, useEffect } from "react";
 import booksApi from "@/api/booksApi";
 import { useLanguageContext } from "@/contexts/LanguageContext";
-import { BookType, EditBookFieldType, EditBookValueType, ResponseType } from "@/types";
+import { BookType, CreateBookType, EditBookFieldType, EditBookValueType, ResponseType } from "@/types";
 
 export interface BookReturn {
   data: BookType | null;
   isLoading: boolean;
+  isCreating: boolean;
   isUpdating: boolean;
   response: ResponseType | null;
+  createBook: (bookData: CreateBookType) => Promise<void>;
   updateBook: (field: EditBookFieldType, value: EditBookValueType) => Promise<void>;
   refresh: () => Promise<void>;
 }
 
-export const useBook = (bookId: string): BookReturn => {
+export const useBook = (bookId: string = ""): BookReturn => {
   const { t } = useLanguageContext();
   
   const [data, setData] = useState<BookType | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isCreating, setIsCreating] = useState<boolean>(false);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [response, setResponse] = useState<ResponseType | null>(null);
 
@@ -40,6 +43,31 @@ export const useBook = (bookId: string): BookReturn => {
         setIsLoading(false);
       });
   }, [bookId]);
+
+  const createBook = useCallback(async (bookData: CreateBookType) => {
+    setIsCreating(true);
+
+    await booksApi.createBook(bookData)
+      .then(() => {
+        setResponse({ status: "success" });
+      })
+      .catch((error) => {
+        const errors: Record<string, string> = {
+          "image/invalid-image-object": "image.invalidImageObject",
+          "image/no-secure-url": "image.noSecureUrl",
+          "books/upload-failed": "books.uploadFailed",
+          "books/upload-additional-failed": "books.uploadAdditionalFailed",  
+        };
+        
+        const errorKey = Object.keys(errors).find((key) => error.message.includes(key));
+        const message = errorKey ? t(`errorMessages.${errors[errorKey]}`) : error.message;
+        
+        setResponse({ status: "error", message });
+      })
+      .finally(() => {
+        setIsCreating(false);
+      });
+  }, [t]);
 
   const updateBook = useCallback(async (field: EditBookFieldType, value: EditBookValueType) => {
     if (!bookId) return;
@@ -83,8 +111,10 @@ export const useBook = (bookId: string): BookReturn => {
   return {
     data,
     isLoading,
+    isCreating,
     isUpdating,
     response,
+    createBook,
     updateBook,
     refresh,
   };

@@ -2,21 +2,34 @@ import { doc, getDoc, getDocs, setDoc, updateDoc, collection } from "@firebase/f
 import { db } from "./firebase";
 import imagesApi from "./imagesApi";
 import { fuseSearch } from "@/helpers/fuseSearch";
-import { CreateBookType, BookType, BookPriceType, BoookImagesType, EditBookFieldType, EditBookValueType, SearchKey } from "@/types";
+import { BookType, BookPriceType, BoookImagesType, CreateBookType, EditBookFieldType, EditBookValueType, SearchKey } from "@/types";
 
 const booksApi = {
   createBook: async (bookData: CreateBookType) => {
+    const createdAt = new Date().toISOString();
+    
     if (bookData.coverImage) {
-      const secureUrl = await imagesApi.uploadFileToCloudinary({ uri: bookData.coverImage }, "books");
-
+      const secureUrl = await imagesApi.uploadFileToCloudinary({ uri: bookData.coverImage }, "books"); 
       if (!secureUrl) {
-        throw new Error("BooksError: Failed to upload image (books/upload-failed).");
+        throw new Error("BooksError: Failed to upload cover image (books/upload-failed).");
       }
-
       bookData.coverImage = secureUrl;
     }
 
-    await setDoc(doc(collection(db, "books")), bookData);
+    if (bookData.additionalImages && bookData.additionalImages.length > 0) {
+      const uploadedAdditionalImages = await Promise.all(
+        bookData.additionalImages.map(async (imageUri) => {
+          const secureUrl = await imagesApi.uploadFileToCloudinary({ uri: imageUri }, "books");
+          if (!secureUrl) {
+            throw new Error("BooksError: Failed to upload additional image (books/upload-additional-failed).");
+          }
+          return secureUrl;
+        })
+      );
+      bookData.additionalImages = uploadedAdditionalImages;
+    }
+
+    await setDoc(doc(collection(db, "books")), { ...bookData, createdAt });
   },
 
   updateBook: async (bookId: string, field: EditBookFieldType, value: EditBookValueType) => {

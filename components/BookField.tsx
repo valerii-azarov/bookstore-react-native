@@ -2,6 +2,7 @@ import { useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { useLanguageContext } from "@/contexts/LanguageContext";
 import { colors } from "@/constants/theme";
+import { converter } from "@/helpers/converter";
 
 import Field from "@/components/Field";
 import Typography from "@/components/Typography";
@@ -10,29 +11,34 @@ type BookFieldProps = {
   field: string;
   initialValue: string;
   onChange: (value: string) => void;
+  isLabelColorWhite?: boolean;
   isNumeric?: boolean;
+  isInteger?: boolean;
   isEditing?: boolean;
 };
 
-const BookField = ({ field, initialValue, onChange, isNumeric = false, isEditing = false }: BookFieldProps) => {
+const BookField = ({ field, initialValue, onChange, isLabelColorWhite = false, isNumeric = false, isInteger = false, isEditing = false }: BookFieldProps) => {
   const { t } = useLanguageContext();
   const [inputValue, setInputValue] = useState(initialValue);
 
   const handleChange = (text: string) => {
-    setInputValue(text);
-    onChange?.(text);
-  };
+    const value = (isNumeric || isInteger) ? converter.numericInput(text, isInteger) : text;
+    if (value !== undefined) {
+      setInputValue(value);
+      onChange?.(value);
+    }
+  };  
 
   return (
     <View style={styles.container}>
-      <Typography fontSize={14} color={colors.white} style={styles.label}>
-        {t(`components.fields.${field}.${isEditing ? "hintLabel" : "label"}`)}
+      <Typography fontSize={14} color={isLabelColorWhite ? colors.white : colors.black} style={styles.label}>
+        {t(`components.fields.${field}.${isEditing ? "label" : "hintLabel"}`)}
       </Typography>
 
       <Field
         value={inputValue}
         onChangeText={handleChange}
-        placeholder={t(`components.fields.${field}.${isEditing ? "hintPlaceholder" : "placeholder"}`)}
+        placeholder={t(`components.fields.${field}.${isEditing ? "placeholder" : "hintPlaceholder"}`)}
         keyboardType={isNumeric ? "numeric" : "default"}
         isSquared
       />

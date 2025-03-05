@@ -100,25 +100,10 @@ export type ProfileFieldType = {
   editable: boolean;
 };
 
-export type CreateBookType = {
+export type StepType = {
   title: string;
-  authors: string[];
-  description: string;
-  genres: string[];
-  language: string;
-  publisher: string;
-  publicationYear: string;
-  isbn: string;
-  pageCount: string;
-  coverType: string;
-  bookType: string;
-  paperType: string;
-  size: string;
-  weight: string;
-  illustrations: boolean;
-  coverImage: string | null;
-  price: string;
-  sku: string;
+  component: JSX.Element;
+  validate?: (form: CreateBookType) => boolean;
 };
 
 export type DirectionType = "forward" | "backward";
@@ -140,9 +125,9 @@ export type BookType = {
   publicationYear: number;
   isbn: string;
   pageCount: number;
-  coverType: "soft" | "hard";
-  bookType: "paper" | "digital";
-  paperType: "offset" | "coated" | "newsprint";
+  coverType: string;
+  bookType: string;
+  paperType: string;
   size: string;
   weight: number;
   illustrations: boolean;
@@ -162,6 +147,8 @@ export type BoookImagesType = {
   coverImage: string;
   additionalImages: string[];
 };
+
+export type CreateBookType = Omit<BookType, "id" | "createdAt" | "updatedAt">;
 
 export type EditBookFieldType =
   | keyof Omit<BookType, "price" | "originalPrice" | "discount" | "coverImage" | "additionalImages" | "createdAt" | "updatedAt">

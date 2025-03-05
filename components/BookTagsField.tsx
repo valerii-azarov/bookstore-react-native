@@ -17,10 +17,11 @@ type BookTagsFieldProps = {
   field: string;
   initialValue: string[];
   onChange: (value: string[]) => void;
+  isLabelColorWhite?: boolean;
   isEditing?: boolean;
 };
 
-const BookTagsField = ({ field, initialValue, onChange, isEditing = false }: BookTagsFieldProps) => {
+const BookTagsField = ({ field, initialValue, onChange, isLabelColorWhite = false, isEditing = false }: BookTagsFieldProps) => {
   const { t } = useLanguageContext();
   const [inputValue, setInputValue] = useState(initialValue.join(", "));
   const [tags, setTags] = useState<string[]>(initialValue);
@@ -37,14 +38,14 @@ const BookTagsField = ({ field, initialValue, onChange, isEditing = false }: Boo
 
   return (
     <View style={styles.container}>
-      <Typography fontSize={14} color={colors.white} style={styles.label}>
-        {t(`components.tagsFields.${field}.${isEditing ? "hintLabel" : "label"}`)}
+      <Typography fontSize={14} color={isLabelColorWhite ? colors.white : colors.black} style={styles.label}>
+        {t(`components.tagsFields.${field}.${isEditing ? "label" : "hintLabel"}`)}
       </Typography>
 
       <Field
         value={inputValue}
         onChangeText={handleChange}
-        placeholder={t(`components.tagsFields.${field}.${isEditing ? "hintPlaceholder" : "placeholder"}`)}
+        placeholder={t(`components.tagsFields.${field}.${isEditing ? "placeholder" : "hintPlaceholder"}`)}
         isSquared
       />
 

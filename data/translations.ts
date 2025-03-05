@@ -73,12 +73,12 @@ const translations: Translations = {
           uk: "Введіть видавництво",
         },
         hintLabel: {
-          en: "Enter the title of the book",
-          uk: "Введіть назву книги",
+          en: "Enter the publisher of the book",
+          uk: "Введіть видавництво книги",
         },
         hintPlaceholder: {
-          en: "e.g. Murder on the Orient Express",
-          uk: "Наприклад, Вбивство в «Східному експресі»",
+          en: "e.g. Canon of Hercule Poirot",
+          uk: "Наприклад, Канон Еркюля Пуаро",
         },
       },
       publicationYear: {
@@ -916,298 +916,120 @@ const translations: Translations = {
         en: "Create Book",
         uk: "Створення книги",
       },
-      buttonBack: {
-        en: "Back",
-        uk: "Назад",
-      },
-      buttonContinue: {
-        en: "Continue",
-        uk: "Продовжити",
-      },
-      buttonCreate: {
-        en: "Create",
-        uk: "Створити",
-      },
-      buttonComplete: {
-        en: "Complete",
-        uk: "Завершити",
-      },
-      buttonExit: {
-        en: "Go back",
-        uk: "Вийти",
-      },
-      step1: {
-        title: {
-          en: "Title",
-          uk: "Назва",
+      titles: {
+        step1: {
+          en: "Book Title and Authors",
+          uk: "Назва книги та автори",
         },
-        hint: {
-          en: "Enter the title of the book",
-          uk: "Введіть назву книги",
-        },
-        placeholder: {
-          en: "e.g. Murder on the Orient Express",
-          uk: "Наприклад, Вбивство в «Східному експресі»",
-        },
-      },
-      step2: {
-        title: {
-          en: "Authors",
-          uk: "Автори",
-        },
-        hint: {
-          en: "Enter authors separated by commas",
-          uk: "Введіть авторів, розділяючи комами",
-        },
-        placeholder: {
-          en: "e.g. Agatha Christie",
-          uk: "Наприклад, Агата Крісті",
-        },
-      },     
-      step3: {
-        title: {
-          en: "Description",
-          uk: "Опис",
-        },
-        hint: {
-          en: "Provide a brief description of the book",
-          uk: "Напишіть короткий опис книги",
-        },
-        placeholder: {
-          en: "e.g. A detective novel involving the famous detective Hercule Poirot...",
-          uk: "Наприклад, Детективний роман про знаменитого детектива Еркюля Пуаро...",
-        },
-      },    
-      step4: {
-        title: {
+        step2: {
           en: "Genres",
           uk: "Жанри",
         },
-        hint: {
-          en: "Select the genres that best describe the book",
-          uk: "Виберіть жанри, які найкраще описують книгу",
+        step3: {
+          en: "Description",
+          uk: "Опис",
         },
-        select: {
-          en: "Select genres",
-          uk: "Виберіть жанри",
-        },
-        search: {
-          en: "Search...",
-          uk: "Пошук...",
-        },
-      },
-      step5: {
-        title: {
-          en: "Language",
-          uk: "Мова",
-        },
-        hint: {
-          en: "Select the language of the book",
-          uk: "Виберіть мову книги",
-        },
-        select: {
-          en: "Select language",
-          uk: "Виберіть мову",
-        },
-      },
-      step6: {
-        title: {
-          en: "Publisher",
-          uk: "Видавництво",
-        },
-        hint: {
-          en: "Enter the publisher's name",
-          uk: "Введіть назву видавництва",
-        },
-        placeholder: {
-          en: "e.g. Collins Crime Club",
-          uk: "Наприклад, Коллінс Крайм Клаб",
-        },
-      },
-      step7: {
-        title: {
-          en: "Publication Year",
-          uk: "Рік публікації",
-        },
-        hint: {
-          en: "Enter the year the book was published",
-          uk: "Введіть рік публікації книги",
-        },
-        placeholder: {
-          en: "e.g. 1938",
-          uk: "Наприклад, 1938",
-        },
-      },
-      step8: {
-        title: {
-          en: "ISBN",
-          uk: "ISBN",
-        },
-        hint: {
-          en: "Enter the book's ISBN number",
-          uk: "Введіть ISBN книги",
-        },
-        placeholder: {
-          en: "e.g. 978-617-12-9854-5",
-          uk: "Наприклад, 978-617-12-9854-5",
-        },
-      },
-      step9: {
-        title: {
+        step4: {
           en: "Page Count",
           uk: "Кількість сторінок",
         },
-        hint: {
-          en: "Enter the number of pages in the book",
-          uk: "Введіть кількість сторінок",
-        },
-        placeholder: {
-          en: "e.g. 288",
-          uk: "Наприклад, 288",
-        },
-      },
-      step10: {
-        title: {
-          en: "Cover Type",
-          uk: "Тип обкладинки",
-        },
-        hint: {
-          en: "Select the type of cover",
-          uk: "Виберіть тип обкладинки",
-        },
-        select: {
-          en: "Select cover type",
-          uk: "Виберіть тип обкладинки",
-        },
-      },
-      step11: {
-        title: {
-          en: "Book Type",
-          uk: "Тип книги",
-        },
-        hint: {
-          en: "Select the book type",
-          uk: "Виберіть тип книги",
-        },
-        select: {
-          en: "Select book type",
-          uk: "Виберіть тип книги",
-        },
-      },
-      step12: {
-        title: {
-          en: "Paper Type",
-          uk: "Тип паперу",
-        },
-        hint: {
-          en: "Select the paper type",
-          uk: "Виберіть тип паперу",
-        },
-        select: {
-          en: "Select paper type",
-          uk: "Виберіть тип паперу",
-        },
-      },
-      step13: {
-        title: {
-          en: "Size",
-          uk: "Розмір",
-        },
-        hint: {
-          en: "Enter the dimensions of the book",
-          uk: "Введіть розміри книги",
-        },
-        placeholder: {
-          en: "e.g. 170 x 123 x 25 mm",
-          uk: "Наприклад, 170 x 123 x 25 мм",
-        },
-      },
-      step14: {
-        title: {
-          en: "Weight",
-          uk: "Вага",
-        },
-        hint: {
-          en: "Enter the weight of the book",
-          uk: "Введіть вагу книги",
-        },
-        placeholder: {
-          en: "e.g. 210 grams",
-          uk: "Наприклад, 210 грам",
-        },
-      },
-      step15: {
-        title: {
+        step5: {
           en: "Illustrations",
           uk: "Ілюстрації",
         },
-        hint: {
-          en: "Does the book contain illustrations?",
-          uk: "Чи містить книга ілюстрації?",
+        step6: {
+          en: "Language",
+          uk: "Мова",
         },
-        label: {
-          en: "Contains Illustrations",
-          uk: "Містить ілюстрації",
+        step7: {
+          en: "Images",
+          uk: "Зображення",
         },
-      },
-      step16: {
-        title: {
-          en: "Cover Image",
-          uk: "Зображення обкладинки",
+        step8: {
+          en: "Background Color",
+          uk: "Колір фону",
         },
-        hint: {
-          en: "Upload the book cover image",
-          uk: "Завантажте зображення обкладинки книги",
+        step9: {
+          en: "Publisher and Year",
+          uk: "Видавець і рік",
         },
-        placeholder: {
-          en: "Upload Image",
-          uk: "Завантажте зображення",
+        step10: {
+          en: "ISBN",
+          uk: "ISBN",
         },
-      },
-      step17: {
-        title: {
-          en: "Price",
-          uk: "Ціна",
+        step11: {
+          en: "Book Format",
+          uk: "Формат книги",
         },
-        hint: {
-          en: "Enter the price of the book",
-          uk: "Введіть ціну книги",
+        step12: {
+          en: "Size and Weight",
+          uk: "Розмір і вага",
         },
-        placeholder: {
-          en: "e.g. 249.99",
-          uk: "Наприклад, 249.99",
+        step13: {
+          en: "Pricing",
+          uk: "Ціноутворення",
         },
-      },
-      step18: {
-        title: {
+        step14: {
+          en: "Quantity",
+          uk: "Кількість",
+        },
+        step15: {
           en: "Article",
           uk: "Артикул",
         },
-        hint: {
-          en: "Enter the article of the book",
-          uk: "Введіть артикул книги",
+      },
+      messages: {
+        success: {
+          text: {
+            en: "Book has been added",
+            uk: "Книгу додано",
+          },
+          subText: {
+            en: "Successfully added to the book list",
+            uk: "Успішно додано до списку книг",
+          },
         },
-        placeholder: {
-          en: "e.g. 825751754618",
-          uk: "Наприклад, 825751754618",
+        error: {
+          text: {
+            en: "Error",
+            uk: "Помилка",
+          },
+          subText: {
+            en: "Please try again later",
+            uk: "Будь ласка, спробуйте ще раз пізніше",
+          },
         },
-      },  
-      step19: {
-        successTitle: {
-          en: "Book has been added",
-          uk: "Книгу додано",
+      },
+      buttons: {
+        back: {
+          text: {
+            en: "Back",
+            uk: "Назад",
+          },
         },
-        successSubtitle: {
-          en: "Successfully added to the book list",
-          uk: "Успішно додано до списку книг",
+        continue: {
+          text: {
+            en: "Continue",
+            uk: "Продовжити",
+          },
         },
-        errorTitle: {
-          en: "Error",
-          uk: "Помилка",
+        create: {
+          text: {
+            en: "Create",
+            uk: "Створити",
+          },
         },
-        errorSubtitle: {
-          en: "Please try again later",
-          uk: "Будь ласка, спробуйте ще раз пізніше",
+        complete: {
+          text: {
+            en: "Complete",
+            uk: "Завершити",
+          },
+        },
+        exit: {
+          text: {
+            en: "Return",
+            uk: "Повернутись",
+          },
         },
       },
     },
@@ -1303,14 +1125,7 @@ const translations: Translations = {
           },
         },
       },
-      static: {
-        comingSoon: {
-          en: "Coming soon...",
-          uk: "Незабаром...",
-        },
-      },
-    },   
-    
+    },
   },
 
   labels: {

@@ -20,12 +20,23 @@ type BookSelectFieldProps = {
   options: { label: string; value: string }[];
   initialValue: string | string[];
   onChange: (value: string | string[]) => void;
+  isLabelColorWhite?: boolean;
   isEditing?: boolean;
   showSearch?: boolean;
   showSelected?: boolean;
 };
 
-const BookSelectField = ({ field, type, options, initialValue, onChange, isEditing = false, showSearch, showSelected }: BookSelectFieldProps) => {
+const BookSelectField = ({ 
+  field, 
+  type, 
+  options, 
+  initialValue, 
+  onChange, 
+  isLabelColorWhite = false, 
+  isEditing = false, 
+  showSearch, 
+  showSelected,
+}: BookSelectFieldProps) => {
   const { t } = useLanguageContext();
   const [selectedValue, setSelectedValue] = useState(initialValue);
 
@@ -36,8 +47,8 @@ const BookSelectField = ({ field, type, options, initialValue, onChange, isEditi
 
   return (
     <View style={styles.container}>
-      <Typography fontSize={14} color={colors.white} style={styles.label}>
-        {t(`components.selectFields.${field}.${isEditing ? "hintLabel" : "label"}`)}
+      <Typography fontSize={14} color={isLabelColorWhite ? colors.white : colors.black} style={styles.label}>
+        {t(`components.selectFields.${field}.${isEditing ? "label" : "hintLabel"}`)}
       </Typography>
 
       {type === "single" && (

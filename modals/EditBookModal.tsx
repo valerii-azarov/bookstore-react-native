@@ -120,6 +120,7 @@ const EditBookModal = () => {
                 field={typedField}
                 initialValue={bookData[typedField]}
                 onChange={(value) => setEditedValue(value)}
+                isLabelColorWhite
                 isEditing
               />
             )}
@@ -129,17 +130,22 @@ const EditBookModal = () => {
                 field={typedField}
                 initialValue={String(bookData[typedField] || "")}
                 onChange={(value) => setEditedValue(converter.toNumericValue(value))}
+                isLabelColorWhite
                 isNumeric
+                isInteger
                 isEditing
               />
             )}
 
             {typedField === "pricing" && (
               <BookPricing
-                initialPrice={bookData.price}
-                initialOriginalPrice={bookData.originalPrice}
-                initialDiscount={bookData.discount}
+                initialValues={{
+                  price: bookData.price,
+                  originalPrice: bookData.originalPrice,
+                  discount: bookData.discount,
+                }}
                 onPriceChange={(values) => setEditedValue(values)}
+                isLabelColorWhite
               />
             )}
 
@@ -150,6 +156,8 @@ const EditBookModal = () => {
                 options={memoizedOptions.genres}
                 initialValue={bookData[typedField]}
                 onChange={(value) => setEditedValue(value)}
+                isLabelColorWhite
+                isEditing
                 showSearch
                 showSelected
               />
@@ -162,6 +170,8 @@ const EditBookModal = () => {
                 options={memoizedOptions.languages}
                 initialValue={bookData[typedField]}
                 onChange={(value) => setEditedValue(value)}
+                isLabelColorWhite
+                isEditing
               />
             )}
 
@@ -172,6 +182,8 @@ const EditBookModal = () => {
                 options={memoizedOptions.coverTypes}
                 initialValue={bookData[typedField]}
                 onChange={(value) => setEditedValue(value)}
+                isLabelColorWhite
+                isEditing
               />
             )}
 
@@ -182,6 +194,8 @@ const EditBookModal = () => {
                 options={memoizedOptions.bookTypes}
                 initialValue={bookData[typedField]}
                 onChange={(value) => setEditedValue(value)}
+                isLabelColorWhite
+                isEditing
               />
             )}
 
@@ -192,6 +206,8 @@ const EditBookModal = () => {
                 options={memoizedOptions.paperTypes}
                 initialValue={bookData[typedField]}
                 onChange={(value) => setEditedValue(value)}
+                isLabelColorWhite
+                isEditing
               />
             )}
             
@@ -200,6 +216,8 @@ const EditBookModal = () => {
                 field={typedField} 
                 initialValue={bookData.authors} 
                 onChange={(value) => setEditedValue(value)} 
+                isLabelColorWhite
+                isEditing
               />
             )}
 
@@ -208,15 +226,19 @@ const EditBookModal = () => {
                 field={typedField} 
                 initialValue={bookData[typedField]} 
                 onChange={(value) => setEditedValue(value)}
+                isLabelColorWhite
+                isEditing
               />
             )}
 
             {typedField === "illustrations" && (
               <BookCheckboxField
                 field={typedField} 
-                initialColor={bookData.backgroundColor}
                 initialValue={bookData[typedField]} 
                 onChange={(value) => setEditedValue(value)}
+                checkboxColor={bookData.backgroundColor}
+                isCheckboxColorDarker
+                isLabelColorWhite
               />
             )}
 
@@ -234,6 +256,8 @@ const EditBookModal = () => {
                   additionalImages: bookData?.additionalImages || [],
                 }}
                 onChange={(value) => setEditedValue(value)}
+                isLabelColorWhite
+                isBorderColorWhite
               />
             )}
           </ScrollView>

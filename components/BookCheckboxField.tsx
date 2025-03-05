@@ -8,12 +8,21 @@ import Typography from "@/components/Typography";
 
 type BookCheckboxFieldProps = {
   field: string;
-  initialColor?: string;
   initialValue: boolean;
   onChange: (value: boolean) => void;
+  checkboxColor?: string;
+  isCheckboxColorDarker?: boolean;
+  isLabelColorWhite?: boolean;
 };
 
-const BookCheckboxField = ({ field, initialColor = colors.orange, initialValue, onChange }: BookCheckboxFieldProps) => {
+const BookCheckboxField = ({ 
+  field, 
+  initialValue, 
+  onChange, 
+  checkboxColor = colors.orange,
+  isCheckboxColorDarker = false,
+  isLabelColorWhite = false,
+}: BookCheckboxFieldProps) => {
   const { t } = useLanguageContext();
   const [inputValue, setInputValue] = useState(initialValue);
 
@@ -24,20 +33,20 @@ const BookCheckboxField = ({ field, initialColor = colors.orange, initialValue, 
 
   return (
     <View style={styles.container}>
-      <Typography fontSize={16} color={colors.white} style={styles.label}>
+      <Typography fontSize={16} color={isLabelColorWhite ? colors.white : colors.black} style={styles.label}>
         {t(`components.checkboxFields.${field}.label`)}
       </Typography>
-
+      
       <View style={styles.checkbox}>
         <Checkbox
           checked={inputValue}
           onPress={handleChange}
           label={t(`components.checkboxFields.${field}.text`)}
           labelSize={16}
-          labelColor={colors.white}
+          labelColor={isLabelColorWhite ? colors.white : colors.black}
           iconSize={20}
-          iconColor={initialColor}
-          isDarkerColor
+          iconColor={checkboxColor}
+          isColorDarker={isCheckboxColorDarker}
         />
       </View>
     </View>

@@ -2,28 +2,29 @@ import { useState, useCallback } from "react";
 import { View, StyleSheet } from "react-native";
 import { useLanguageContext } from "@/contexts/LanguageContext";
 import { colors } from "@/constants/theme";
+import { converter } from "@/helpers/converter";
+import { BookPriceType } from "@/types";
 
 import Field from "@/components/Field";
 import Checkbox from "@/components/Checkbox";
 import Typography from "@/components/Typography";
 
 type BookPricingProps = {
-  initialPrice?: number;
-  initialOriginalPrice?: number;
-  initialDiscount?: number;
-  onPriceChange?: (data: { price: number; originalPrice?: number; discount?: number }) => void;
+  initialValues: BookPriceType;
+  onPriceChange: (data: BookPriceType) => void;
+  isLabelColorWhite?: boolean;
 };
 
-const BookPricing = ({ initialPrice = 0, initialOriginalPrice, initialDiscount, onPriceChange }: BookPricingProps) => {
+const BookPricing = ({ initialValues, onPriceChange, isLabelColorWhite = false }: BookPricingProps) => {
   const { t } = useLanguageContext();
   const [values, setValues] = useState<{
     price: string;
     originalPrice: string;
     discount: string;
   }>({
-    price: initialPrice.toString(),
-    originalPrice: initialOriginalPrice?.toString() || "",
-    discount: initialDiscount?.toString() || "",
+    price: initialValues.price === 0 ? "" : initialValues.price.toString(),
+    originalPrice: initialValues.originalPrice === 0 ? "" : initialValues.originalPrice?.toString() || "",
+    discount: initialValues.discount?.toString() || "",
   });
   const [manual, setManual] = useState<boolean>(false);
   
@@ -70,13 +71,17 @@ const BookPricing = ({ initialPrice = 0, initialOriginalPrice, initialDiscount, 
     }
   }, [onPriceChange]);
   
-  const handleChange = useCallback((type: "price" | "originalPrice" | "discount", value: string) => {
+  const handleChange = useCallback((type: "price" | "originalPrice" | "discount", text: string) => {
     if (!manual && type === "price") return;
-
-    const cleanedValue = value.replace(/[^0-9.]/g, "");
-    setValues((prev) => ({ ...prev, [type]: cleanedValue }));
     
-    const currentValues = { ...values, [type]: cleanedValue };
+    const value = converter.numericInput(text);
+    if (value === undefined) {
+      return;
+    }
+
+    setValues((prev) => ({ ...prev, [type]: value }));
+
+    const currentValues = { ...values, [type]: value };
     const priceNum = parseFloat(currentValues.price) || 0;
     const originalPriceNum = parseFloat(currentValues.originalPrice) || undefined;
     const discountNum = parseFloat(currentValues.discount) || undefined;
@@ -94,13 +99,13 @@ const BookPricing = ({ initialPrice = 0, initialOriginalPrice, initialDiscount, 
     if (type === "originalPrice") {
       if (!manual && currentValues.discount) {
         calculatePrice(
-          cleanedValue, 
+          value, 
           currentValues.discount,
         );
       } else if (!manual && currentValues.price) {
         calculateDiscount(
           currentValues.price, 
-          cleanedValue,
+          value,
         );
       } else {
         onPriceChange?.({
@@ -109,13 +114,13 @@ const BookPricing = ({ initialPrice = 0, initialOriginalPrice, initialDiscount, 
           discount: discountNum,
         });
       }
-    }  
+    }
 
     if (type === "discount") {
       if (!manual && currentValues.originalPrice) {
         calculatePrice(
           currentValues.originalPrice, 
-          cleanedValue,
+          value,
         );
       } else {
         onPriceChange?.({
@@ -126,11 +131,11 @@ const BookPricing = ({ initialPrice = 0, initialOriginalPrice, initialDiscount, 
       }
     }
   }, [values, manual, calculatePrice, calculateDiscount, onPriceChange]);
-
+  
   return (
     <View style={styles.container}>
       <View style={styles.field}>
-        <Typography fontSize={14} color={colors.white} style={styles.label}>
+        <Typography fontSize={14} color={isLabelColorWhite ? colors.white : colors.black} style={styles.label}>
           {t("components.pricing.labels.price")}
         </Typography>
         
@@ -142,12 +147,13 @@ const BookPricing = ({ initialPrice = 0, initialOriginalPrice, initialDiscount, 
           style={
             !manual ? { color: colors.gray } : undefined
           }
+          keyboardType="numeric"
           isSquared
         />
       </View>
 
       <View style={styles.field}>
-        <Typography fontSize={14} color={colors.white} style={styles.label}>
+        <Typography fontSize={14} color={isLabelColorWhite ? colors.white : colors.black} style={styles.label}>
           {t("components.pricing.labels.originalPrice")}
         </Typography>
 
@@ -155,12 +161,13 @@ const BookPricing = ({ initialPrice = 0, initialOriginalPrice, initialDiscount, 
           value={values.originalPrice}
           onChangeText={(value) => handleChange("originalPrice", value)}
           placeholder={t("components.pricing.placeholders.originalPrice")}
+          keyboardType="numeric"
           isSquared
         />
       </View>
 
       <View style={styles.field}>  
-        <Typography fontSize={14} color={colors.white} style={styles.label}>
+        <Typography fontSize={14} color={isLabelColorWhite ? colors.white : colors.black} style={styles.label}>
           {t("components.pricing.labels.discount")}
         </Typography>
 
@@ -168,13 +175,14 @@ const BookPricing = ({ initialPrice = 0, initialOriginalPrice, initialDiscount, 
           value={values.discount}
           onChangeText={(value) => handleChange("discount", value)}
           placeholder={t("components.pricing.placeholders.discount")}
+          keyboardType="numeric"
           isSquared
         />
       </View>
 
       <View style={styles.checkbox}>
         <Checkbox checked={manual} onPress={() => setManual(!manual)} />
-        <Typography fontSize={16} color={colors.white} style={styles.checkboxText}>
+        <Typography fontSize={16} color={isLabelColorWhite ? colors.white : colors.black} style={styles.checkboxText}>
           {t("components.pricing.checkbox.text")}
         </Typography>
       </View>
