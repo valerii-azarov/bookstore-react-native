@@ -888,6 +888,12 @@ const translations: Translations = {
             uk: "Редагувати",
           },
         },
+        delete: {
+          text: {
+            en: "Delete book",
+            uk: "Видалити книгу",
+          },
+        },
         back: {
           text: {
             en: "Back",
@@ -1242,6 +1248,38 @@ const translations: Translations = {
         en: "Are you sure you want to log out?",
         uk: "Ви впевнені, що хочете вийти?",
       },
+    },
+    confirmDeleteBook: {
+      title: {
+        en: "Delete Book",
+        uk: "Видалити книгу",
+      },
+      message: {
+        en: "Are you sure you want to delete this book? This action cannot be undone.",
+        uk: "Ви впевнені, що хочете видалити цю книгу? Цю дію неможливо скасувати.",
+      },
+      confirm: {
+        en: "Delete",
+        uk: "Видалити",
+      },
+      success: {
+        title: {
+          en: "Success",
+          uk: "Успіх",
+        },
+        message: {
+          en: "The book has been successfully deleted.",
+          uk: "Книгу успішно видалено.",
+        },
+      },
+      error: {
+        message: {
+          en: "Failed to delete the book. Please try again.",
+          uk: "Не вдалося видалити книгу. Спробуйте ще раз.",
+        },
+      },
+    },
+    static: {
       cancel: {
         en: "Cancel",
         uk: "Скасувати",
@@ -1250,11 +1288,11 @@ const translations: Translations = {
         en: "Confirm",
         uk: "Підтвердити",
       },
-    },
-    error: {
-      title: {
-        en: "Error",
-        uk: "Помилка",
+      error: {
+        title: {
+          en: "Error",
+          uk: "Помилка",
+        },
       },
     },
   },

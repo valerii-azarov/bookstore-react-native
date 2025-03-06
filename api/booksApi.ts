@@ -1,4 +1,4 @@
-import { doc, getDoc, getDocs, setDoc, updateDoc, collection } from "@firebase/firestore";
+import { doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, collection } from "@firebase/firestore";
 import { db } from "./firebase";
 import imagesApi from "./imagesApi";
 import { fuseSearch } from "@/helpers/fuseSearch";
@@ -110,6 +110,36 @@ const booksApi = {
       [field]: value,
       updatedAt,
     });
+  },
+
+  deleteBook: async (bookId: string) => {
+    const bookRef = doc(db, "books", bookId);
+    const currentBook = await booksApi.getBookById(bookId);
+
+    if (!currentBook) {
+      throw new Error("BooksError: Book not found (books/book-not-found)");
+    }
+
+    const coverImage = currentBook.coverImage;
+    const additionalImages = currentBook.additionalImages || [];
+
+    if (coverImage) {
+      await imagesApi.deleteFileFromCloudinary(coverImage).catch((error) => {
+        console.error(`Failed to delete cover image ${coverImage}:`, error);
+      });
+    }
+
+    if (additionalImages.length > 0) {
+      await Promise.all(
+        additionalImages.map(async (imageUrl) => {
+          await imagesApi.deleteFileFromCloudinary(imageUrl).catch((error) => {
+            console.error(`Failed to delete additional image ${imageUrl}:`, error);
+          });
+        })
+      );
+    }
+    
+    await deleteDoc(bookRef);
   },
 
   getBooks: async (): Promise<Book[]> => {

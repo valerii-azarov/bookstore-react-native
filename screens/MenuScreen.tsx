@@ -20,10 +20,6 @@ import Notification from "@/components/Notification";
 const MenuScreen = () => {
   const { t } = useLanguageContext();
   const { user, isAdmin } = useAuthContext();
-  
-  const handleLogout = async () => {
-    await authApi.logout();
-  };
 
   const confirmLogout = () => {
     Alert.alert(
@@ -31,13 +27,13 @@ const MenuScreen = () => {
       t("alerts.confirmLogout.message"),
       [
         {
-          text: t("alerts.confirmLogout.cancel"),
+          text: t("alerts.static.cancel"),
           style: "cancel",
         },
         {
-          text: t("alerts.confirmLogout.confirm"),
-          onPress: handleLogout,
+          text: t("alerts.static.confirm"),
           style: "destructive",
+          onPress: async () => await authApi.logout(),
         },
       ],
       { cancelable: false }

@@ -1,5 +1,5 @@
 import { useRef, useState, useMemo, useEffect } from "react";
-import { View, Image, TouchableOpacity, RefreshControl, Platform, ScrollView, StyleSheet } from "react-native";
+import { Alert, View, Image, TouchableOpacity, RefreshControl, Platform, ScrollView, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { useSharedValue, useAnimatedScrollHandler, useAnimatedStyle, withTiming } from "react-native-reanimated";
 import { Ionicons as Icon } from "@expo/vector-icons";
@@ -25,7 +25,7 @@ const BookDetailsScreen = () => {
   const { isAdmin } = useAuthContext();
     
   const { bookId } = useLocalSearchParams<{ bookId: string }>();
-  const { data, isLoading, response, refresh } = useBook(bookId);
+  const { data, isLoading, response, deleteBook, refresh } = useBook(bookId);
 
   const scrollViewRef = useRef<Animated.ScrollView>(null);
   const imagesBlockRef = useRef<View>(null);
@@ -57,6 +57,39 @@ const BookDetailsScreen = () => {
       scrollToTitleBlock();
     }
   };  
+
+  const confirmDeleteBook = () => {
+    Alert.alert(
+      t("alerts.confirmDeleteBook.title"),
+      t("alerts.confirmDeleteBook.message"),
+      [
+        {
+          text: t("alerts.static.cancel"),
+          style: "cancel",
+        },
+        {
+          text: t("alerts.confirmDeleteBook.confirm"),
+          style: "destructive",
+          onPress: async () => {
+            await deleteBook()
+              .then(() => {
+                Alert.alert(
+                  t("alerts.confirmDeleteBook.success.title"),
+                  t("alerts.confirmDeleteBook.success.message"),
+                  [{ text: "OK", onPress: () => router.back() }]
+                );
+              })
+              .catch((error) => {
+                Alert.alert(
+                  t("alerts.static.error.title"),
+                  error.message || t("alerts.confirmDeleteBook.error.message")
+                );
+              });
+          },
+        },
+      ]
+    );
+  };
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
@@ -733,6 +766,25 @@ const BookDetailsScreen = () => {
                 <TouchableOpacity onPressIn={toggleEdit}>
                   <Typography fontSize={16} fontWeight="bold" color={colors.white} style={{ textDecorationLine: "underline" }}>
                     {t(`screens.bookDetails.buttons.${isEditing ? "back" : "adminEdit"}.text`)}
+                  </Typography>
+                </TouchableOpacity>
+              </View>  
+            </View>
+          )}
+
+          {isAdmin && (
+            <View
+              style={[
+                styles.blockContainer,
+                { 
+                  backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
+                },
+              ]}
+            >
+              <View style={{ alignItems: "center" }}>
+                <TouchableOpacity onPressIn={confirmDeleteBook}>
+                  <Typography fontSize={16} fontWeight="bold" color={colors.red} style={{ textDecorationLine: "underline" }}>
+                    {t(`screens.bookDetails.buttons.delete.text`)}
                   </Typography>
                 </TouchableOpacity>
               </View>  

@@ -8,9 +8,11 @@ export interface BookReturn {
   isLoading: boolean;
   isCreating: boolean;
   isUpdating: boolean;
+  isDeleting: boolean;
   response: ResponseType | null;
   createBook: (bookData: CreateBook) => Promise<void>;
   updateBook: (field: EditableBookField, value: EditableBookValueType) => Promise<void>;
+  deleteBook: () => Promise<void>;
   refresh: () => Promise<void>;
 }
 
@@ -21,6 +23,7 @@ export const useBook = (bookId: string = ""): BookReturn => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [response, setResponse] = useState<ResponseType | null>(null);
 
   const loadBook = useCallback(async () => {
@@ -64,9 +67,7 @@ export const useBook = (bookId: string = ""): BookReturn => {
         
         setResponse({ status: "error", message });
       })
-      .finally(() => {
-        setIsCreating(false);
-      });
+      .finally(() => setIsCreating(false));
   }, [t]);
 
   const updateBook = useCallback(async (field: EditableBookField, value: EditableBookValueType) => {
@@ -91,10 +92,28 @@ export const useBook = (bookId: string = ""): BookReturn => {
         
         setResponse({ status: "error", message });
       })
-      .finally(() => {
-        setIsUpdating(false);
-      });
-  }, [bookId]);
+      .finally(() => setIsUpdating(false));
+  }, [t, bookId]);
+
+  const deleteBook = useCallback(async () => {
+    if (!bookId) return;
+    setIsDeleting(true);
+
+    await booksApi.deleteBook(bookId)
+      .then(() => setResponse({ status: "success" }))
+      .catch((error) => {
+        const errors: Record<string, string> = {
+          "books/book-not-found": "books.bookNotFound",
+          "image/delete-failed": "image.deleteFailed",
+        };
+        
+        const errorKey = Object.keys(errors).find((key) => error.message.includes(key));
+        const message = errorKey ? t(`errorMessages.${errors[errorKey]}`) : error.message;
+        
+        setResponse({ status: "error", message });
+      })
+      .finally(() => setIsDeleting(false));
+  }, [t, bookId]);
 
   const refresh = useCallback(async () => {
     await loadBook();
@@ -113,9 +132,11 @@ export const useBook = (bookId: string = ""): BookReturn => {
     isLoading,
     isCreating,
     isUpdating,
+    isDeleting,
     response,
     createBook,
     updateBook,
+    deleteBook,
     refresh,
   };
 };
