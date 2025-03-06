@@ -6,7 +6,7 @@ import { useBook } from "@/hooks/useBook";
 import { colors } from "@/constants/theme";
 import { colorConverter } from "@/helpers/colorConverter";
 import { genresKeys, languageKeys, coverTypeKeys, bookTypeKeys, paperTypeKeys } from "@/constants/book";
-import { BookPricing, BookFieldType, BookSelectFieldType, EditableBookFields, EditableBookField, EditableBookValueType } from "@/types";
+import { BookPricing, EditableBookFields, EditableBookField, EditableBookValueType } from "@/types";
 
 import ModalWrapper from "@/components/ModalWrapper";
 import Header from "@/components/Header";
@@ -35,124 +35,132 @@ const EditBookModal = () => {
 
   const initialValue = bookData && typedField ? bookData[typedField] : null;
   const [editedValue, setEditedValue] = useState<EditableBookValueType>(initialValue);  
-  
-  const createTextField = ({ field, value }: BookFieldType) => ({
-    component: (
-      <BookField
-        field={field}
-        initialValue={value?.toString() || ""}
-        onChange={(newValue) => setEditedValue(newValue)}
-        isLabelColorWhite
-        isEditing
-      />
-    ),
-  });
-
-  const createNumericField = ({ field, value, props }: BookFieldType) => ({
-    component: (
-      <BookField
-        field={field}
-        initialValue={value?.toString() || ""}
-        onChange={(newValue) => setEditedValue(newValue ? Number(newValue) : 0)}
-        isLabelColorWhite
-        isEditing
-        {...props}
-      />
-    ),
-  });
-
-  const createSingleSelectField = ({ field, options, value }: BookSelectFieldType) => ({
-    component: (
-      <BookSelectField
-        field={field}
-        type="single"
-        options={options}
-        initialValue={typeof value === "string" ? value : ""}
-        onChange={(newValue) => setEditedValue(newValue)}
-        isLabelColorWhite
-        isEditing
-      />
-    )
-  });
-  
-  const createMultipleSelectField = ({ field, options, value, props }: BookSelectFieldType) => ({
-    component: (
-      <BookSelectField
-        field={field}
-        type="multiple"
-        options={options}
-        initialValue={Array.isArray(value) ? value : []}
-        onChange={(newValue) => setEditedValue(newValue)}
-        isLabelColorWhite
-        isEditing
-        {...props}
-      />
-    )
-  });
-    
+      
   const fields = useMemo<EditableBookFields>(() => {
     const textFields: EditableBookField[] = ["title", "publisher", "size", "isbn", "sku"];
-    
     const numericFields: EditableBookField[] = ["pageCount", "publicationYear", "quantity"];
     const numericNonIntegerFields: EditableBookField[] = ["weight"];
-
-    const singleSelectFields: BookSelectFieldType[] = [
-      { 
-        field: "language",
-        options: languageKeys.map((key) => ({ label: t(`languages.${key}`), value: key })),
-        value: bookData?.language || "",
-      },
-      { 
-        field: "coverType",
-        options: coverTypeKeys.map((key) => ({ label: t(`coverTypes.${key}`), value: key })),
-        value: bookData?.coverType || "",
-      },
-      { 
-        field: "bookType",
-        options: bookTypeKeys.map((key) => ({ label: t(`bookTypes.${key}`), value: key })),
-        value: bookData?.bookType || "",
-      },
-      { 
-        field: "paperType",
-        options: paperTypeKeys.map((key) => ({ label: t(`paperTypes.${key}`), value: key })),
-        value: bookData?.paperType || "",
-      },
-    ];
-    
-    const multipleSelectFields: BookSelectFieldType[] = [
-      { 
-        field: "genres",
-        options: genresKeys.map((key) => ({ label: t(`genres.${key}`), value: key })),
-        value: bookData?.genres || [],
-        props: { showSearch: true, showSelected: true },
-      },
-    ];    
 
     return {
       ...textFields.reduce((acc, field) => ({
         ...acc,
-        [field]: createTextField({ field, value: bookData?.[field] }),
+        [field]: {
+          component: (
+            <BookField
+              field={field}
+              initialValue={bookData?.[field]?.toString() || ""}
+              onChange={(newValue) => setEditedValue(newValue)}
+              isLabelColorWhite
+              isEditing
+            />
+          )
+        }
       }), {}),
 
       ...numericFields.reduce((acc, field) => ({
         ...acc,
-        [field]: createNumericField({ field, value: bookData?.[field], props: { isNumeric: true, isInteger: true } }),
+        [field]: {
+          component: (
+            <BookField
+              field={field}
+              initialValue={bookData?.[field]?.toString() || ""}
+              onChange={(newValue) => setEditedValue(newValue ? Number(newValue) : 0)}
+              isLabelColorWhite
+              isEditing
+              isNumeric
+              isInteger
+            />
+          )
+        }
       }), {}),
 
       ...numericNonIntegerFields.reduce((acc, field) => ({
         ...acc,
-        [field]: createNumericField({ field, value: bookData?.[field], props: { isNumeric: true } }),
+        [field]: {
+          component: (
+            <BookField
+              field={field}
+              initialValue={bookData?.[field]?.toString() || ""}
+              onChange={(newValue) => setEditedValue(newValue ? Number(newValue) : 0)}
+              isLabelColorWhite
+              isEditing
+              isNumeric
+            />
+          )
+        }
       }), {}),
 
-      ...singleSelectFields.reduce((acc, config) => ({
-        ...acc,
-        [config.field]: createSingleSelectField(config)
-      }), {}),
+      language: {
+        component: (
+          <BookSelectField
+            field="language"
+            type="single"
+            options={languageKeys.map((key) => ({ label: t(`languages.${key}`), value: key }))}
+            initialValue={bookData?.language || ""}
+            onChange={(newValue) => setEditedValue(newValue)}
+            isLabelColorWhite
+            isEditing
+          />
+        )
+      },
 
-      ...multipleSelectFields.reduce((acc, config) => ({
-        ...acc,
-        [config.field]: createMultipleSelectField(config)
-      }), {}),
+      coverType: {
+        component: (
+          <BookSelectField
+            field="coverType"
+            type="single"
+            options={coverTypeKeys.map((key) => ({ label: t(`coverTypes.${key}`), value: key }))}
+            initialValue={bookData?.coverType || ""}
+            onChange={(newValue) => setEditedValue(newValue)}
+            isLabelColorWhite
+            isEditing
+          />
+        )
+      },
+
+      bookType: {
+        component: (
+          <BookSelectField
+            field="bookType"
+            type="single"
+            options={bookTypeKeys.map((key) => ({ label: t(`bookTypes.${key}`), value: key }))}
+            initialValue={bookData?.bookType || ""}
+            onChange={(newValue) => setEditedValue(newValue)}
+            isLabelColorWhite
+            isEditing
+          />
+        )
+      },
+
+      paperType: {
+        component: (
+          <BookSelectField
+            field="paperType"
+            type="single"
+            options={paperTypeKeys.map((key) => ({ label: t(`paperTypes.${key}`), value: key }))}
+            initialValue={bookData?.paperType || ""}
+            onChange={(newValue) => setEditedValue(newValue)}
+            isLabelColorWhite
+            isEditing
+          />
+        )
+      },
+
+      genres: {
+        component: (
+          <BookSelectField
+            field="genres"
+            type="multiple"
+            options={genresKeys.map((key) => ({ label: t(`genres.${key}`), value: key }))}
+            initialValue={bookData?.genres || []}
+            onChange={(newValue) => setEditedValue(newValue)}
+            isLabelColorWhite
+            isEditing
+            showSearch
+            showSelected
+          />
+        )
+      },
 
       backgroundColor: { 
         component: (

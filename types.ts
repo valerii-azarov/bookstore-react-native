@@ -157,19 +157,6 @@ export type BookFieldComponentType = {
 
 export type EditableBookFields = Partial<Record<EditableBookField, BookFieldComponentType>>;
 
-export type BookFieldType = {
-  field: EditableBookField;
-  value: EditableBookValueType;
-  props?: { isNumeric: boolean; isInteger?: boolean };
-};
-
-export type BookSelectFieldType = {
-  field: EditableBookField;
-  options: OptionType[];
-  value: EditableBookValueType;
-  props?: { showSearch?: boolean; showSelected?: boolean };
-};
-
 export type BookStepComponentType = {
   title: string;
   component: JSX.Element;
