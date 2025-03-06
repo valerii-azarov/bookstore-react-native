@@ -1,6 +1,6 @@
 import React, { useRef, useState, useCallback, useMemo, useEffect } from "react";
 import { useRouter } from "expo-router";
-import { View, ScrollView, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { View, ScrollView, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, StyleSheet } from "react-native";
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSequence, withDelay, SlideInLeft, SlideInRight } from "react-native-reanimated";
 import { useLanguageContext } from "@/contexts/LanguageContext";
 import { useBook } from "@/hooks/useBook";
@@ -70,12 +70,13 @@ const CreateBookModal = () => {
       {
         title: t("modals.createBook.titles.step1"),
         component: (
-          <View style={{ flex: 1 }}>
+          <View style={styles.contentContainer}>
             <BookField
               field="title"
               initialValue={form.title}
               onChange={(value) => setForm({ ...form, title: value })}
             />
+
             <BookTagsField
               field="authors"
               initialValue={form.authors}
@@ -88,7 +89,7 @@ const CreateBookModal = () => {
       {
         title: t("modals.createBook.titles.step2"),
         component: (
-          <View style={{ flex: 1 }}>
+          <View style={styles.contentContainer}>
             <BookSelectField
               field="genres"
               type="multiple"
@@ -105,7 +106,7 @@ const CreateBookModal = () => {
       {
         title: t("modals.createBook.titles.step3"),
         component: (
-          <View style={{ flex: 1 }}>
+          <View style={styles.contentContainer}>
             <BookTextareaField
               field="description"
               initialValue={form.description}
@@ -118,7 +119,7 @@ const CreateBookModal = () => {
       {
         title: t("modals.createBook.titles.step4"),
         component: (
-          <View style={{ flex: 1 }}>
+          <View style={styles.contentContainer}>
             <BookField
               field="pageCount"
               initialValue={form.pageCount === 0 ? "" : form.pageCount.toString()}
@@ -133,7 +134,7 @@ const CreateBookModal = () => {
       {
         title: t("modals.createBook.titles.step5"),
         component: (
-          <View style={{ flex: 1 }}>
+          <View style={styles.contentContainer}>
             <BookCheckboxField
               field="illustrations"
               initialValue={form.illustrations}
@@ -145,7 +146,7 @@ const CreateBookModal = () => {
       {
         title: t("modals.createBook.titles.step6"),
         component: (
-          <View style={{ flex: 1 }}>
+          <View style={styles.contentContainer}>
             <BookSelectField
               field="language"
               type="single"
@@ -160,7 +161,7 @@ const CreateBookModal = () => {
       {
         title: t("modals.createBook.titles.step7"),
         component: (
-          <View style={{ flex: 1 }}>
+          <View style={styles.contentContainer}>
             <BookImages
               initialValue={{
                 coverImage: form.coverImage,
@@ -181,7 +182,7 @@ const CreateBookModal = () => {
       {
         title: t("modals.createBook.titles.step8"),
         component: (
-          <View style={{ flex: 1 }}>
+          <View style={styles.contentContainer}>
             <ColorChanger
               initialColor={form.backgroundColor || colors.creamTint9}
               onColorChange={(hex) => setForm({ ...form, backgroundColor: hex })}
@@ -193,12 +194,13 @@ const CreateBookModal = () => {
       {
         title: t("modals.createBook.titles.step9"),
         component: (
-          <View style={{ flex: 1 }}>
+          <View style={styles.contentContainer}>
             <BookField
               field="publisher"
               initialValue={form.publisher}
               onChange={(value) => setForm({ ...form, publisher: value })}
             />
+
             <BookField
               field="publicationYear"
               initialValue={form.publicationYear === 0 ? "" : form.publicationYear.toString()}
@@ -216,7 +218,7 @@ const CreateBookModal = () => {
       {
         title: t("modals.createBook.titles.step10"),
         component: (
-          <View style={{ flex: 1 }}>
+          <View style={styles.contentContainer}>
             <BookField
               field="isbn"
               initialValue={form.isbn}
@@ -229,7 +231,7 @@ const CreateBookModal = () => {
       {
         title: t("modals.createBook.titles.step11"),
         component: (
-          <View style={{ flex: 1, gap: 15 }}>
+          <View style={[styles.contentContainer, { gap: 15 }]}>
             <BookSelectField
               field="coverType"
               type="single"
@@ -237,6 +239,7 @@ const CreateBookModal = () => {
               initialValue={form.coverType}
               onChange={(value) => setForm({ ...form, coverType: value as string })}
             />
+
             <BookSelectField
               field="bookType"
               type="single"
@@ -244,6 +247,7 @@ const CreateBookModal = () => {
               initialValue={form.bookType}
               onChange={(value) => setForm({ ...form, bookType: value as string })}
             />
+
             <BookSelectField
               field="paperType"
               type="single"
@@ -258,12 +262,13 @@ const CreateBookModal = () => {
       {
         title: t("modals.createBook.titles.step12"),
         component: (
-          <View style={{ flex: 1 }}>
+          <View style={styles.contentContainer}>
             <BookField
               field="size"
               initialValue={form.size}
               onChange={(value) => setForm({ ...form, size: value })}
             />
+
             <BookField
               field="weight"
               initialValue={form.weight === 0 ? "" : form.weight.toString()}
@@ -277,7 +282,7 @@ const CreateBookModal = () => {
       {
         title: t("modals.createBook.titles.step13"),
         component: (
-          <View style={{ flex: 1 }}>
+          <View style={styles.contentContainer}>
             <BookPricing
               initialValues={{
                 price: form.price,
@@ -300,7 +305,7 @@ const CreateBookModal = () => {
       {
         title: t("modals.createBook.titles.step14"),
         component: (
-          <View style={{ flex: 1 }}>
+          <View style={styles.contentContainer}>
             <BookField
               field="quantity"
               initialValue={form.quantity === 0 ? "" : form.quantity.toString()}
@@ -315,7 +320,7 @@ const CreateBookModal = () => {
       {
         title: t("modals.createBook.titles.step15"),
         component: (
-          <View style={{ flex: 1 }}>
+          <View style={styles.contentContainer}>
             <BookField
               field="sku"
               initialValue={form.sku}
@@ -328,17 +333,22 @@ const CreateBookModal = () => {
       {
         title: "",
         component: (
-          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <Typography fontSize={24} fontWeight="bold" style={{ marginBottom: 5 }}>
+          <View 
+            style={[
+              styles.contentContainer,
+              {
+                padding: 20,
+                justifyContent: "center", 
+                alignItems: "center",
+              },
+            ]}
+          >
+            <Typography fontSize={24} fontWeight="bold" style={styles.contentTitle}>
               {t(`modals.createBook.messages.${response?.status || "error"}.text`)}{" "}
               {response?.status === "error" && "❌"}
             </Typography>
-            <Typography
-              fontSize={16}
-              fontWeight="medium"
-              color={colors.gray}
-              style={{ textAlign: "center" }}
-            >
+            
+            <Typography fontSize={16} fontWeight="medium" color={colors.blackTint5} style={styles.contentSubtitle}>
               {response?.message || t(`modals.createBook.messages.${response?.status || "error"}.subText`)}
             </Typography>
           </View>
@@ -373,8 +383,7 @@ const CreateBookModal = () => {
   }, []);
 
   useEffect(() => {
-    const canProceed = isSecondToLastStep && !isCreating && response;
-    if (canProceed) {
+    if (isSecondToLastStep && !isCreating && response) {
       setCurrentStep((prev) => prev + 1);
     }
   }, [isCreating, response, isSecondToLastStep]);
@@ -420,37 +429,33 @@ const CreateBookModal = () => {
     <ModalWrapper style={{ backgroundColor: colors.creamTint9 }}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView
-          style={{ flex: 1 }}
+          style={styles.keyboardAvoidingView}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
           <Header
-            title={t("modals.createBook.header") || "Create Book"}
-            iconLeft={
-              <BackButton style={{ backgroundColor: colors.orangeTint5 }} />
-            }
-            style={{ 
-              paddingHorizontal: 15, 
-              marginBottom: 15,
-            }}
-            titleStyle={{ color: colors.black }}
+            title={t("modals.createBook.header")}
+            iconLeft={<BackButton style={{ backgroundColor: colors.orangeTint5 }} />}
+            style={styles.header}
+            titleStyle={styles.headerTitle}
           />
 
           <ScrollView
             scrollEnabled={!isLastStep}
-            contentContainerStyle={{
-              flexGrow: 1,
-              paddingHorizontal: 15,
-              paddingBottom: 15,
-              justifyContent: isLastStep ? "center" : undefined,
-            }}
+            contentContainerStyle={[
+              styles.scrollViewContent,
+              isLastStep && { justifyContent: "center" },
+            ]}
           >
             {!isLastStep && (
-              <Typography fontSize={18} fontWeight="bold" style={{ marginBottom: 10 }}>
-                {steps[currentStep].title}{" "}
-                <Typography fontSize={18} fontWeight="bold" style={{ color: colors.gray }}>
-                  {`${currentStep + 1}/${totalSteps - 1}`}
+              <View style={styles.stepTitleContainer}>
+                <Typography fontSize={18} fontWeight="bold" style={styles.stepTitle}>
+                  {steps[currentStep].title}
                 </Typography>
-              </Typography>
+
+                <Typography fontSize={18} fontWeight="bold" color={colors.gray}>
+                  {` ${currentStep + 1}/${totalSteps - 1}`}
+                </Typography>
+              </View>
             )}
 
             <Animated.View
@@ -461,19 +466,16 @@ const CreateBookModal = () => {
             </Animated.View>
           </ScrollView>
 
-          <View
-            style={{
-              gap: 10,
-              padding: 10,
-              paddingHorizontal: 15,
-              flexDirection: "row",
-              justifyContent: "center",
-            }}
+          <View 
+            style={[
+              styles.buttonContainer,
+              !(isFirstStep || isLastStep) && { gap: 10 },
+            ]}
           >
             <Animated.View style={animatedStyles.backButton}>
               <Button 
-                style={{ backgroundColor: colors.grayTint5 }} 
                 onPress={handlePrevious}
+                style={{ backgroundColor: colors.grayTint5 }} 
               >
                 <Animated.View style={animatedStyles.backText}>
                   <Typography fontSize={16} fontWeight="bold" color={colors.white}>
@@ -502,5 +504,46 @@ const CreateBookModal = () => {
     </ModalWrapper>
   );
 };
+
+const styles = StyleSheet.create({
+  header: {
+    paddingHorizontal: 15,
+    marginBottom: 15,
+  },
+  headerTitle: {
+    color: colors.black,
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    paddingHorizontal: 15,
+    paddingBottom: 15,
+  },
+  stepTitleContainer: {
+    flexDirection: "row",
+    alignItems: "baseline",
+  },
+  stepTitle: {
+    marginBottom: 10,
+  },
+  contentContainer: {
+    flex: 1,
+  },
+  contentTitle: {
+    marginBottom: 5,
+    textAlign: "center",
+  },
+  contentSubtitle: {
+    textAlign: "center",
+  },
+  buttonContainer: {
+    padding: 10,
+    paddingHorizontal: 15,
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+});
 
 export default CreateBookModal;
