@@ -1,23 +1,23 @@
 import { useState, useCallback, useEffect } from "react";
 import booksApi from "@/api/booksApi";
 import { useLanguageContext } from "@/contexts/LanguageContext";
-import { BookType, CreateBookType, EditBookFieldType, EditBookValueType, ResponseType } from "@/types";
+import { Book, CreateBook, EditableBookField, EditableBookValueType, ResponseType } from "@/types";
 
 export interface BookReturn {
-  data: BookType | null;
+  data: Book | null;
   isLoading: boolean;
   isCreating: boolean;
   isUpdating: boolean;
   response: ResponseType | null;
-  createBook: (bookData: CreateBookType) => Promise<void>;
-  updateBook: (field: EditBookFieldType, value: EditBookValueType) => Promise<void>;
+  createBook: (bookData: CreateBook) => Promise<void>;
+  updateBook: (field: EditableBookField, value: EditableBookValueType) => Promise<void>;
   refresh: () => Promise<void>;
 }
 
 export const useBook = (bookId: string = ""): BookReturn => {
   const { t } = useLanguageContext();
   
-  const [data, setData] = useState<BookType | null>(null);
+  const [data, setData] = useState<Book | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
@@ -44,7 +44,7 @@ export const useBook = (bookId: string = ""): BookReturn => {
       });
   }, [bookId]);
 
-  const createBook = useCallback(async (bookData: CreateBookType) => {
+  const createBook = useCallback(async (bookData: CreateBook) => {
     setIsCreating(true);
 
     await booksApi.createBook(bookData)
@@ -69,7 +69,7 @@ export const useBook = (bookId: string = ""): BookReturn => {
       });
   }, [t]);
 
-  const updateBook = useCallback(async (field: EditBookFieldType, value: EditBookValueType) => {
+  const updateBook = useCallback(async (field: EditableBookField, value: EditableBookValueType) => {
     if (!bookId) return;
     setIsUpdating(true);
 

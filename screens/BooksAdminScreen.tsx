@@ -8,7 +8,7 @@ import { useListMode } from "@/hooks/useListMode";
 import { colors } from "@/constants/theme";
 import { booksAdminPageSize } from "@/constants/settings";
 import { verticalScale } from "@/helpers/common";
-import { BookType } from "@/types";
+import { Book } from "@/types";
 
 import ScreenWrapper from "@/components/ScreenWrapper";
 import Header from "@/components/Header";
@@ -26,7 +26,7 @@ const BooksAdminScreen = () => {
   const { data, isLoading, isFetching, isRefreshing, response, searchText, setSearchText, refresh, loadMore } = useBooksList();
   const router = useRouter();
 
-  const renderItem = useCallback(({ item }: { item: BookType | undefined }) => {
+  const renderItem = useCallback(({ item }: { item: Book | undefined }) => {
     if (isLoading || !item) {
       return <SkeletonBookItem mode={mode} isOwner />;
     }

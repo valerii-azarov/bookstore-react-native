@@ -1,10 +1,10 @@
 import { useState, useCallback, useEffect } from "react";
 import booksApi from "@/api/booksApi";
 import { booksAdminPageSize } from "@/constants/settings";
-import { BookType, ResponseType } from "@/types";
+import { Book, ResponseType } from "@/types";
 
 export interface BooksListReturn {
-  data: BookType[];
+  data: Book[];
   isLoading: boolean;
   isFetching: boolean;
   isRefreshing: boolean;
@@ -16,7 +16,7 @@ export interface BooksListReturn {
 }
 
 export const useBooksList = (initialQuery: string = ""): BooksListReturn => {
-  const [data, setData] = useState<BookType[]>([]);
+  const [data, setData] = useState<Book[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);

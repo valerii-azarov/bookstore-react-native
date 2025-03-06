@@ -100,15 +100,8 @@ export type ProfileFieldType = {
   editable: boolean;
 };
 
-export type StepType = {
-  title: string;
-  component: JSX.Element;
-  validate?: (form: CreateBookType) => boolean;
-};
-
-export type DirectionType = "forward" | "backward";
-
-export type BookType = {
+// book fields
+export type Book = {
   id: string;
   title: string;
   authors: string[];
@@ -137,28 +130,57 @@ export type BookType = {
   updatedAt: Date;
 };
 
-export type BookPriceType = {
+export type BookPricing = {
   price: number;
   originalPrice?: number;
   discount?: number;
 };
 
-export type BoookImagesType = {
+export type BoookImages = {
   coverImage: string;
   additionalImages: string[];
 };
 
-export type CreateBookType = Omit<BookType, "id" | "createdAt" | "updatedAt">;
+export type CreateBook = Omit<Book, "id" | "createdAt" | "updatedAt">;
 
-export type EditBookFieldType =
-  | keyof Omit<BookType, "price" | "originalPrice" | "discount" | "coverImage" | "additionalImages" | "createdAt" | "updatedAt">
+export type EditableBookField =
+  | keyof Omit<Book, "price" | "originalPrice" | "discount" | "coverImage" | "additionalImages" | "createdAt" | "updatedAt">
   | "images"
   | "pricing";
 
-export type EditBookValueType = string | string[] | number | boolean | BookPriceType | BoookImagesType | null;
+export type EditableBookValueType = string | string[] | number | boolean | BookPricing | BoookImages | null;
 
-export type SearchKey = keyof BookType;
+// components
+export type BookFieldComponentType = {
+  component: JSX.Element;
+};
+
+export type EditableBookFields = Partial<Record<EditableBookField, BookFieldComponentType>>;
+
+export type BookFieldType = {
+  field: EditableBookField;
+  value: EditableBookValueType;
+  props?: { isNumeric: boolean; isInteger?: boolean };
+};
+
+export type BookSelectFieldType = {
+  field: EditableBookField;
+  options: OptionType[];
+  value: EditableBookValueType;
+  props?: { showSearch?: boolean; showSelected?: boolean };
+};
+
+export type BookStepComponentType = {
+  title: string;
+  component: JSX.Element;
+  validate?: (form: CreateBook) => boolean;
+};
+
+// others
+export type BookSearchKey = keyof Book;
 
 export type ModeType = "list" | "grid" | "horizontal";
 
 export type HeightType = "small" | "medium" | "large";
+
+export type DirectionType = "forward" | "backward";

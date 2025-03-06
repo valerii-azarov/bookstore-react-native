@@ -3,16 +3,16 @@ import { View, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons as Icon } from "@expo/vector-icons";
 import { useLanguageContext } from "@/contexts/LanguageContext";
 import { colors } from "@/constants/theme";
-import { ModeType, BookType } from "@/types";
+import { Book, ModeType } from "@/types";
 
 import Typography from "@/components/Typography";
 
 interface BookItemProps {
   mode: ModeType;
-  item: BookType;
+  item: Book;
   onViewDetails: () => void;
-  onAddToFavorites?: (item: BookType) => void;
-  onAddToCart?: (item: BookType) => void;
+  onAddToFavorites?: (item: Book) => void;
+  onAddToCart?: (item: Book) => void;
   isOwner?: boolean;
 }
 

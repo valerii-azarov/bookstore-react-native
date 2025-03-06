@@ -6,7 +6,7 @@ import { useLanguageContext } from "@/contexts/LanguageContext";
 import { useBook } from "@/hooks/useBook";
 import { colors } from "@/constants/theme";
 import { genresKeys, languageKeys, coverTypeKeys, bookTypeKeys, paperTypeKeys } from "@/constants/book";
-import { StepType, CreateBookType, DirectionType } from "@/types";
+import { CreateBook, DirectionType, BookStepComponentType } from "@/types";
 
 import ModalWrapper from "@/components/ModalWrapper";
 import Header from "@/components/Header";
@@ -16,14 +16,14 @@ import ColorChanger from "@/components/ColorChanger";
 import Typography from "@/components/Typography";
 
 import BookField from "@/components/BookField";
-import BookImages from "@/components/BookImages";
-import BookPricing from "@/components/BookPricing";
+import BookImagesField from "@/components/BookImagesField";
+import BookPricingField from "@/components/BookPricingField";
 import BookSelectField from "@/components/BookSelectField";
 import BookTagsField from "@/components/BookTagsField";
 import BookTextareaField from "@/components/BookTextareaField";
 import BookCheckboxField from "@/components/BookCheckboxField";
 
-const initialValues: CreateBookType = {
+const initialValues: CreateBook = {
   title: "",
   authors: [],
   price: 0,
@@ -56,7 +56,7 @@ const CreateBookModal = () => {
   const { isCreating, response, createBook } = useBook();
 
   const isFirstRender = useRef(true);
-  const [form, setForm] = useState<CreateBookType>(initialValues);
+  const [form, setForm] = useState<CreateBook>(initialValues);
   const [direction, setDirection] = useState<DirectionType>("forward");
   const [currentStep, setCurrentStep] = useState<number>(0);
 
@@ -65,7 +65,7 @@ const CreateBookModal = () => {
   const backTextOpacity = useSharedValue(0);
   const nextTextOpacity = useSharedValue(1);
 
-  const steps = useMemo<StepType[]>(() => {
+  const steps = useMemo<BookStepComponentType[]>(() => {
     return [
       {
         title: t("modals.createBook.titles.step1"),
@@ -162,8 +162,8 @@ const CreateBookModal = () => {
         title: t("modals.createBook.titles.step7"),
         component: (
           <View style={styles.contentContainer}>
-            <BookImages
-              initialValue={{
+            <BookImagesField
+              initialValues={{
                 coverImage: form.coverImage,
                 additionalImages: form.additionalImages,
               }}
@@ -283,7 +283,7 @@ const CreateBookModal = () => {
         title: t("modals.createBook.titles.step13"),
         component: (
           <View style={styles.contentContainer}>
-            <BookPricing
+            <BookPricingField
               initialValues={{
                 price: form.price,
                 originalPrice: form.originalPrice,

@@ -5,24 +5,25 @@ import { Ionicons as Icon } from "@expo/vector-icons";
 import { useLanguageContext } from "@/contexts/LanguageContext";
 import { colors } from "@/constants/theme";
 import { verticalScale } from "@/helpers/common";
-import { BoookImagesType } from "@/types";
+import { BoookImages } from "@/types";
+
 import Typography from "@/components/Typography";
 
-type BookImagesProps = {
-  initialValue: BoookImagesType;
-  onChange: (value: BoookImagesType) => void;
+type BookImagesFieldProps = {
+  initialValues: BoookImages;
+  onChange: (values: BoookImages) => void;
   isLabelColorWhite?: boolean;
   isBorderColorWhite?: boolean;
 };
 
-const BookImages = ({ 
-  initialValue, 
+const BookImagesField = ({ 
+  initialValues, 
   onChange, 
   isLabelColorWhite = false,
   isBorderColorWhite = false,
-}: BookImagesProps) => {
+}: BookImagesFieldProps) => {
   const { t } = useLanguageContext();
-  const [images, setImages] = useState<BoookImagesType>(initialValue);
+  const [images, setImages] = useState<BoookImages>(initialValues);
 
   const pickImage = async (isCover: boolean, index?: number) => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -251,4 +252,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BookImages;
+export default BookImagesField;

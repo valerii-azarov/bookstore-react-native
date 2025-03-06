@@ -1,14 +1,12 @@
-import React, { useState, useMemo, } from "react";
-import { View, Alert, TouchableWithoutFeedback, ScrollView, Keyboard, KeyboardAvoidingView, Platform } from "react-native";
+import React, { useState, useMemo } from "react";
+import { View, Alert, TouchableWithoutFeedback, ScrollView, Keyboard, KeyboardAvoidingView, Platform, StyleSheet } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useLanguageContext } from "@/contexts/LanguageContext";
 import { useBook } from "@/hooks/useBook";
-import { useMemoizedOptions } from "@/hooks/useMemoizedOptions";
 import { colors } from "@/constants/theme";
-import { converter } from "@/helpers/converter";
 import { colorConverter } from "@/helpers/colorConverter";
 import { genresKeys, languageKeys, coverTypeKeys, bookTypeKeys, paperTypeKeys } from "@/constants/book";
-import { BookPriceType, EditBookFieldType, EditBookValueType } from "@/types";
+import { BookPricing, BookFieldType, BookSelectFieldType, EditableBookFields, EditableBookField, EditableBookValueType } from "@/types";
 
 import ModalWrapper from "@/components/ModalWrapper";
 import Header from "@/components/Header";
@@ -18,8 +16,8 @@ import ColorChanger from "@/components/ColorChanger";
 import Typography from "@/components/Typography";
 
 import BookField from "@/components/BookField";
-import BookImages from "@/components/BookImages";
-import BookPricing from "@/components/BookPricing";
+import BookImagesField from "@/components/BookImagesField";
+import BookPricingField from "@/components/BookPricingField";
 import BookSelectField from "@/components/BookSelectField";
 import BookTagsField from "@/components/BookTagsField";
 import BookTextareaField from "@/components/BookTextareaField";
@@ -31,21 +29,207 @@ const EditBookModal = () => {
   const router = useRouter();
 
   const bookData = data ? JSON.parse(data) : null;
-  const typedField = field as EditBookFieldType | undefined;
+  const typedField = field as EditableBookField | undefined;
   
   const { isUpdating, updateBook } = useBook(bookData.id);
 
   const initialValue = bookData && typedField ? bookData[typedField] : null;
-  const [editedValue, setEditedValue] = useState<EditBookValueType>(initialValue);
+  const [editedValue, setEditedValue] = useState<EditableBookValueType>(initialValue);  
+  
+  const createTextField = ({ field, value }: BookFieldType) => ({
+    component: (
+      <BookField
+        field={field}
+        initialValue={value?.toString() || ""}
+        onChange={(newValue) => setEditedValue(newValue)}
+        isLabelColorWhite
+        isEditing
+      />
+    ),
+  });
 
-  const memoizedOptions = {
-    genres: useMemoizedOptions(genresKeys, "genres"),
-    languages: useMemoizedOptions(languageKeys, "languages"),
-    coverTypes: useMemoizedOptions(coverTypeKeys, "coverTypes"),
-    bookTypes: useMemoizedOptions(bookTypeKeys, "bookTypes"),
-    paperTypes: useMemoizedOptions(paperTypeKeys, "paperTypes"),
-  };
+  const createNumericField = ({ field, value, props }: BookFieldType) => ({
+    component: (
+      <BookField
+        field={field}
+        initialValue={value?.toString() || ""}
+        onChange={(newValue) => setEditedValue(newValue ? Number(newValue) : 0)}
+        isLabelColorWhite
+        isEditing
+        {...props}
+      />
+    ),
+  });
 
+  const createSingleSelectField = ({ field, options, value }: BookSelectFieldType) => ({
+    component: (
+      <BookSelectField
+        field={field}
+        type="single"
+        options={options}
+        initialValue={typeof value === "string" ? value : ""}
+        onChange={(newValue) => setEditedValue(newValue)}
+        isLabelColorWhite
+        isEditing
+      />
+    )
+  });
+  
+  const createMultipleSelectField = ({ field, options, value, props }: BookSelectFieldType) => ({
+    component: (
+      <BookSelectField
+        field={field}
+        type="multiple"
+        options={options}
+        initialValue={Array.isArray(value) ? value : []}
+        onChange={(newValue) => setEditedValue(newValue)}
+        isLabelColorWhite
+        isEditing
+        {...props}
+      />
+    )
+  });
+    
+  const fields = useMemo<EditableBookFields>(() => {
+    const textFields: EditableBookField[] = ["title", "publisher", "size", "isbn", "sku"];
+    
+    const numericFields: EditableBookField[] = ["pageCount", "publicationYear", "quantity"];
+    const numericNonIntegerFields: EditableBookField[] = ["weight"];
+
+    const singleSelectFields: BookSelectFieldType[] = [
+      { 
+        field: "language",
+        options: languageKeys.map((key) => ({ label: t(`languages.${key}`), value: key })),
+        value: bookData?.language || "",
+      },
+      { 
+        field: "coverType",
+        options: coverTypeKeys.map((key) => ({ label: t(`coverTypes.${key}`), value: key })),
+        value: bookData?.coverType || "",
+      },
+      { 
+        field: "bookType",
+        options: bookTypeKeys.map((key) => ({ label: t(`bookTypes.${key}`), value: key })),
+        value: bookData?.bookType || "",
+      },
+      { 
+        field: "paperType",
+        options: paperTypeKeys.map((key) => ({ label: t(`paperTypes.${key}`), value: key })),
+        value: bookData?.paperType || "",
+      },
+    ];
+    
+    const multipleSelectFields: BookSelectFieldType[] = [
+      { 
+        field: "genres",
+        options: genresKeys.map((key) => ({ label: t(`genres.${key}`), value: key })),
+        value: bookData?.genres || [],
+        props: { showSearch: true, showSelected: true },
+      },
+    ];    
+
+    return {
+      ...textFields.reduce((acc, field) => ({
+        ...acc,
+        [field]: createTextField({ field, value: bookData?.[field] }),
+      }), {}),
+
+      ...numericFields.reduce((acc, field) => ({
+        ...acc,
+        [field]: createNumericField({ field, value: bookData?.[field], props: { isNumeric: true, isInteger: true } }),
+      }), {}),
+
+      ...numericNonIntegerFields.reduce((acc, field) => ({
+        ...acc,
+        [field]: createNumericField({ field, value: bookData?.[field], props: { isNumeric: true } }),
+      }), {}),
+
+      ...singleSelectFields.reduce((acc, config) => ({
+        ...acc,
+        [config.field]: createSingleSelectField(config)
+      }), {}),
+
+      ...multipleSelectFields.reduce((acc, config) => ({
+        ...acc,
+        [config.field]: createMultipleSelectField(config)
+      }), {}),
+
+      backgroundColor: { 
+        component: (
+          <ColorChanger
+            initialColor={bookData?.backgroundColor || colors.creamTint9}
+            onColorChange={(hex) => setEditedValue(hex)}
+          />
+        )
+      },
+
+      images: { 
+        component: (
+          <BookImagesField
+            initialValues={{
+              coverImage: bookData?.coverImage || "",
+              additionalImages: bookData?.additionalImages || [],
+            }}
+            onChange={(value) => setEditedValue(value)}
+            isLabelColorWhite
+            isBorderColorWhite
+          />
+        )
+      },
+
+      pricing: { 
+        component: (
+          <BookPricingField
+            initialValues={{
+              price: bookData?.price || 0,
+              originalPrice: bookData?.originalPrice || 0,
+              discount: bookData?.discount || 0,
+            }}
+            onPriceChange={(values) => setEditedValue(values)}
+            isLabelColorWhite
+          />
+        )
+      },
+
+      authors: { 
+        component: (
+          <BookTagsField
+            field="authors"
+            initialValue={bookData?.authors || []}
+            onChange={(value) => setEditedValue(value)}
+            isLabelColorWhite
+            isEditing
+          />
+        )
+      },
+
+      description: { 
+        component: (
+          <BookTextareaField
+            field="description"
+            initialValue={bookData?.description || ""}
+            onChange={(value) => setEditedValue(value)}
+            isLabelColorWhite
+            isEditing
+          />
+        )
+      },
+
+      illustrations: { 
+        component: (
+          <BookCheckboxField
+            field="illustrations"
+            initialValue={bookData?.illustrations || false}
+            onChange={(value) => setEditedValue(value)}
+            checkboxColor={bookData?.backgroundColor}
+            isCheckboxColorDarker
+            isLabelColorWhite
+          />
+        )
+      },
+    };
+  }, [t, bookData]);
+  
   const handleSave = () => {
     if (!typedField) return;
   
@@ -65,8 +249,8 @@ const EditBookModal = () => {
     if (initialValue === editedValue) return false;
 
     if (typedField === "pricing" && initialValue && editedValue) {
-      const { price, originalPrice, discount } = initialValue as BookPriceType;
-      const { price: newPrice, originalPrice: newOriginalPrice, discount: newDiscount } = editedValue as BookPriceType;
+      const { price, originalPrice, discount } = initialValue as BookPricing;
+      const { price: newPrice, originalPrice: newOriginalPrice, discount: newDiscount } = editedValue as BookPricing;
 
       return (
         price !== newPrice ||
@@ -89,7 +273,7 @@ const EditBookModal = () => {
     <ModalWrapper style={{ backgroundColor: bookData.backgroundColor || colors.creamTint9 }}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView
-          style={{ flex: 1 }}
+          style={styles.keyboardAvoidingView}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
           <Header
@@ -103,172 +287,18 @@ const EditBookModal = () => {
                 }}
               />
             }
-            style={{ paddingHorizontal: 15, marginBottom: 15 }}
-            titleStyle={{ color: colors.white }}
+            style={styles.header}
+            titleStyle={styles.headerTitle}
           />
 
-          <ScrollView
+          <ScrollView 
             style={{ flex: 1 }}
-            contentContainerStyle={{
-              paddingHorizontal: 15,
-              paddingBottom: 15,
-            }}
-            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={styles.scrollViewContent}
           >
-            {typedField && ["title", "publisher", "size", "isbn", "sku"].includes(typedField) && (
-              <BookField
-                field={typedField}
-                initialValue={bookData[typedField]}
-                onChange={(value) => setEditedValue(value)}
-                isLabelColorWhite
-                isEditing
-              />
-            )}
-
-            {typedField && ["pageCount", "publicationYear", "weight", "quantity"].includes(typedField) && (
-              <BookField
-                field={typedField}
-                initialValue={String(bookData[typedField] || "")}
-                onChange={(value) => setEditedValue(converter.toNumericValue(value))}
-                isLabelColorWhite
-                isNumeric
-                isInteger
-                isEditing
-              />
-            )}
-
-            {typedField === "pricing" && (
-              <BookPricing
-                initialValues={{
-                  price: bookData.price,
-                  originalPrice: bookData.originalPrice,
-                  discount: bookData.discount,
-                }}
-                onPriceChange={(values) => setEditedValue(values)}
-                isLabelColorWhite
-              />
-            )}
-
-            {typedField === "genres" && (
-              <BookSelectField
-                field={typedField}
-                type="multiple"
-                options={memoizedOptions.genres}
-                initialValue={bookData[typedField]}
-                onChange={(value) => setEditedValue(value)}
-                isLabelColorWhite
-                isEditing
-                showSearch
-                showSelected
-              />
-            )}
-
-            {typedField === "language" && (
-              <BookSelectField
-                field={typedField}
-                type="single"
-                options={memoizedOptions.languages}
-                initialValue={bookData[typedField]}
-                onChange={(value) => setEditedValue(value)}
-                isLabelColorWhite
-                isEditing
-              />
-            )}
-
-            {typedField === "coverType" && (
-              <BookSelectField
-                field={typedField}
-                type="single"
-                options={memoizedOptions.coverTypes}
-                initialValue={bookData[typedField]}
-                onChange={(value) => setEditedValue(value)}
-                isLabelColorWhite
-                isEditing
-              />
-            )}
-
-            {typedField === "bookType" && (
-              <BookSelectField
-                field={typedField}
-                type="single"
-                options={memoizedOptions.bookTypes}
-                initialValue={bookData[typedField]}
-                onChange={(value) => setEditedValue(value)}
-                isLabelColorWhite
-                isEditing
-              />
-            )}
-
-            {typedField === "paperType" && (
-              <BookSelectField
-                field={typedField}
-                type="single"
-                options={memoizedOptions.paperTypes}
-                initialValue={bookData[typedField]}
-                onChange={(value) => setEditedValue(value)}
-                isLabelColorWhite
-                isEditing
-              />
-            )}
-            
-            {typedField === "authors" && (
-              <BookTagsField 
-                field={typedField} 
-                initialValue={bookData.authors} 
-                onChange={(value) => setEditedValue(value)} 
-                isLabelColorWhite
-                isEditing
-              />
-            )}
-
-            {typedField === "description" && (
-              <BookTextareaField
-                field={typedField} 
-                initialValue={bookData[typedField]} 
-                onChange={(value) => setEditedValue(value)}
-                isLabelColorWhite
-                isEditing
-              />
-            )}
-
-            {typedField === "illustrations" && (
-              <BookCheckboxField
-                field={typedField} 
-                initialValue={bookData[typedField]} 
-                onChange={(value) => setEditedValue(value)}
-                checkboxColor={bookData.backgroundColor}
-                isCheckboxColorDarker
-                isLabelColorWhite
-              />
-            )}
-
-            {typedField === "backgroundColor" && (
-              <ColorChanger 
-                initialColor={bookData.backgroundColor || colors.creamTint9} 
-                onColorChange={(hex) => setEditedValue(hex)}
-              />
-            )}        
-
-            {typedField === "images" && (
-              <BookImages
-                initialValue={{
-                  coverImage: bookData?.coverImage || "",
-                  additionalImages: bookData?.additionalImages || [],
-                }}
-                onChange={(value) => setEditedValue(value)}
-                isLabelColorWhite
-                isBorderColorWhite
-              />
-            )}
+            {typedField && fields[typedField]?.component}
           </ScrollView>
 
-          <View
-            style={{
-              paddingTop: 10,
-              paddingHorizontal: 15,
-              paddingBottom: 15,
-            }}
-          >
+          <View style={styles.buttonContainer}>
             <Button
               onPress={handleSave}
               style={{
@@ -291,5 +321,28 @@ const EditBookModal = () => {
     </ModalWrapper>
   );
 };
+
+const styles = StyleSheet.create({
+  header: {
+    paddingHorizontal: 15,
+    marginBottom: 15,
+  },
+  headerTitle: {
+    color: colors.white,
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    paddingHorizontal: 15,
+    paddingBottom: 15,
+  },
+  buttonContainer: {
+    paddingTop: 10,
+    paddingHorizontal: 15,
+    paddingBottom: 15,
+  },
+});
 
 export default EditBookModal;

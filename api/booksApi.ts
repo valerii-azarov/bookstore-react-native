@@ -2,10 +2,10 @@ import { doc, getDoc, getDocs, setDoc, updateDoc, collection } from "@firebase/f
 import { db } from "./firebase";
 import imagesApi from "./imagesApi";
 import { fuseSearch } from "@/helpers/fuseSearch";
-import { BookType, BookPriceType, BoookImagesType, CreateBookType, EditBookFieldType, EditBookValueType, SearchKey } from "@/types";
+import { Book, BookPricing, BoookImages, CreateBook, EditableBookField, EditableBookValueType, BookSearchKey } from "@/types";
 
 const booksApi = {
-  createBook: async (bookData: CreateBookType) => {
+  createBook: async (bookData: CreateBook) => {
     const createdAt = new Date().toISOString();
     
     if (bookData.coverImage) {
@@ -32,13 +32,13 @@ const booksApi = {
     await setDoc(doc(collection(db, "books")), { ...bookData, createdAt });
   },
 
-  updateBook: async (bookId: string, field: EditBookFieldType, value: EditBookValueType) => {
+  updateBook: async (bookId: string, field: EditableBookField, value: EditableBookValueType) => {
     const bookRef = doc(db, "books", bookId);
     const updatedAt = new Date().toISOString();
 
     if (field === "pricing") {
       if (value && typeof value === "object" && !Array.isArray(value)) {
-        const { price, originalPrice, discount } = value as BookPriceType;
+        const { price, originalPrice, discount } = value as BookPricing;
         await updateDoc(bookRef, {
           price: price || 0,
           originalPrice: originalPrice || 0,
@@ -51,7 +51,7 @@ const booksApi = {
 
     if (field === "images") {
       if (value && typeof value === "object" && !Array.isArray(value)) {
-        const { coverImage, additionalImages } = value as BoookImagesType;
+        const { coverImage, additionalImages } = value as BoookImages;
 
         const currentBook = await booksApi.getBookById(bookId);
         if (!currentBook) {
@@ -112,24 +112,24 @@ const booksApi = {
     });
   },
 
-  getBooks: async (): Promise<BookType[]> => {
+  getBooks: async (): Promise<Book[]> => {
     const snapshot = await getDocs(collection(db, "books"));
-    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as BookType);
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as Book);
   },
   
-  getBookById: async (uid: string): Promise<BookType | null> => {
+  getBookById: async (uid: string): Promise<Book | null> => {
     const bookDoc = await getDoc(doc(db, "books", uid));
-    return bookDoc.exists() ? ({ id: bookDoc.id, ...bookDoc.data() } as BookType) : null;
+    return bookDoc.exists() ? ({ id: bookDoc.id, ...bookDoc.data() } as Book) : null;
   },
 
-  searchBooks: async (searchQuery: string, limit: number = 5, offset: number = 0, keys: SearchKey[]): Promise<BookType[]> => {
+  searchBooks: async (searchQuery: string, limit: number = 5, offset: number = 0, keys: BookSearchKey[]): Promise<Book[]> => {
     const books = await booksApi.getBooks();
 
     if (!searchQuery.trim()) {
       return books.slice(offset, offset + limit);
     }
     
-    const fuse = fuseSearch<BookType>(books, keys);
+    const fuse = fuseSearch<Book>(books, keys);
     
     const result = fuse.search(searchQuery.trim()).map(item => item.item);
     return result.slice(offset, offset + limit);

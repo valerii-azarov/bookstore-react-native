@@ -3,19 +3,19 @@ import { View, StyleSheet } from "react-native";
 import { useLanguageContext } from "@/contexts/LanguageContext";
 import { colors } from "@/constants/theme";
 import { converter } from "@/helpers/converter";
-import { BookPriceType } from "@/types";
+import { BookPricing } from "@/types";
 
 import Field from "@/components/Field";
 import Checkbox from "@/components/Checkbox";
 import Typography from "@/components/Typography";
 
-type BookPricingProps = {
-  initialValues: BookPriceType;
-  onPriceChange: (data: BookPriceType) => void;
+type BookPricingFieldProps = {
+  initialValues: BookPricing;
+  onPriceChange: (values: BookPricing) => void;
   isLabelColorWhite?: boolean;
 };
 
-const BookPricing = ({ initialValues, onPriceChange, isLabelColorWhite = false }: BookPricingProps) => {
+const BookPricingField = ({ initialValues, onPriceChange, isLabelColorWhite = false }: BookPricingFieldProps) => {
   const { t } = useLanguageContext();
   const [values, setValues] = useState<{
     price: string;
@@ -209,4 +209,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BookPricing;
+export default BookPricingField;
