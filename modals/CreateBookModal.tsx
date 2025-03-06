@@ -355,7 +355,7 @@ const CreateBookModal = () => {
         ),
       },
     ]
-  }, [t, form]);
+  }, [t, form, response]);
 
   const totalSteps = steps.length;
   const isFirstStep = currentStep === 0;
