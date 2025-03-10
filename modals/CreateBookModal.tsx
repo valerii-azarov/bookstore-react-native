@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import { View, ScrollView, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, StyleSheet } from "react-native";
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSequence, withDelay, SlideInLeft, SlideInRight } from "react-native-reanimated";
 import { useLanguageContext } from "@/contexts/LanguageContext";
-import { useBook } from "@/hooks/useBook";
+import { useBookStore } from "@/stores/bookStore";
 import { colors } from "@/constants/theme";
 import { genresKeys, languageKeys, coverTypeKeys, bookTypeKeys, paperTypeKeys } from "@/constants/book";
 import { CreateBook, DirectionType, BookStepComponentType } from "@/types";
@@ -53,7 +53,7 @@ const CreateBookModal = () => {
   const { t } = useLanguageContext();
   const router = useRouter();
 
-  const { isCreating, response, createBook } = useBook();
+  const { isCreating, response, createBook } = useBookStore();
 
   const isFirstRender = useRef(true);
   const [form, setForm] = useState<CreateBook>(initialValues);

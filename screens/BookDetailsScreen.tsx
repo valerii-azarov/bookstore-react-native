@@ -6,7 +6,7 @@ import { Ionicons as Icon } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useLanguageContext } from "@/contexts/LanguageContext";
-import { useBook } from "@/hooks/useBook";
+import { useBookStore } from "@/stores/bookStore";
 import { colors } from "@/constants/theme";
 import { colorConverter } from "@/helpers/colorConverter";
 
@@ -25,7 +25,7 @@ const BookDetailsScreen = () => {
   const { isAdmin } = useAuthContext();
     
   const { bookId } = useLocalSearchParams<{ bookId: string }>();
-  const { data, isLoading, response, deleteBook, refresh } = useBook(bookId);
+  const { data, isLoading, response, setBookId, deleteBook, refresh } = useBookStore();
 
   const scrollViewRef = useRef<Animated.ScrollView>(null);
   const imagesBlockRef = useRef<View>(null);
@@ -313,7 +313,13 @@ const BookDetailsScreen = () => {
       }, 100);
     }
   }, [isEditing]);
-
+  
+  useEffect(() => {
+    if (bookId) {
+      setBookId(bookId);
+    }
+  }, [bookId, setBookId]);
+  
   if (isLoading) {
     return (
       <BookDetailsWrapper>

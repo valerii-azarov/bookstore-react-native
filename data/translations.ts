@@ -1344,7 +1344,11 @@ const translations: Translations = {
       bookNotFound: {
         en: "Book not found",
         uk: "Книгу не знайдено"
-      }
+      },
+      bookNotFoundAfterUpdate: {
+        en: "Book not found after update",
+        uk: "Книга не знайдена після оновлення"
+      },
     },
   },
 

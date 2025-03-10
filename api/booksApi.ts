@@ -32,10 +32,10 @@ const booksApi = {
     await setDoc(doc(collection(db, "books")), { ...bookData, createdAt });
   },
 
-  updateBook: async (bookId: string, field: EditableBookField, value: EditableBookValueType) => {
+  updateBook: async (bookId: string, field: EditableBookField, value: EditableBookValueType): Promise<Book> => {
     const bookRef = doc(db, "books", bookId);
     const updatedAt = new Date().toISOString();
-
+  
     if (field === "pricing") {
       if (value && typeof value === "object" && !Array.isArray(value)) {
         const { price, originalPrice, discount } = value as BookPricing;
@@ -46,27 +46,24 @@ const booksApi = {
           updatedAt,
         });
       }
-      return;
-    }
-
-    if (field === "images") {
+    } else if (field === "images") {
       if (value && typeof value === "object" && !Array.isArray(value)) {
         const { coverImage, additionalImages } = value as BoookImages;
-
+  
         const currentBook = await booksApi.getBookById(bookId);
         if (!currentBook) {
           throw new Error("BooksError: Book not found (books/book-not-found)");
         }
-
+  
         const oldCoverImage = currentBook.coverImage || "";
         const oldAdditionalImages = currentBook.additionalImages || [];
         
         const uploadedCoverImage = coverImage && coverImage !== oldCoverImage
           ? await imagesApi.uploadFileToCloudinary({ uri: coverImage }, "books") || ""
           : oldCoverImage;
-
+  
         if (coverImage && coverImage !== oldCoverImage && !uploadedCoverImage) {
-          throw new Error("BooksError: Failed to upload cover image (books/upload-failed).");
+          throw new Error("BooksError: Failed to upload cover image (books/upload-failed)");
         }
         
         if (oldCoverImage && oldCoverImage !== uploadedCoverImage && oldCoverImage !== coverImage) {
@@ -77,13 +74,13 @@ const booksApi = {
         
         const newAdditionalImagesSet = new Set(additionalImages || []);
         const imagesToDelete = oldAdditionalImages.filter(img => !newAdditionalImagesSet.has(img));
-
+  
         const uploadedAdditionalImages = await Promise.all(
           (additionalImages || []).map(async (imageUri) => {
             if (oldAdditionalImages.includes(imageUri)) return imageUri;
             const secureUrl = await imagesApi.uploadFileToCloudinary({ uri: imageUri }, "books");
             if (!secureUrl) {
-              throw new Error("BooksError: Failed to upload additional image (books/upload-additional-failed).");
+              throw new Error("BooksError: Failed to upload additional image (books/upload-additional-failed)");
             }
             return secureUrl;
           })
@@ -96,20 +93,26 @@ const booksApi = {
             });
           })
         );
-
+  
         await updateDoc(bookRef, {
           coverImage: uploadedCoverImage,
           additionalImages: uploadedAdditionalImages,
           updatedAt,
         });
       }
-      return;
+    } else {
+      await updateDoc(bookRef, {
+        [field]: value,
+        updatedAt,
+      });
     }
-
-    await updateDoc(bookRef, {
-      [field]: value,
-      updatedAt,
-    });
+    
+    const updatedBookDoc = await getDoc(bookRef);
+    if (!updatedBookDoc.exists()) {
+      throw new Error("BooksError: Book not found after update (books/book-not-found-after-update)");
+    }
+    
+    return { id: updatedBookDoc.id, ...updatedBookDoc.data() } as Book;
   },
 
   deleteBook: async (bookId: string) => {
