@@ -5,7 +5,7 @@ import { cloudinaryConfig } from "@/config/cloudinary";
 const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`;
 const CLOUDINARY_DESTROY_URL = `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/destroy`;
 
-const imagesApi = {
+export const imagesApi = {
   uploadFileToCloudinary: async (file: { uri?: string }, folderName: string): Promise<string> => {
     if (!file?.uri) {
       throw new Error("ImageError: Invalid image object (image/invalid-image-object).");
@@ -59,5 +59,3 @@ const imagesApi = {
     }
   },
 };
-
-export default imagesApi;

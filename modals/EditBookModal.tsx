@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { View, Alert, TouchableWithoutFeedback, ScrollView, Keyboard, KeyboardAvoidingView, Platform, StyleSheet } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useLanguageContext } from "@/contexts/LanguageContext";
-import { useBookStore } from "@/stores/bookStore";
+import { useBooksStore } from "@/stores/booksStore";
 import { colors } from "@/constants/theme";
 import { colorConverter } from "@/helpers/colorConverter";
 import { genresKeys, languageKeys, coverTypeKeys, bookTypeKeys, paperTypeKeys } from "@/constants/book";
@@ -25,7 +25,7 @@ import BookCheckboxField from "@/components/BookCheckboxField";
 
 const EditBookModal = () => {
   const { t } = useLanguageContext();
-  const { isUpdating, updateBook } = useBookStore();
+  const { bookId, bookStatus, updateBook } = useBooksStore();
   const { field, data } = useLocalSearchParams<{ field?: string; data?: string }>();
   const router = useRouter();
 
@@ -238,9 +238,9 @@ const EditBookModal = () => {
   }, [t, bookData]);
   
   const handleSave = () => {
-    if (!typedField) return;
-  
-    updateBook(typedField, editedValue)
+    if (!bookId || !typedField) return;
+
+    updateBook(bookId, typedField, editedValue)
       .then(() => {
         setTimeout(() => {
           router.back();
@@ -315,7 +315,7 @@ const EditBookModal = () => {
                     : colors.gray
                   : colors.grayTint4,
               }}
-              loading={isUpdating}
+              loading={bookStatus === "updating"}
               disabled={!isValueChanged}
             >
               <Typography fontSize={16} fontWeight="bold" color={colors.white}>

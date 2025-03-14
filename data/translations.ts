@@ -1341,6 +1341,10 @@ const translations: Translations = {
         en: "Failed to upload additional image",
         uk: "Не вдалося завантажити додаткове зображення"
       },
+      createdBookNotFound: {
+        en: "Book not found after creation",
+        uk: "Книгу не знайдено після створення",
+      },
       bookNotFound: {
         en: "Book not found",
         uk: "Книгу не знайдено"

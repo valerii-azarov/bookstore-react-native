@@ -1,1 +1,1 @@
-export const booksAdminPageSize = 6;
+export const ADMIN_BOOKS_PAGE_SIZE = 6;

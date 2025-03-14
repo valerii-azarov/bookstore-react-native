@@ -1,4 +1,5 @@
 import { ImageSourcePropType } from "react-native";
+import { QueryDocumentSnapshot, DocumentData } from "@firebase/firestore";
 
 export type Language = "en" | "uk";
 
@@ -162,6 +163,17 @@ export type BookStepComponentType = {
   component: JSX.Element;
   validate?: (form: CreateBook) => boolean;
 };
+
+// book responses
+export type BooksResponse = {
+  books: Book[];
+  lastDoc: QueryDocumentSnapshot<DocumentData> | null;
+};
+
+// statuses
+export type BooksStatusType = "idle" | "loading" | "fetching" | "refreshing";
+
+export type BookStatusType = "idle" | "loading" | "creating" | "updating" | "deleting";
 
 // others
 export type BookSearchKey = keyof Book;

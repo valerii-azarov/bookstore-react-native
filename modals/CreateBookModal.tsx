@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import { View, ScrollView, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, StyleSheet } from "react-native";
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSequence, withDelay, SlideInLeft, SlideInRight } from "react-native-reanimated";
 import { useLanguageContext } from "@/contexts/LanguageContext";
-import { useBookStore } from "@/stores/bookStore";
+import { useBooksStore } from "@/stores/booksStore";
 import { colors } from "@/constants/theme";
 import { genresKeys, languageKeys, coverTypeKeys, bookTypeKeys, paperTypeKeys } from "@/constants/book";
 import { CreateBook, DirectionType, BookStepComponentType } from "@/types";
@@ -53,7 +53,7 @@ const CreateBookModal = () => {
   const { t } = useLanguageContext();
   const router = useRouter();
 
-  const { isCreating, response, createBook } = useBookStore();
+  const { bookStatus, bookResponse, createBook } = useBooksStore();
 
   const isFirstRender = useRef(true);
   const [form, setForm] = useState<CreateBook>(initialValues);
@@ -344,24 +344,24 @@ const CreateBookModal = () => {
             ]}
           >
             <Typography fontSize={24} fontWeight="bold" style={styles.contentTitle}>
-              {t(`modals.createBook.messages.${response?.status || "error"}.text`)}{" "}
-              {response?.status === "error" && "❌"}
+              {t(`modals.createBook.messages.${bookResponse?.status || "error"}.text`)}{" "}
+              {bookResponse?.status === "error" && "❌"}
             </Typography>
             
             <Typography fontSize={16} fontWeight="medium" color={colors.blackTint5} style={styles.contentSubtitle}>
-              {response?.message || t(`modals.createBook.messages.${response?.status || "error"}.subText`)}
+              {bookResponse?.message || t(`modals.createBook.messages.${bookResponse?.status || "error"}.subText`)}
             </Typography>
           </View>
         ),
       },
     ]
-  }, [t, form, response]);
+  }, [t, form, bookResponse]);
 
   const totalSteps = steps.length;
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === steps.length - 1;
   const isSecondToLastStep = currentStep === steps.length - 2;
-  const isError = response?.status === "error";
+  const isError = bookResponse?.status === "error";
 
   const isNextStepDisabled = useMemo(() => steps[currentStep].validate?.(form) === false, [form, currentStep]);
 
@@ -370,12 +370,12 @@ const CreateBookModal = () => {
     if (isLastStep) {
       return isError ? router.back() : router.dismiss();
     }
-    if (isSecondToLastStep && !isCreating) {
+    if (isSecondToLastStep && bookStatus !== "creating") {
       createBook(form);
       return;
     }
     setCurrentStep((prev) => prev + 1);
-  }, [isLastStep, isSecondToLastStep, isCreating, isError, form, createBook]);
+  }, [isLastStep, isSecondToLastStep, bookStatus, isError, form, createBook]);
 
   const handlePrevious = useCallback(() => {
     setDirection("backward");
@@ -383,10 +383,10 @@ const CreateBookModal = () => {
   }, []);
 
   useEffect(() => {
-    if (isSecondToLastStep && !isCreating && response) {
+    if (isSecondToLastStep && bookStatus !== "creating" && bookResponse) {
       setCurrentStep((prev) => prev + 1);
     }
-  }, [isCreating, response, isSecondToLastStep]);
+  }, [bookStatus, bookResponse, isSecondToLastStep]);
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -488,8 +488,8 @@ const CreateBookModal = () => {
             <Animated.View style={animatedStyles.nextButton}>
               <Button 
                 onPress={handleNext} 
-                loading={isCreating} 
-                disabled={isNextStepDisabled || isCreating}
+                loading={bookStatus === "creating"} 
+                disabled={isNextStepDisabled || bookStatus === "creating"}
               >
                 <Animated.View style={animatedStyles.nextText}>
                   <Typography fontSize={16} fontWeight="bold" color={colors.white}>

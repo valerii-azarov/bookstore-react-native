@@ -6,7 +6,7 @@ import { Ionicons as Icon } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useLanguageContext } from "@/contexts/LanguageContext";
-import { useBookStore } from "@/stores/bookStore";
+import { useBooksStore } from "@/stores/booksStore";
 import { colors } from "@/constants/theme";
 import { colorConverter } from "@/helpers/colorConverter";
 
@@ -24,8 +24,9 @@ const BookDetailsScreen = () => {
   const { t } = useLanguageContext();
   const { isAdmin } = useAuthContext();
     
-  const { bookId } = useLocalSearchParams<{ bookId: string }>();
-  const { data, isLoading, response, setBookId, deleteBook, refresh } = useBookStore();
+  const { bookId } = useLocalSearchParams<{ bookId: string }>();  
+  
+  const { book, bookStatus, bookResponse, loadBookById, deleteBook, refreshBook } = useBooksStore();
 
   const scrollViewRef = useRef<Animated.ScrollView>(null);
   const imagesBlockRef = useRef<View>(null);
@@ -46,7 +47,7 @@ const BookDetailsScreen = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const pullToRefresh = () => {
-    refresh()
+    refreshBook()
       .then(() => setIsPulling(true))
       .finally(() => setIsPulling(false));
   };
@@ -71,7 +72,7 @@ const BookDetailsScreen = () => {
           text: t("alerts.confirmDeleteBook.confirm"),
           style: "destructive",
           onPress: async () => {
-            await deleteBook()
+            await deleteBook(bookId)
               .then(() => {
                 Alert.alert(
                   t("alerts.confirmDeleteBook.success.title"),
@@ -194,117 +195,117 @@ const BookDetailsScreen = () => {
   }, [t]);
 
   const memoizedGenres = useMemo(() => {
-    return data?.genres ? data.genres.map((key) => t(`genres.${key}`)) : [];
-  }, [t, data]);
+    return book?.genres ? book.genres.map((key) => t(`genres.${key}`)) : [];
+  }, [t, book]);
 
   const memoizedDetails = useMemo(() => {
-    if (!data) return [];
+    if (!book) return [];
     return [
       { 
         field: "pageCount",
         label: t("screens.bookDetails.labels.pageCount"), 
-        value: data.pageCount || "-", 
+        value: book.pageCount || "-", 
         isVisible: true,
         isEditable: true,
       },
       { 
         field: "publisher",
         label: t("screens.bookDetails.labels.publisher"), 
-        value: data.publisher || "-",
+        value: book.publisher || "-",
         isVisible: true,
         isEditable: true,
       },
       { 
         field: "coverType",
         label: t("screens.bookDetails.labels.coverType"), 
-        value: data.coverType ? t(`coverTypes.${data.coverType}`) : "-", 
+        value: book.coverType ? t(`coverTypes.${book.coverType}`) : "-", 
         isVisible: true,
         isEditable: true,
       },
       { 
         field: "publicationYear",
         label: t("screens.bookDetails.labels.publicationYear"),
-        value: data.publicationYear || "-", 
+        value: book.publicationYear || "-", 
         isVisible: true,
         isEditable: true,
       },
       { 
         field: "language",
         label: t("screens.bookDetails.labels.language"), 
-        value: data.language ? t(`languages.${data.language}`) : "-",
+        value: book.language ? t(`languages.${book.language}`) : "-",
         isVisible: true,
         isEditable: true,
       },
       { 
         field: "size",
         label: t("screens.bookDetails.labels.size"), 
-        value: data.size || "-",
+        value: book.size || "-",
         isVisible: true,
         isEditable: true,
       },
       { 
         field: "weight",
         label: t("screens.bookDetails.labels.weight"), 
-        value: data.weight || "-",
+        value: book.weight || "-",
         isVisible: true,
         isEditable: true,
       },
       { 
         field: "illustrations",
         label: t("screens.bookDetails.labels.illustrations"), 
-        value: t(`screens.bookDetails.values.illustrations.${data.illustrations ? "contains" : "notContains"}`),
+        value: t(`screens.bookDetails.values.illustrations.${book.illustrations ? "contains" : "notContains"}`),
         isVisible: true,
         isEditable: true,
       },
       { 
         field: "bookType",
         label: t("screens.bookDetails.labels.bookType"), 
-        value: data.bookType ? t(`bookTypes.${data.bookType}`) : "-",
+        value: book.bookType ? t(`bookTypes.${book.bookType}`) : "-",
         isVisible: true,
         isEditable: true,
       },
       { 
         field: "paperType",
         label: t("screens.bookDetails.labels.paperType"), 
-        value: data.paperType ? t(`paperTypes.${data.paperType}`) : "-",
+        value: book.paperType ? t(`paperTypes.${book.paperType}`) : "-",
         isVisible: true,
         isEditable: true,
       },
       { 
         field: "isbn",
         label: t("screens.bookDetails.labels.isbn"), 
-        value: data.isbn || "-", 
+        value: book.isbn || "-", 
         isVisible: true,
         isEditable: true,
       },
       { 
         field: "sku",
         label: t("screens.bookDetails.labels.sku"), 
-        value: data.sku || "-",
+        value: book.sku || "-",
         isVisible: true,
         isEditable: true,
       },
       { 
         field: "quantity",
         label: t("screens.bookDetails.labels.quantity"), 
-        value: data.quantity || 0, 
+        value: book.quantity || 0, 
         isVisible: isAdmin,
         isEditable: true,
       },
       { 
         label: t("screens.bookDetails.labels.createdAt"), 
-        value: data.createdAt ? new Date(data.createdAt).toLocaleString() : "-", 
+        value: book.createdAt ? new Date(book.createdAt).toLocaleString() : "-", 
         isVisible: isAdmin,
         isEditable: false,
       },
       { 
         label: t("screens.bookDetails.labels.updatedAt"), 
-        value: data.updatedAt ? new Date(data.updatedAt).toLocaleString() : "-", 
+        value: book.updatedAt ? new Date(book.updatedAt).toLocaleString() : "-", 
         isVisible: isAdmin,
         isEditable: false,
       },
     ]
-  }, [t, data, isAdmin]);
+  }, [t, book, isAdmin]);
 
   useEffect(() => {
     if (!isEditing) {
@@ -316,11 +317,11 @@ const BookDetailsScreen = () => {
   
   useEffect(() => {
     if (bookId) {
-      setBookId(bookId);
+      loadBookById(bookId);
     }
-  }, [bookId, setBookId]);
+  }, [bookId, loadBookById]);
   
-  if (isLoading) {
+  if (bookStatus === "loading") {
     return (
       <BookDetailsWrapper>
         <SkeletonBookDetails />
@@ -328,7 +329,7 @@ const BookDetailsScreen = () => {
     );
   }
 
-  if (!data && response?.status === "error") {
+  if (!book && bookResponse?.status === "error") {
     return (
       <BookDetailsWrapper>
         <View style={styles.loadingContainer}> 
@@ -336,14 +337,14 @@ const BookDetailsScreen = () => {
             message={t("screens.bookDetails.messages.error.text")}
             subMessage={t("screens.bookDetails.messages.error.subText")}
             buttonText={t("screens.bookDetails.buttons.error.text")}
-            onRetry={refresh} 
+            onRetry={refreshBook} 
           />
         </View>
       </BookDetailsWrapper>
     );
   }
 
-  if (!data) {
+  if (!book) {
     return (
       <BookDetailsWrapper>
         <View style={styles.loadingContainer}> 
@@ -358,7 +359,7 @@ const BookDetailsScreen = () => {
 
   return (
     <BookDetailsWrapper 
-      backgroundColor={data.backgroundColor || colors.grayTint6}
+      backgroundColor={book.backgroundColor || colors.grayTint6}
       showHeader={false}
     >
       <Animated.View
@@ -371,7 +372,7 @@ const BookDetailsScreen = () => {
           iconLeft={
             <BackButton 
               style={{
-                backgroundColor: data.backgroundColor ? colorConverter.lighterHexColor(data.backgroundColor) : colors.grayTint4,
+                backgroundColor: book.backgroundColor ? colorConverter.lighterHexColor(book.backgroundColor) : colors.grayTint4,
               }}
             />
           }
@@ -404,22 +405,22 @@ const BookDetailsScreen = () => {
           <View style={styles.coverImageContainer}>
             <Image
               style={styles.coverImage}
-              source={{ uri: selectedImage || data.coverImage }}
+              source={{ uri: selectedImage || book.coverImage }}
               resizeMode="cover"
             />
           </View>
-          {(data.additionalImages || []).length > 0 && (
+          {(book.additionalImages || []).length > 0 && (
             <View style={styles.additionalImagesContainer}>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {[data.coverImage, ...(data.additionalImages || [])].map((imageUri, index) => (
+                {[book.coverImage, ...(book.additionalImages || [])].map((imageUri, index) => (
                   <TouchableOpacity key={index} onPressIn={() => setSelectedImage(imageUri)}>
                     <Image
                       style={[
                         styles.thumbnailImage,
                         {
-                          borderColor: imageUri === (selectedImage || data.coverImage) ? colors.white : colors.gray,
-                          borderWidth: imageUri === (selectedImage || data.coverImage) ? 2 : 1,
-                          marginRight: index < [data.coverImage, ...(data.additionalImages || [])].length - 1 ? 10 : 0,
+                          borderColor: imageUri === (selectedImage || book.coverImage) ? colors.white : colors.gray,
+                          borderWidth: imageUri === (selectedImage || book.coverImage) ? 2 : 1,
+                          marginRight: index < [book.coverImage, ...(book.additionalImages || [])].length - 1 ? 10 : 0,
                         },
                       ]}
                       source={{ uri: imageUri }}
@@ -434,11 +435,11 @@ const BookDetailsScreen = () => {
 
         <View ref={titleBlockRef} onLayout={measureTitleBlockPosition} style={styles.titleContainer}>
           <Typography fontSize={14} fontWeight="bold" color={colors.whiteTint1} numberOfLines={1}>
-            {data.authors.join(", ")}
+            {book.authors.join(", ")}
           </Typography>
 
           <Typography fontSize={24} fontWeight="bold" color={colors.white} numberOfLines={1} style={styles.titleText}>
-            {data.title}
+            {book.title}
           </Typography>
         </View>
 
@@ -448,7 +449,7 @@ const BookDetailsScreen = () => {
               style={[
                 styles.blockContainer,
                 {
-                  backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
+                  backgroundColor: book.backgroundColor ? colorConverter.darkerHexColor(book.backgroundColor) : colors.grayTint2,
                 },
               ]}
             >
@@ -471,7 +472,7 @@ const BookDetailsScreen = () => {
                           onPressIn={() =>
                             router.push({
                               pathname: "/(admin)/(modals)/edit-book/[field]",
-                              params: { field: field || "defaultField", data: JSON.stringify(data) },
+                              params: { field: field || "defaultField", data: JSON.stringify(book) },
                             })
                           }
                         >
@@ -493,7 +494,7 @@ const BookDetailsScreen = () => {
             style={[
               styles.blockContainer,
               { 
-                backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
+                backgroundColor: book.backgroundColor ? colorConverter.darkerHexColor(book.backgroundColor) : colors.grayTint2,
               },
             ]}
           >
@@ -501,23 +502,23 @@ const BookDetailsScreen = () => {
               style={[
                 styles.priceContainer,
                 {
-                  marginBottom: !isAdmin && data.quantity === 0 ? 0 : isAdmin && !isEditing ? 0 : 15,
+                  marginBottom: !isAdmin && book.quantity === 0 ? 0 : isAdmin && !isEditing ? 0 : 15,
                 },
               ]}
             >
               <View style={styles.priceRow}>
-                <Typography fontSize={28} fontWeight="bold" color={data.discount > 0 ? colors.red : colors.white}>
-                  {`${data.price}₴`}
+                <Typography fontSize={28} fontWeight="bold" color={book.discount > 0 ? colors.red : colors.white}>
+                  {`${book.price}₴`}
                 </Typography>
 
-                {data.discount > 0 && (
+                {book.discount > 0 && (
                   <Typography fontSize={18} color={colors.grayTint5} style={styles.originalPrice}>
-                    {data.originalPrice}
+                    {book.originalPrice}
                   </Typography>
                 )}
               </View>
 
-              {data.discount > 0 && (
+              {book.discount > 0 && (
                 <View
                   style={[
                     styles.discountBadge,
@@ -528,19 +529,19 @@ const BookDetailsScreen = () => {
                   ]} 
                 >
                   <Typography fontSize={16} fontWeight="bold" color={colors.white}>
-                    {`-${data.discount}%`}
+                    {`-${book.discount}%`}
                   </Typography>
                 </View>
               )}
             </View>
 
-            {!isAdmin && data.quantity === 0 && (
+            {!isAdmin && book.quantity === 0 && (
               <Typography fontSize={16} fontWeight="bold" color={colors.grayTint5}>
                 {t("screens.bookDetails.static.outOfStock")}
               </Typography>
             )}
             
-            {!isAdmin && data.quantity > 0 && (
+            {!isAdmin && book.quantity > 0 && (
               <View style={styles.actionButtonsContainer}>
                 <TouchableOpacity
                   onPressIn={() => {}}
@@ -597,7 +598,7 @@ const BookDetailsScreen = () => {
                   onPressIn={() =>
                     router.push({
                       pathname: "/(admin)/(modals)/edit-book/[field]",
-                      params: { field: "pricing", data: JSON.stringify(data) },
+                      params: { field: "pricing", data: JSON.stringify(book) },
                     })
                   }
                 >
@@ -613,7 +614,7 @@ const BookDetailsScreen = () => {
             style={[
               styles.blockContainer,
               { 
-                backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
+                backgroundColor: book.backgroundColor ? colorConverter.darkerHexColor(book.backgroundColor) : colors.grayTint2,
               },
             ]}
           >
@@ -631,7 +632,7 @@ const BookDetailsScreen = () => {
                   onPressIn={() =>
                     router.push({
                       pathname: "/(admin)/(modals)/edit-book/[field]",
-                      params: { field: "genres", data: JSON.stringify(data) },
+                      params: { field: "genres", data: JSON.stringify(book) },
                     })
                   }
                 >
@@ -647,7 +648,7 @@ const BookDetailsScreen = () => {
             style={[
               styles.blockContainer,
               { 
-                backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
+                backgroundColor: book.backgroundColor ? colorConverter.darkerHexColor(book.backgroundColor) : colors.grayTint2,
               },
             ]}
           >
@@ -691,7 +692,7 @@ const BookDetailsScreen = () => {
                           onPressIn={() =>
                             router.push({
                               pathname: "/(admin)/(modals)/edit-book/[field]",
-                              params: { field: field || "defaultField", data: JSON.stringify(data) },
+                              params: { field: field || "defaultField", data: JSON.stringify(book) },
                             })
                           }
                         >
@@ -729,7 +730,7 @@ const BookDetailsScreen = () => {
             style={[
               styles.blockContainer,
               { 
-                backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
+                backgroundColor: book.backgroundColor ? colorConverter.darkerHexColor(book.backgroundColor) : colors.grayTint2,
               },
             ]}
           >
@@ -738,7 +739,7 @@ const BookDetailsScreen = () => {
             </Typography>
 
             <Typography fontSize={16} fontWeight="medium" color={colors.white} numberOfLines={isEditing ? 5 : isExpandedDescription ? undefined : 5}>
-              {data.description}
+              {book.description}
             </Typography>
 
             <View style={{ alignItems: "flex-start", marginTop: 15 }}>
@@ -747,7 +748,7 @@ const BookDetailsScreen = () => {
                   isEditing
                     ? router.push({
                         pathname: "/(admin)/(modals)/edit-book/[field]",
-                        params: { field: "description", data: JSON.stringify(data) },
+                        params: { field: "description", data: JSON.stringify(book) },
                       })
                     : setIsExpandedDescription(!isExpandedDescription)
                 }
@@ -764,7 +765,7 @@ const BookDetailsScreen = () => {
               style={[
                 styles.blockContainer,
                 { 
-                  backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
+                  backgroundColor: book.backgroundColor ? colorConverter.darkerHexColor(book.backgroundColor) : colors.grayTint2,
                 },
               ]}
             >
@@ -783,7 +784,7 @@ const BookDetailsScreen = () => {
               style={[
                 styles.blockContainer,
                 { 
-                  backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
+                  backgroundColor: book.backgroundColor ? colorConverter.darkerHexColor(book.backgroundColor) : colors.grayTint2,
                 },
               ]}
             >
@@ -807,22 +808,22 @@ const BookDetailsScreen = () => {
         style={[
           styles.footerContainer,
           {
-            backgroundColor: data.backgroundColor ? colorConverter.darkerHexColor(data.backgroundColor) : colors.grayTint2,
-            borderTopColor: data.backgroundColor ? colorConverter.lighterHexColor(data.backgroundColor) : colors.grayTint6,
+            backgroundColor: book.backgroundColor ? colorConverter.darkerHexColor(book.backgroundColor) : colors.grayTint2,
+            borderTopColor: book.backgroundColor ? colorConverter.lighterHexColor(book.backgroundColor) : colors.grayTint6,
             paddingBottom: Platform.OS === "ios" ? insets.bottom : 10 + insets.bottom,
           },
           footerAnimatedStyle,
         ]}
       >
         <View style={styles.footerPriceContainer}>
-          <Typography fontSize={data.discount > 0 ? 24 : 32} fontWeight="bold" color={data.discount > 0 ? colors.red : colors.white}>
-            {`${data.price}₴`}
+          <Typography fontSize={book.discount > 0 ? 24 : 32} fontWeight="bold" color={book.discount > 0 ? colors.red : colors.white}>
+            {`${book.price}₴`}
           </Typography>
 
-          {data.discount > 0 && (
+          {book.discount > 0 && (
             <View style={styles.footerDiscountContainer}>
               <Typography fontSize={18} color={colors.grayTint5} style={{ textDecorationLine: "line-through" }}>
-                {data.originalPrice}
+                {book.originalPrice}
               </Typography>
 
               <View 
@@ -835,7 +836,7 @@ const BookDetailsScreen = () => {
                 ]}
               >
                 <Typography fontSize={16} fontWeight="bold" color={colors.white}>
-                  {`-${data.discount}%`}
+                  {`-${book.discount}%`}
                 </Typography>
               </View>
             </View>

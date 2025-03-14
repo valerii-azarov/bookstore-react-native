@@ -3,10 +3,10 @@ import { View, FlatList, StyleSheet, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons as Icon } from "@expo/vector-icons";
 import { useLanguageContext } from "@/contexts/LanguageContext";
-import { useBooksListStore } from "@/stores/booksListStore";
+import { useBooksStore } from "@/stores/booksStore";
 import { useModeStore } from "@/stores/modeStore";
 import { colors } from "@/constants/theme";
-import { booksAdminPageSize } from "@/constants/settings";
+import { ADMIN_BOOKS_PAGE_SIZE } from "@/constants/settings";
 import { verticalScale } from "@/helpers/common";
 import { Book } from "@/types";
 
@@ -23,13 +23,13 @@ import FloatingActionButton from "@/components/FloatingButton";
 const BooksAdminScreen = () => {
   const { t } = useLanguageContext();
   const { mode, toggleMode } = useModeStore();
-  const { data, isLoading, isFetching, isRefreshing, response, searchText, setSearchText, refresh, loadMore } = useBooksListStore();
+  const { bookList, booksStatus, booksResponse, booksSearchQuery, setBooksSearchQuery, refreshBooks, loadMoreBooks } = useBooksStore();
   const router = useRouter();
 
-  useEffect(() => refresh(), [refresh]);
+  useEffect(() => refreshBooks(), [refreshBooks]);
 
   const renderItem = useCallback(({ item }: { item: Book | undefined }) => {
-    if (isLoading || !item) {
+    if (booksStatus === "loading" || !item) {
       return <SkeletonBookItem mode={mode} isOwner />;
     }
     return (
@@ -40,30 +40,30 @@ const BooksAdminScreen = () => {
         isOwner
       />
     );
-  }, [isLoading, mode, router]);
+  }, [booksStatus, mode, router]);
 
   const renderFooter = useCallback(() => {
-    if (isFetching) {
+    if (booksStatus === "fetching") {
       return <ListLoader />;
     }
     return null;
-  }, [isFetching]);
+  }, [booksStatus]);
 
   const renderEmpty = useCallback(() => {
-    if (isLoading) return null;
+    if (booksStatus === "loading") return null;
     
-    if (response?.status === "error") {
+    if (booksResponse?.status === "error") {
       return ( 
         <ErrorWithRetry 
           message={t("screens.books.messages.error.text")}
           subMessage={t("screens.books.messages.error.subText")}
           buttonText={t("screens.books.buttons.error.text")}
-          onRetry={refresh} 
+          onRetry={refreshBooks} 
         />
       );
     }
 
-    if (data.length === 0) {
+    if (bookList.length === 0) {
       return (
         <Empty 
           message={t("screens.books.messages.empty.text")}
@@ -72,7 +72,7 @@ const BooksAdminScreen = () => {
       );
     }
     return null;
-  }, [isLoading, response, data.length, refresh]);
+  }, [booksStatus, booksResponse, bookList.length, refreshBooks]);
 
   return (
     <ScreenWrapper statusBarStyle="dark" disableTopInset>
@@ -90,8 +90,8 @@ const BooksAdminScreen = () => {
       />
 
       <SearchBar
-        searchText={searchText}
-        onSearchChange={setSearchText}
+        searchText={booksSearchQuery}
+        onSearchChange={(text) => setBooksSearchQuery(text, ["title", "sku"])}
         placeholder={t("screens.books.search.placeholder")}
         size="medium"
         mode={mode}
@@ -100,10 +100,10 @@ const BooksAdminScreen = () => {
 
       <View style={styles.contentContainer}>
         <FlatList
-          data={isLoading ? [...Array(booksAdminPageSize)] : data}
+          data={booksStatus === "loading" ? [...Array(ADMIN_BOOKS_PAGE_SIZE)] : bookList}
           renderItem={renderItem}
           keyExtractor={(item, index) =>
-            isLoading ? `skeleton-${index}` : (item?.id || `item-${index}`)
+            booksStatus === "loading" ? `skeleton-${index}` : (item?.id || `item-${index}`)
           }
           numColumns={mode === "grid" ? 2 : 1}
           key={mode}
@@ -115,9 +115,9 @@ const BooksAdminScreen = () => {
             paddingHorizontal: 15,
             gap: 10,
           }}
-          refreshing={isRefreshing}
-          onRefresh={refresh}
-          onEndReached={loadMore}
+          refreshing={booksStatus === "refreshing"}
+          onRefresh={refreshBooks}
+          onEndReached={loadMoreBooks}
           onEndReachedThreshold={0.1}
           ListFooterComponent={renderFooter}
           ListEmptyComponent={renderEmpty}
