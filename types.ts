@@ -170,10 +170,19 @@ export type BooksResponse = {
   lastDoc: QueryDocumentSnapshot<DocumentData> | null;
 };
 
+
+// categories
+export type CategoriesType = { [key: string]: Book[] };
+
 // statuses
 export type BooksStatusType = "idle" | "loading" | "fetching" | "refreshing";
 
 export type BookStatusType = "idle" | "loading" | "creating" | "updating" | "deleting";
+
+export type CategoriesStatusType = "idle" | "loading" | "refreshing";
+
+export type CategoryStatusType = "idle" | "loading" | "fetching" | "refreshing";
+
 
 // others
 export type BookSearchKey = keyof Book;

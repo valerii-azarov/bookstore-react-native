@@ -3,23 +3,26 @@ import { Ionicons as Icon } from "@expo/vector-icons";
 import { colors } from "@/constants/theme";
 import { horizontalScale, verticalScale } from "@/helpers/common";
 
-import Typography from "@/components/Typography";
+import Typography from "./Typography";
 
-interface NotificationProps {
-  count?: number;
-  onPress?: () => void;
-  style?: ViewStyle;
+interface IconBadgeProps {
+  count: number;
+  iconName: keyof typeof Icon.glyphMap;
   iconSize?: number;
   iconColor?: string;
+  onPress?: () => void;
+  style?: ViewStyle;
 }
 
-const Notification = ({
-  count = 0,
-  onPress,
-  style,
+
+const IconBadge = ({
+  count,
+  iconName,
   iconSize = 24,
   iconColor = colors.orange,
-}: NotificationProps) => {
+  onPress,
+  style,
+}: IconBadgeProps) => {
   const displayedCount = count >= 100 ? "99+" : count.toString();
 
   return (
@@ -30,7 +33,7 @@ const Notification = ({
         style
       ]}
     >
-      <Icon name="notifications" size={iconSize} color={iconColor} />
+      <Icon name={iconName} size={iconSize} color={iconColor} />
       {count > 0 && (
         <View
           style={[
@@ -67,4 +70,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Notification;
+export default IconBadge;

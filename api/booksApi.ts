@@ -1,4 +1,4 @@
-import { doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, collection, query, orderBy, limit, startAfter, QueryDocumentSnapshot, DocumentData } from "@firebase/firestore";
+import { doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, collection, query, where, orderBy, limit, startAfter, QueryDocumentSnapshot, DocumentData } from "@firebase/firestore";
 import { db } from "./firebase";
 import { imagesApi } from "./imagesApi";
 import { fuseSearch } from "@/helpers/fuseSearch";
@@ -19,6 +19,29 @@ export const booksApi = {
   fetchBookById: async (uid: string): Promise<Book | null> => {
     const bookDoc = await getDoc(doc(db, "books", uid));
     return bookDoc.exists() ? ({ id: bookDoc.id, ...bookDoc.data() } as Book) : null;
+  },
+
+  fetchAllCategories: async (categories: string[], pageSize: number = 5): Promise<Record<string, Book[]>> => {
+    const results = await Promise.all(
+      categories.map(async (category) => {
+        const snapshot = await getDocs(
+          query(collection(db, "books"), where("genres", "array-contains", category), limit(pageSize))
+        );
+        return snapshot.docs.length ? { [category]: snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Book)) } : null;
+      })
+    );
+    return Object.assign({}, ...results.filter(Boolean));
+  },
+
+  fetchBooksByCategory: async (category: string, lastDoc?: QueryDocumentSnapshot<DocumentData> | null, pageSize: number = 5): Promise<BooksResponse> => {
+    const snapshot = await getDocs(
+      query(collection(db, "books"), where("genres", "array-contains", category), limit(pageSize), ...(lastDoc ? [startAfter(lastDoc)] : []))
+    );
+          
+    return {
+      books: snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Book)),
+      lastDoc: snapshot.docs[snapshot.docs.length - 1] || null,
+    };
   },
 
   searchBooks: async (queryString: string, keys: BookSearchKey[], lastDoc?: QueryDocumentSnapshot<DocumentData> | null): Promise<BooksResponse> => {

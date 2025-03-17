@@ -1,1 +1,3 @@
 export const ADMIN_BOOKS_PAGE_SIZE = 6;
+
+export const USER_CATEGORY_BOOKS_PAGE_SIZE = 4;

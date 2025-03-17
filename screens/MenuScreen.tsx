@@ -13,9 +13,9 @@ import { MenuOptionsType } from "@/types";
 
 import ScreenWrapper from "@/components/ScreenWrapper";
 import Header from "@/components/Header";
+import IconBadge from "@/components/IconBadge";
 import Button from "@/components/Button";
 import Typography from "@/components/Typography";
-import Notification from "@/components/Notification";
 
 const MenuScreen = () => {
   const { t } = useLanguageContext();
@@ -75,7 +75,7 @@ const MenuScreen = () => {
         title={`${t("screens.menu.header.welcome")}, ${user?.firstName}`}
         titleSize={18}
         iconRight={
-          <Notification count={5} />
+          <IconBadge count={5} iconName="notifications" />
         }
         style={[
           styles.headerContainer, 

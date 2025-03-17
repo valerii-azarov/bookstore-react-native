@@ -693,8 +693,24 @@ const translations: Translations = {
           en: "Search by title or article...",
           uk: "Пошук за назвою чи артикулом...",
         },
-      },      
+      },
+      showAll: {
+        text: {
+          en: "Show all",
+          uk: "Показати всі",
+        },
+      },            
       messages: {
+        noData: {
+          text: {
+            en: "Oops",
+            uk: "Упс",
+          },
+          subText: {
+            en: "It seems there is no data available",
+            uk: "Здається, немає даних",
+          },
+        },        
         empty: {
           text: {
             en: "No books found",
