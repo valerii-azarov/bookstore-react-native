@@ -114,6 +114,10 @@ const InitialLayout = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
+        name="(user)/category-books/[category]"
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
         name="(user)/profile"
         options={{ headerShown: false }}
       />

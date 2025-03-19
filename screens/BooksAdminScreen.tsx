@@ -21,15 +21,21 @@ import ErrorWithRetry from "@/components/ErrorWithRetry";
 import FloatingActionButton from "@/components/FloatingButton";
 
 const BooksAdminScreen = () => {
-  const { t } = useLanguageContext();
-  const { mode, toggleMode } = useModeStore();
-  const { bookList, booksStatus, booksResponse, booksSearchQuery, setBooksSearchQuery, refreshBooks, loadMoreBooks } = useBooksStore();
   const router = useRouter();
+  
+  const { t } = useLanguageContext();
+  const { bookList, booksStatus, booksResponse, booksSearchQuery, setBooksSearchQuery, refreshBooks, loadMoreBooks } = useBooksStore();
 
-  useEffect(() => refreshBooks(), [refreshBooks]);
+  const { getMode, toggleMode } = useModeStore();
+  const mode = getMode("books-list");
+
+  const isLoading = booksStatus === "loading";
+  const isFetching = booksStatus === "fetching";
+  const isEmpty = !isLoading && bookList.length === 0;
+  const isError = !isLoading && booksResponse?.status === "error";
 
   const renderItem = useCallback(({ item }: { item: Book | undefined }) => {
-    if (booksStatus === "loading" || !item) {
+    if (isLoading || !item) {
       return <SkeletonBookItem mode={mode} isOwner />;
     }
     return (
@@ -40,39 +46,18 @@ const BooksAdminScreen = () => {
         isOwner
       />
     );
-  }, [booksStatus, mode, router]);
+  }, [isLoading, mode, router]);
 
   const renderFooter = useCallback(() => {
-    if (booksStatus === "fetching") {
+    if (isFetching) {
       return <ListLoader />;
     }
     return null;
-  }, [booksStatus]);
+  }, [isFetching]);
 
-  const renderEmpty = useCallback(() => {
-    if (booksStatus === "loading") return null;
-    
-    if (booksResponse?.status === "error") {
-      return ( 
-        <ErrorWithRetry 
-          message={t("screens.books.messages.error.text")}
-          subMessage={t("screens.books.messages.error.subText")}
-          buttonText={t("screens.books.buttons.error.text")}
-          onRetry={refreshBooks} 
-        />
-      );
-    }
-
-    if (bookList.length === 0) {
-      return (
-        <Empty 
-          message={t("screens.books.messages.empty.text")}
-          subMessage={t("screens.books.messages.empty.subText")} 
-        />
-      );
-    }
-    return null;
-  }, [booksStatus, booksResponse, bookList.length, refreshBooks]);
+  useEffect(() => {
+    refreshBooks();
+  }, [refreshBooks]);
 
   return (
     <ScreenWrapper statusBarStyle="dark" disableTopInset>
@@ -95,33 +80,52 @@ const BooksAdminScreen = () => {
         placeholder={t("screens.books.search.placeholder")}
         size="medium"
         mode={mode}
-        onToggleMode={toggleMode}
+        onToggleMode={() => toggleMode("books-list")}
       />
 
       <View style={styles.contentContainer}>
-        <FlatList
-          data={booksStatus === "loading" ? [...Array(ADMIN_BOOKS_PAGE_SIZE)] : bookList}
-          renderItem={renderItem}
-          keyExtractor={(item, index) =>
-            booksStatus === "loading" ? `skeleton-${index}` : (item?.id || `item-${index}`)
-          }
-          numColumns={mode === "grid" ? 2 : 1}
-          key={mode}
-          columnWrapperStyle={
-            mode === "grid" ? { justifyContent: "space-between" } : undefined
-          }
-          contentContainerStyle={{
-            paddingVertical: 10,
-            paddingHorizontal: 15,
-            gap: 10,
-          }}
-          refreshing={booksStatus === "refreshing"}
-          onRefresh={refreshBooks}
-          onEndReached={loadMoreBooks}
-          onEndReachedThreshold={0.1}
-          ListFooterComponent={renderFooter}
-          ListEmptyComponent={renderEmpty}
-        />
+        {!isEmpty && !isError && (
+          <FlatList
+            data={isLoading ? Array(ADMIN_BOOKS_PAGE_SIZE) : bookList}
+            renderItem={renderItem}
+            keyExtractor={(item, index) =>
+              isLoading ? `skeleton-${index}` : (item?.id || `item-${index}`)
+            }
+            numColumns={mode === "grid" ? 2 : 1}
+            key={mode}
+            columnWrapperStyle={mode === "grid" ? { justifyContent: "space-between" } : undefined}
+            contentContainerStyle={{
+              paddingVertical: 10,
+              paddingHorizontal: 15,
+              gap: 10,
+            }}
+            refreshing={booksStatus === "refreshing"}
+            onRefresh={refreshBooks}
+            onEndReached={loadMoreBooks}
+            onEndReachedThreshold={0.1}
+            ListFooterComponent={renderFooter}
+          />
+        )}
+
+        {isEmpty && (
+          <View style={styles.overlayContainer}>
+            <Empty 
+              message={t("screens.books.messages.empty.text")}
+              subMessage={t("screens.books.messages.empty.subText")} 
+            />
+          </View>
+        )}
+
+        {isError && (
+          <View style={styles.overlayContainer}>
+            <ErrorWithRetry 
+              message={t("screens.books.messages.error.text")}
+              subMessage={t("screens.books.messages.error.subText")}
+              buttonText={t("screens.books.buttons.error.text")}
+              onRetry={refreshBooks} 
+            />
+          </View>
+        )}
       </View>
 
       <FloatingActionButton
@@ -138,6 +142,12 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
+  },
+  overlayContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 15,
   },
 });
 

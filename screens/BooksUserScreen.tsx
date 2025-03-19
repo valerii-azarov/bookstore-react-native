@@ -18,13 +18,15 @@ import RedirectButton from "@/components/RedirectButton";
 import Typography from "@/components/Typography";
 
 const BooksUserScreen = () => {
-  const { t } = useLanguageContext();
-  const { categories, categoriesStatus, categoriesResponse, loadCategories, refreshCategories } = useBooksStore();
   const router = useRouter();
 
-  useEffect(() => {
-    loadCategories();
-  }, [loadCategories]);
+  const { t } = useLanguageContext();
+  const { categories, categoriesStatus, categoriesResponse, loadCategories, refreshCategories } = useBooksStore();
+
+  const isLoading = categoriesStatus === "loading";
+  const isRefreshing = categoriesStatus === "refreshing";
+  const isEmpty = !isLoading && Object.keys(categories).length === 0;
+  const isError = !isLoading && categoriesResponse?.status === "error";
 
   const renderCategory = (category: string) => {
     return (
@@ -33,11 +35,18 @@ const BooksUserScreen = () => {
           <Typography fontSize={18} fontWeight="bold">
             {t(`genres.${category}`)}
           </Typography>
+
           <RedirectButton 
             title={t("screens.books.showAll.text")}
-            onPress={() => console.log("redirect to books by category")}
+            onPress={() =>
+              router.push({
+                pathname: "/(user)/category-books/[category]",
+                params: { category },
+              })
+            }
           />
         </View>
+        
         <FlatList
           data={categories[category]}
           renderItem={({ item }: { item: Book }) => (
@@ -60,6 +69,10 @@ const BooksUserScreen = () => {
     );
   };
 
+  useEffect(() => {
+    loadCategories();
+  }, [loadCategories]);
+
   return (
     <ScreenWrapper statusBarStyle="dark" disableTopInset>
       <Header
@@ -79,7 +92,7 @@ const BooksUserScreen = () => {
             borderBottomColor: colors.grayTint7,
             borderBottomWidth: 1,
             minHeight: Platform.OS === "ios" ? verticalScale(100) : verticalScale(85),
-          }
+          },
         ]}
         enableTopInset
       />
@@ -88,33 +101,35 @@ const BooksUserScreen = () => {
         contentContainerStyle={styles.scrollViewContent}
         refreshControl={
           <RefreshControl
-            refreshing={categoriesStatus === "refreshing"}
+            refreshing={isRefreshing}
             onRefresh={refreshCategories}
           />
         }
-        scrollEnabled={categoriesResponse?.status !== "error" && Object.keys(categories).length > 0}
+        scrollEnabled={!isEmpty && !isError}
       >
-        {categoriesStatus === "loading" && <SkeletonCategories />}
+        {isLoading && <SkeletonCategories />}
 
-        {categoriesStatus !== "loading" && categoriesResponse?.status === "error" && (
-          <ErrorWithRetry 
-            message={t("screens.books.messages.error.text")}
-            subMessage={t("screens.books.messages.error.subText")}
-            buttonText={t("screens.books.buttons.error.text")}
-            onRetry={refreshCategories} 
-          />
+        {isError && (
+          <View style={styles.overlayContainer}>
+            <ErrorWithRetry 
+              message={t("screens.books.messages.error.text")}
+              subMessage={t("screens.books.messages.error.subText")}
+              buttonText={t("screens.books.buttons.error.text")}
+              onRetry={refreshCategories} 
+            />
+          </View>
         )}
 
-        {categoriesStatus !== "loading" && Object.keys(categories).length === 0 && (
-          <Empty 
-            message={t("screens.books.messages.noData.text")}
-            subMessage={t("screens.books.messages.noData.subText")} 
-          />
+        {isEmpty && (
+          <View style={styles.overlayContainer}>
+            <Empty 
+              message={t("screens.books.messages.noData.text")}
+              subMessage={t("screens.books.messages.noData.subText")} 
+            />
+          </View>
         )}
 
-        {categoriesStatus !== "loading" && Object.keys(categories).length > 0 && (
-          Object.keys(categories).map(renderCategory)
-        )}
+        {!isEmpty && !isError && Object.keys(categories).map(renderCategory)}
       </ScrollView>
     </ScreenWrapper>
   );
@@ -134,7 +149,13 @@ const styles = StyleSheet.create({
     flexDirection: "row", 
     alignItems: "center", 
     justifyContent: "space-between",
-    paddingHorizontal: 15 
+    paddingHorizontal: 15,
+  },
+  overlayContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 15,
   },
 });
 

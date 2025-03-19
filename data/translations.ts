@@ -742,6 +742,39 @@ const translations: Translations = {
       },     
     },
 
+    categoryBooks: {            
+      messages: {       
+        empty: {
+          text: {
+            en: "No Books Found",
+            uk: "Книг не знайдено",
+          },
+          subText: {
+            en: "There are no books in this category yet",
+            uk: "У цій категорії ще немає книг",
+          },
+        },
+        error: {
+          text: {
+            en: "An error occurred",
+            uk: "Виникла помилка",
+          },
+          subText: {
+            en: "Something went wrong. Please try again",
+            uk: "Щось пішло не так. Спробуйте ще раз",
+          },
+        },
+      },
+      buttons: {
+        error: {
+          text: {
+            en: "Retry",
+            uk: "Повторіть спробу",
+          },
+        },
+      },     
+    },
+
     bookDetails: {
       titles: {
         editing: {

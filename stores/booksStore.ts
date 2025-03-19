@@ -46,9 +46,10 @@ interface BooksStore {
   loadCategories: () => void;
   refreshCategories: () => void;
 
-  loadCategoryBooks: (category: string, reset?: boolean) => Promise<void>;
+  loadCategoryBooks: (category: string) => Promise<void>;
   loadMoreCategoryBooks: () => void;
-  refreshCategory: (category: string) => void;
+
+  resetCategory: () => void;
 }
 
 export const useBooksStore = create<BooksStore>((set, get) => ({
@@ -277,18 +278,23 @@ export const useBooksStore = create<BooksStore>((set, get) => ({
     get().loadCategories();
   },
 
-  loadCategoryBooks: async (category: string, reset = false) => {
+  loadCategoryBooks: async (category: string) => {
     const { currentCategory, categoryLastDoc } = get();
-
-    set({ 
-      categoryStatus: reset ? "loading" : "fetching",
-      currentCategory: reset || category !== currentCategory ? category : currentCategory,
+  
+    set({
+      categoryStatus: category !== currentCategory ? "loading" : "fetching",
+      ...(category !== currentCategory && {
+        currentCategory: category,
+        categoryBooks: [],
+        categoryLastDoc: null,
+        categoryHasMore: true,
+      }),
     });
-
-    booksApi.fetchBooksByCategory(category, categoryLastDoc, USER_CATEGORY_BOOKS_PAGE_SIZE)
+  
+    booksApi.fetchBooksByCategory(category, category !== currentCategory ? null : categoryLastDoc, USER_CATEGORY_BOOKS_PAGE_SIZE)
       .then(({ books: newCategoryBooks, lastDoc: newLastDoc }) =>
         set((state) => ({
-          categoryBooks: reset ? newCategoryBooks : [...state.categoryBooks, ...newCategoryBooks],
+          categoryBooks: category !== currentCategory ? newCategoryBooks : [...state.categoryBooks, ...newCategoryBooks],
           categoryLastDoc: newLastDoc,
           categoryHasMore: newCategoryBooks.length === USER_CATEGORY_BOOKS_PAGE_SIZE,
           categoryResponse: { status: "success" },
@@ -297,8 +303,8 @@ export const useBooksStore = create<BooksStore>((set, get) => ({
       )
       .catch((error) =>
         set((state) => ({
-          categoryBooks: reset ? [] : state.categoryBooks,
-          categoryLastDoc: reset ? null : state.categoryLastDoc,
+          categoryBooks: category !== currentCategory ? [] : state.categoryBooks,
+          categoryLastDoc: category !== currentCategory ? null : state.categoryLastDoc,
           categoryResponse: { status: "error", message: error.message },
         }))
       )
@@ -312,14 +318,9 @@ export const useBooksStore = create<BooksStore>((set, get) => ({
       set({ categoryStatus: "fetching" });
       get().loadCategoryBooks(currentCategory);
     }
-  },  
+  },
 
-  refreshCategory: (category: string) => {
-    const { categoryStatus } = get();
-
-    if (categoryStatus === "refreshing") return;
-
-    set({ categoryStatus: "refreshing", categoryResponse: null });
-    get().loadCategoryBooks(category);
+  resetCategory: () => {
+    set({ categoryBooks: [], categoryLastDoc: null, categoryHasMore: true, currentCategory: null });
   },
 }));
