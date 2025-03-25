@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { View, Alert, TouchableWithoutFeedback, ScrollView, Keyboard, KeyboardAvoidingView, Platform, StyleSheet } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { useTranslation } from "@/contexts/translateContext";
 import { useBooksStore } from "@/stores/booksStore";
 import { colors } from "@/constants/theme";
 import { colorConverter } from "@/helpers/colorConverter";
@@ -24,11 +24,13 @@ import BookTextareaField from "@/components/BookTextareaField";
 import BookCheckboxField from "@/components/BookCheckboxField";
 
 const EditBookModal = () => {
-  const { t } = useLanguageContext();
-  const { bookId, bookStatus, updateBook } = useBooksStore();
-  const { field, data } = useLocalSearchParams<{ field?: string; data?: string }>();
   const router = useRouter();
+  const { field, data } = useLocalSearchParams<{ field?: string; data?: string }>();
+    
+  const t = useTranslation();
 
+  const { bookId, bookStatus, updateBook } = useBooksStore();
+  
   const bookData = data ? JSON.parse(data) : null;
   const typedField = field as EditableBookField | undefined;
   

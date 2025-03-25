@@ -5,7 +5,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { Ionicons as Icon } from "@expo/vector-icons";
 import { colors } from "@/constants/theme";
 import { verticalScale } from "@/helpers/common";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/translateContext";
 import { SignInFormProvider } from "./contexts/SignInForm";
 import { useSignInFormContext } from "./contexts/SignInForm";
 
@@ -15,7 +15,7 @@ import Typography from "@/components/Typography";
 import ScreenWrapper from "@/components/ScreenWrapper";
 
 const SignInScreen = () => {
-  const { t } = useLanguageContext();
+  const t = useTranslation();
   const { form, errors, isPasswordVisible, isIncomplete, isLoading, response, handleSubmit, handleInputChange, handleToggle } = useSignInFormContext();
 
   const handleGoogleSignIn = () => {

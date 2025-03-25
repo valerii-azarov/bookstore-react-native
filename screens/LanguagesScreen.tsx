@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 import { View, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { colors } from "@/constants/theme";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useLanguage, useSetLanguage, useTranslation } from "@/contexts/translateContext";
 import { verticalScale } from "@/helpers/common";
 import { ImageFlag, Language } from "@/types";
 
@@ -16,11 +16,13 @@ const flags: ImageFlag[] = [
 ];
 
 const LanguagesScreen = () => {
-  const { language, changeLanguage, t } = useLanguageContext();
+  const language = useLanguage();
+  const setLanguage = useSetLanguage();
+  const t = useTranslation();
 
   const handleLanguageChange = (selectedLanguage: Language) => {
     if (selectedLanguage !== language) {
-      changeLanguage(selectedLanguage);
+      setLanguage(selectedLanguage);
       router.back();
     }
   };

@@ -2,8 +2,9 @@ import { router } from "expo-router";
 import { View, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { colors } from "@/constants/theme";
-import { useAuthContext } from "@/contexts/AuthContext";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/translateContext";
+import { useAuthStore } from "@/stores/authStore";
+import { selectUser } from "@/selectors/authSelectors";
 import { ProfileFieldType } from "@/types";
 
 import ScreenWrapper from "@/components/ScreenWrapper";
@@ -12,8 +13,8 @@ import BackButton from "@/components/BackButton";
 import Typography from "@/components/Typography";
 
 const ProfileScreen = () => {
-  const { t } = useLanguageContext();
-  const { user } = useAuthContext();
+  const t = useTranslation();
+  const user = useAuthStore(selectUser);
 
   const profileFields: ProfileFieldType[] = [
     {

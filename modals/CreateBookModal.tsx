@@ -2,7 +2,7 @@ import React, { useRef, useState, useCallback, useMemo, useEffect } from "react"
 import { useRouter } from "expo-router";
 import { View, ScrollView, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, StyleSheet } from "react-native";
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSequence, withDelay, SlideInLeft, SlideInRight } from "react-native-reanimated";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/translateContext";
 import { useBooksStore } from "@/stores/booksStore";
 import { colors } from "@/constants/theme";
 import { genresKeys, languageKeys, coverTypeKeys, bookTypeKeys, paperTypeKeys } from "@/constants/book";
@@ -50,9 +50,10 @@ const initialValues: CreateBook = {
 };
 
 const CreateBookModal = () => {
-  const { t } = useLanguageContext();
   const router = useRouter();
 
+  const t = useTranslation();
+  
   const { bookStatus, bookResponse, createBook } = useBooksStore();
 
   const isFirstRender = useRef(true);

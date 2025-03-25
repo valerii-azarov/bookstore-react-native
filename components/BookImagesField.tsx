@@ -2,7 +2,7 @@ import { useState } from "react";
 import { View, Alert, Image, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons as Icon } from "@expo/vector-icons";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/translateContext";
 import { colors } from "@/constants/theme";
 import { verticalScale } from "@/helpers/common";
 import { BoookImages } from "@/types";
@@ -22,7 +22,7 @@ const BookImagesField = ({
   isLabelColorWhite = false,
   isBorderColorWhite = false,
 }: BookImagesFieldProps) => {
-  const { t } = useLanguageContext();
+  const t = useTranslation();
   const [images, setImages] = useState<BoookImages>(initialValues);
 
   const pickImage = async (isCover: boolean, index?: number) => {

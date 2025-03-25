@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from "react";
 import authApi from "@/api/authApi";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/translateContext";
 import { emailRegex, passwordRegex } from "@/constants/regex";
 import { ResponseType, SignUpForm, SignUpErrors, SignUpVisibility, SignUpValidations } from "@/types";
 
@@ -22,8 +22,8 @@ interface SignUpFormContextType {
 const SignUpFormContext = createContext<SignUpFormContextType>({} as SignUpFormContextType);
 
 export const SignUpFormProvider = ({ children }: { children: React.ReactNode }) => {
-  const { t } = useLanguageContext();
-
+  const t = useTranslation();
+  
   const [form, setForm] = useState<SignUpForm>({
     firstName: "",
     lastName: "",

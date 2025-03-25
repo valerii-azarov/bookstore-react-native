@@ -1346,6 +1346,19 @@ const translations: Translations = {
     },
   },
 
+  successMessages: {
+    favorites: {
+      bookAddedToFavorites: { 
+        en: "Book added to favorites",
+        uk: "Книгу додано до обраного"
+      },
+      bookRemovedFromFavorites: {
+        en: "Book removed from favorites",
+        uk: "Книгу видалено з обраного",
+      },
+    },
+  },
+
   errorMessages: {
     invalidCredentials: {
       en: "Invalid email or password",

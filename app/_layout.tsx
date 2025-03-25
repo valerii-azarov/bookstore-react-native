@@ -7,16 +7,21 @@ import { StatusBar } from "expo-status-bar";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
 
-import { AuthProvider } from "@/contexts/AuthContext";
-import { useAuthContext } from "@/contexts/AuthContext";
-import { LanguageProvider } from "@/contexts/LanguageContext";
+import { TranslateProvider } from "@/contexts/translateContext";
+
+import { useAuthStore } from "@/stores/authStore";
+import { selectIsLoggedIn, selectIsAdmin, selectInitialized, selectInitializeAuth } from "@/selectors/authSelectors";
 
 SplashScreen.preventAutoHideAsync();
 
 const InitialLayout = () => {
   const router = useRouter();
   const segments = useSegments();
-  const { isLoggedIn, isAdmin } = useAuthContext();
+  
+  const isLoggedIn = useAuthStore(selectIsLoggedIn);
+  const isAdmin = useAuthStore(selectIsAdmin);
+  const initialized = useAuthStore(selectInitialized);
+  const initializeAuth = useAuthStore(selectInitializeAuth);
   
   const [fontsLoaded, fontsError] = useFonts({
     "Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.ttf"),
@@ -24,9 +29,13 @@ const InitialLayout = () => {
     "Montserrat-Medium": require("../assets/fonts/Montserrat-Medium.ttf"),
     "Montserrat-Regular": require("../assets/fonts/Montserrat-Regular.ttf"),
   });
+
+  useEffect(() => {
+    initializeAuth();
+  }, [initializeAuth]);
   
   useEffect(() => {
-    if (!fontsLoaded && !fontsError) return;
+    if (!fontsLoaded || fontsError || !initialized) return;
   
     SplashScreen.hideAsync();
   
@@ -41,9 +50,9 @@ const InitialLayout = () => {
     } else {
       router.replace("/welcome");
     }
-  }, [fontsLoaded, fontsError, isLoggedIn, isAdmin]);
+  }, [fontsLoaded, fontsError, isLoggedIn, isAdmin, initialized]);
   
-  if (!fontsLoaded && !fontsError) return null;
+  if (!fontsLoaded || fontsError || !initialized) return null;
 
   return (
     <Stack>
@@ -130,17 +139,11 @@ const InitialLayout = () => {
       />
       <Stack.Screen
         name="(user)/favorites"
-        options={{
-          headerShown: true,
-          title: "Favorites",
-        }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="(user)/viewing-history"
-        options={{
-          headerShown: true,
-          title: "Viewing History",
-        }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="(user)/(modals)/cart"
@@ -169,12 +172,10 @@ const InitialLayout = () => {
 const RootLayout = () => {
   return (
     <SafeAreaProvider>
-      <AuthProvider>
-        <LanguageProvider>
-          <InitialLayout />
-          <StatusBar style={Platform.OS === "ios" ? "dark" : "light"} />
-        </LanguageProvider>
-      </AuthProvider>
+      <TranslateProvider>
+        <InitialLayout />
+        <StatusBar style={Platform.OS === "ios" ? "dark" : "light"} />
+      </TranslateProvider>
     </SafeAreaProvider>
   );
 };

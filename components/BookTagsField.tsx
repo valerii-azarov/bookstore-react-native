@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/translateContext";
 import { colors } from "@/constants/theme";
 
 import Field from "@/components/Field";
@@ -22,7 +22,7 @@ type BookTagsFieldProps = {
 };
 
 const BookTagsField = ({ field, initialValue, onChange, isLabelColorWhite = false, isEditing = false }: BookTagsFieldProps) => {
-  const { t } = useLanguageContext();
+  const t = useTranslation();
   const [inputValue, setInputValue] = useState(initialValue.join(", "));
   const [tags, setTags] = useState<string[]>(initialValue);
 

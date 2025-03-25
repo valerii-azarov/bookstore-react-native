@@ -1,7 +1,7 @@
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons as Icon } from "@expo/vector-icons";
 import { colors } from "@/constants/theme";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/translateContext";
 import { useSignUpFormContext } from "../contexts/SignUpForm";
 
 import Field from "@/components/Field";
@@ -9,7 +9,7 @@ import FieldValidation from "@/components/FieldValidation";
 import Typography from "@/components/Typography";
 
 const Step1 = () => {
-  const { t } = useLanguageContext(); 
+  const t = useTranslation();
   const { form, errors, visibility, validations, handleInputChange, handleToggle } = useSignUpFormContext();
 
   return (

@@ -6,7 +6,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons as Icon } from "@expo/vector-icons";
 import { colors } from "@/constants/theme";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useLanguage, useTranslation } from "@/contexts/translateContext";
 import { horizontalScale, verticalScale, widthPercentage, heightPercentage } from "@/helpers/common";
 import { ImageBook } from "@/types";
 
@@ -30,7 +30,9 @@ const images: ImageBook[] = [
 
 const WelcomeScreen = () => {
   const insets = useSafeAreaInsets();
-  const { language, t } = useLanguageContext();
+
+  const language = useLanguage();
+  const t = useTranslation();
 
   const shuffledImages = useMemo(() => {
     return [...images].sort(() => Math.random() - 0.5);

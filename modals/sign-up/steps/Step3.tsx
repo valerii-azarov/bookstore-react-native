@@ -1,13 +1,13 @@
 import { View, StyleSheet } from "react-native";
 import Animated, { SlideInRight } from "react-native-reanimated";
 import { colors } from "@/constants/theme";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/translateContext";
 import { useSignUpFormContext } from "../contexts/SignUpForm";
 
 import Typography from "@/components/Typography";
 
 const Step3 = () => {
-  const { t } = useLanguageContext();
+  const t = useTranslation();
   const { response } = useSignUpFormContext();
   
   const isSuccess = response?.status === "success";

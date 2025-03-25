@@ -3,10 +3,22 @@ import { Alert, View, Image, TouchableOpacity, RefreshControl, Platform, ScrollV
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { useSharedValue, useAnimatedScrollHandler, useAnimatedStyle, withTiming } from "react-native-reanimated";
 import { Ionicons as Icon } from "@expo/vector-icons";
-import { router, useLocalSearchParams } from "expo-router";
-import { useAuthContext } from "@/contexts/AuthContext";
-import { useLanguageContext } from "@/contexts/LanguageContext";
-import { useBooksStore } from "@/stores/booksStore";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { useTranslation } from "@/contexts/translateContext";
+import { useAuthStore } from "@/stores/authStore";
+import { useBookStore } from "@/stores/bookStore";
+import { useFavoritesStore } from "@/stores/favoritesStore";
+import { 
+  selectBook, 
+  selectBookStatus, 
+  selectBookResponse, 
+  selectLoadBookById, 
+  selectDeleteBook, 
+  selectRefreshBook,
+} from "@/selectors/bookSelectors";
+import { selectToggleFavorite } from "@/selectors/favoritesSelectors";
+import { selectIsAdmin } from "@/selectors/authSelectors";
+
 import { colors } from "@/constants/theme";
 import { colorConverter } from "@/helpers/colorConverter";
 
@@ -21,12 +33,21 @@ import ErrorWithRetry from "@/components/ErrorWithRetry";
 const BookDetailsScreen = () => {
   const insets = useSafeAreaInsets();
 
-  const { t } = useLanguageContext();
-  const { isAdmin } = useAuthContext();
-    
+  const router = useRouter();
   const { bookId } = useLocalSearchParams<{ bookId: string }>();  
+
+  const t = useTranslation();
+  const isAdmin = useAuthStore(selectIsAdmin);
   
-  const { book, bookStatus, bookResponse, loadBookById, deleteBook, refreshBook } = useBooksStore();
+  const book = useBookStore(selectBook);
+  const bookStatus = useBookStore(selectBookStatus);
+  const bookResponse = useBookStore(selectBookResponse);
+  
+  const loadBookById = useBookStore(selectLoadBookById);
+  const deleteBook = useBookStore(selectDeleteBook); 
+  const refreshBook = useBookStore(selectRefreshBook);
+
+  const toggleFavorite = useFavoritesStore(selectToggleFavorite);
 
   const scrollViewRef = useRef<Animated.ScrollView>(null);
   const imagesBlockRef = useRef<View>(null);
@@ -577,7 +598,7 @@ const BookDetailsScreen = () => {
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                    onPressIn={() => {}}
+                    onPressIn={() => toggleFavorite(book.id)}
                     style={[
                       styles.actionButton,
                       {
@@ -586,7 +607,11 @@ const BookDetailsScreen = () => {
                       },
                     ]}
                   >
-                    <Icon name="heart-outline" size={24} color={colors.white} />
+                    <Icon 
+                      name={book.isFavorite ? "heart" : "heart-outline"} 
+                      size={24} 
+                      color={book.isFavorite ? colors.red : colors.white} 
+                    />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -859,7 +884,7 @@ const BookDetailsScreen = () => {
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPressIn={() => {}}
+              onPressIn={() => toggleFavorite(book.id)}
               style={[
                 styles.actionButton,
                 {
@@ -868,7 +893,11 @@ const BookDetailsScreen = () => {
                 },
               ]}
             >
-              <Icon name="heart-outline" size={24} color={colors.white} />
+              <Icon 
+                name={book.isFavorite ? "heart" : "heart-outline"}
+                size={24} 
+                color={book.isFavorite ? colors.red : colors.white}
+              />
             </TouchableOpacity>
           </View>
         )}

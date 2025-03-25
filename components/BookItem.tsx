@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons as Icon } from "@expo/vector-icons";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/translateContext";
 import { colors } from "@/constants/theme";
 import { Book, ModeType } from "@/types";
 
@@ -17,7 +17,7 @@ interface BookItemProps {
 }
 
 const BookItem = ({ mode, item, onViewDetails, onAddToFavorites, onAddToCart, isOwner = false }: BookItemProps) => {
-  const { t } = useLanguageContext();
+  const t = useTranslation();
 
   return (
     <View
@@ -92,7 +92,11 @@ const BookItem = ({ mode, item, onViewDetails, onAddToFavorites, onAddToCart, is
                       }
                     ]}
                   >
-                    <Icon name="heart-outline" size={18} color={colors.white} />
+                    <Icon 
+                      name={item?.isFavorite ? "heart" : "heart-outline"} 
+                      size={18} 
+                      color={item?.isFavorite ? colors.red : colors.white} 
+                    />
                   </TouchableOpacity>
                 </View>
               )}
@@ -197,7 +201,11 @@ const BookItem = ({ mode, item, onViewDetails, onAddToFavorites, onAddToCart, is
                         }
                       ]}
                     >
-                      <Icon name="heart-outline" size={18} color={colors.white} />
+                      <Icon 
+                        name={item?.isFavorite ? "heart" : "heart-outline"} 
+                        size={18} 
+                        color={item?.isFavorite ? colors.red : colors.white} 
+                      />
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -245,7 +253,11 @@ const BookItem = ({ mode, item, onViewDetails, onAddToFavorites, onAddToCart, is
                       }
                     ]}
                   >
-                    <Icon name="heart-outline" size={18} color={colors.white} />
+                    <Icon 
+                      name={item?.isFavorite ? "heart" : "heart-outline"} 
+                      size={18} 
+                      color={item?.isFavorite ? colors.red : colors.white} 
+                    />
                   </TouchableOpacity>
 
                   <TouchableOpacity

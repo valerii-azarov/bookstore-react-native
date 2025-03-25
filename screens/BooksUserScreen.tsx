@@ -1,8 +1,17 @@
 import React, { useEffect } from "react";
 import { View, FlatList, ScrollView, RefreshControl, StyleSheet, Platform } from "react-native";
 import { useRouter } from "expo-router";
-import { useLanguageContext } from "@/contexts/LanguageContext";
-import { useBooksStore } from "@/stores/booksStore";
+import { useTranslation } from "@/contexts/translateContext";
+import { useCategoriesStore } from "@/stores/categoriesStore";
+import { useFavoritesStore } from "@/stores/favoritesStore";
+import { 
+  selectCategories, 
+  selectCategoriesStatus, 
+  selectCategoriesResponse, 
+  selectLoadCategories, 
+  selectRefreshCategories,
+} from "@/selectors/categoriesSelectors";
+import { selectToggleFavorite } from "@/selectors/favoritesSelectors";
 import { colors } from "@/constants/theme";
 import { verticalScale } from "@/helpers/common";
 import { Book } from "@/types";
@@ -20,8 +29,16 @@ import Typography from "@/components/Typography";
 const BooksUserScreen = () => {
   const router = useRouter();
 
-  const { t } = useLanguageContext();
-  const { categories, categoriesStatus, categoriesResponse, loadCategories, refreshCategories } = useBooksStore();
+  const t = useTranslation();
+
+  const categories = useCategoriesStore(selectCategories);
+  const categoriesStatus = useCategoriesStore(selectCategoriesStatus);
+  const categoriesResponse = useCategoriesStore(selectCategoriesResponse);
+  
+  const loadCategories = useCategoriesStore(selectLoadCategories);
+  const refreshCategories = useCategoriesStore(selectRefreshCategories);
+  
+  const toggleFavorite = useFavoritesStore(selectToggleFavorite);
 
   const isLoading = categoriesStatus === "loading";
   const isRefreshing = categoriesStatus === "refreshing";
@@ -54,6 +71,7 @@ const BooksUserScreen = () => {
               item={item}
               mode="horizontal"
               onViewDetails={() => router.push(`/(user)/book/${item.id}`)}
+              onAddToFavorites={() => toggleFavorite(item.id)}
             />
           )}
           keyExtractor={(item: Book) => item.id}

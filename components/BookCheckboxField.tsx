@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/translateContext";
 import { colors } from "@/constants/theme";
 
 import Checkbox from "@/components/Checkbox";
@@ -23,7 +23,7 @@ const BookCheckboxField = ({
   isCheckboxColorDarker = false,
   isLabelColorWhite = false,
 }: BookCheckboxFieldProps) => {
-  const { t } = useLanguageContext();
+  const t = useTranslation();
   const [inputValue, setInputValue] = useState(initialValue);
 
   const handleChange = () => {

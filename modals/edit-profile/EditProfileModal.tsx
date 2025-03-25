@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Alert, View, ScrollView, Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, Platform, StyleSheet } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { colors } from "@/constants/theme";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/translateContext";
 import { useEditProfile } from "./hooks/useEditProfile";
 import { EditFieldType } from "@/types";
 
@@ -14,7 +14,8 @@ import Header from "@/components/Header";
 import Typography from "@/components/Typography";
 
 const EditProfileModal = () => {
-  const { t } = useLanguageContext();
+  const t = useTranslation();
+  
   const { field } = useLocalSearchParams<{ field: keyof EditFieldType }>();
   const { newValue, setNewValue, isLoading, isDisabled, response, handleSubmit } = useEditProfile(field);
 

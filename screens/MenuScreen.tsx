@@ -7,8 +7,9 @@ import { Ionicons as Icon } from "@expo/vector-icons";
 import authApi from "@/api/authApi";
 import { colors } from "@/constants/theme";
 import { horizontalScale, verticalScale } from "@/helpers/common";
-import { useAuthContext } from "@/contexts/AuthContext";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/translateContext";
+import { useAuthStore } from "@/stores/authStore";
+import { selectUser, selectIsAdmin } from "@/selectors/authSelectors";
 import { MenuOptionsType } from "@/types";
 
 import ScreenWrapper from "@/components/ScreenWrapper";
@@ -18,8 +19,10 @@ import Button from "@/components/Button";
 import Typography from "@/components/Typography";
 
 const MenuScreen = () => {
-  const { t } = useLanguageContext();
-  const { user, isAdmin } = useAuthContext();
+  const t = useTranslation();
+
+  const user = useAuthStore(selectUser);
+  const isAdmin = useAuthStore(selectIsAdmin);
 
   const confirmLogout = () => {
     Alert.alert(

@@ -1,9 +1,19 @@
 import React, { useCallback, useEffect } from "react";
 import { View, FlatList, StyleSheet, Platform } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useLanguageContext } from "@/contexts/LanguageContext";
-import { useSafeAreaPadding } from "@/hooks/useSafeAreaPadding";
-import { useBooksStore } from "@/stores/booksStore";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { useTranslation } from "@/contexts/translateContext";
+import { useCategoryBooksStore } from "@/stores/categoryBooksStore";
+import { useFavoritesStore } from "@/stores/favoritesStore";
+import { 
+  selectCategoryBooks, 
+  selectCategoryStatus, 
+  selectCategoryResponse, 
+  selectLoadCategoryBooks, 
+  selectLoadMoreCategoryBooks, 
+  selectResetCategory,
+} from "@/selectors/categoryBooksSelectors";
+import { selectToggleFavorite } from "@/selectors/favoritesSelectors";
 import { colors } from "@/constants/theme";
 import { USER_CATEGORY_BOOKS_PAGE_SIZE } from "@/constants/settings";
 import { Book } from "@/types";
@@ -18,14 +28,23 @@ import Empty from "@/components/Empty";
 import ErrorWithRetry from "@/components/ErrorWithRetry";
 
 const CategoryBooksScreen = () => {
+  const insets = useSafeAreaInsets();
+  
   const router = useRouter();
+  const { category } = useLocalSearchParams<{ category: string }>();
+   
+  const t = useTranslation();
   
-  const { t } = useLanguageContext();
-  const { top } = useSafeAreaPadding();
+  const categoryBooks = useCategoryBooksStore(selectCategoryBooks);
+  const categoryStatus = useCategoryBooksStore(selectCategoryStatus);
+  const categoryResponse = useCategoryBooksStore(selectCategoryResponse);
+  
+  const loadCategoryBooks = useCategoryBooksStore(selectLoadCategoryBooks);
+  const loadMoreCategoryBooks = useCategoryBooksStore(selectLoadMoreCategoryBooks);
+  const resetCategory = useCategoryBooksStore(selectResetCategory);
 
-  const { category } = useLocalSearchParams<{ category?: string }>();
-  const { categoryBooks, categoryStatus, categoryResponse, loadCategoryBooks, loadMoreCategoryBooks, resetCategory } = useBooksStore();
-  
+  const toggleFavorite = useFavoritesStore(selectToggleFavorite);
+
   const isLoading = categoryStatus === "loading";
   const isFetching = categoryStatus === "fetching";
   const isEmpty = !isLoading && categoryBooks.length === 0;
@@ -40,6 +59,7 @@ const CategoryBooksScreen = () => {
         item={item}
         mode="list"
         onViewDetails={() => router.push(`/(user)/book/${item.id}`)}
+        onAddToFavorites={() => toggleFavorite(item.id)}
       />
     );
   }, [isLoading, router]);
@@ -69,7 +89,7 @@ const CategoryBooksScreen = () => {
             backgroundColor: colors.white,
             borderBottomColor: colors.grayTint7,
             borderBottomWidth: 1,
-            paddingTop: Platform.OS === "ios" ? top : 15 + top,
+            paddingTop: Platform.OS === "ios" ? insets.top : 15 + insets.top,
             paddingBottom: 10,
           },
         ]}

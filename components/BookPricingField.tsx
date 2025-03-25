@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { View, StyleSheet } from "react-native";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/translateContext";
 import { colors } from "@/constants/theme";
 import { converter } from "@/helpers/converter";
 import { BookPricing } from "@/types";
@@ -16,7 +16,7 @@ type BookPricingFieldProps = {
 };
 
 const BookPricingField = ({ initialValues, onPriceChange, isLabelColorWhite = false }: BookPricingFieldProps) => {
-  const { t } = useLanguageContext();
+  const t = useTranslation();
   const [values, setValues] = useState<{
     price: string;
     originalPrice: string;

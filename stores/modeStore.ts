@@ -32,6 +32,7 @@ export const useModeStore = create<ModeState>()(
         name: "mode-storage",
         storage: createJSONStorage(() => asyncStorage),
       }
-    )
+    ),
+    { name: "ModeStore" }
   )
 );

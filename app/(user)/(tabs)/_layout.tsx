@@ -1,12 +1,12 @@
 import { Tabs } from "expo-router";
 import { Ionicons as Icon } from "@expo/vector-icons";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/translateContext";
 import { TabType } from "@/types";
 
 import TabBar from "@/components/TabBar";
 
 const UserTabsLayout = () => {
-  const { t } = useLanguageContext();
+  const t = useTranslation();
 
   const tabs: TabType[] = [
     {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/translateContext";
 import { colors } from "@/constants/theme";
 
 import Textarea from "@/components/Textarea";
@@ -21,7 +21,7 @@ const BookTextareaField = ({
   isLabelColorWhite = false, 
   isEditing = false,
 }: BookTextareaFieldProps) => {
-  const { t } = useLanguageContext();
+  const t = useTranslation();
   const [inputValue, setInputValue] = useState(initialValue);
 
   const handleChange = (text: string) => {

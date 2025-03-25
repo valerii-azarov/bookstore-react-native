@@ -1,6 +1,6 @@
 import { View, ScrollView, KeyboardAvoidingView, StyleSheet, Platform } from "react-native";
 import { colors } from "@/constants/theme";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/translateContext";
 import { SignUpFormProvider } from "./contexts/SignUpForm";
 import { useSignUpFormContext } from "./contexts/SignUpForm";
 import { useRouter } from "expo-router";
@@ -16,7 +16,8 @@ import Step2 from "./steps/Step2";
 import Step3 from "./steps/Step3";
 
 const SignUpModal = () => {
-  const { t } = useLanguageContext();
+  const t = useTranslation();
+
   const { currentStep, isIncomplete, isLoading, response, handleSubmit, handleContinue } = useSignUpFormContext();
   const router = useRouter();
 

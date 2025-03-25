@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/translateContext";
 import { colors } from "@/constants/theme";
 
 import Dropdown from "@/components/Dropdown";
@@ -37,7 +37,7 @@ const BookSelectField = ({
   showSearch, 
   showSelected,
 }: BookSelectFieldProps) => {
-  const { t } = useLanguageContext();
+  const t = useTranslation();
   const [selectedValue, setSelectedValue] = useState(initialValue);
 
   const handleChange = (value: string | string[]) => {

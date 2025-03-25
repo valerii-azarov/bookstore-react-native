@@ -2,9 +2,20 @@ import React, { useCallback, useEffect } from "react";
 import { View, FlatList, StyleSheet, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons as Icon } from "@expo/vector-icons";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/translateContext";
 import { useBooksStore } from "@/stores/booksStore";
 import { useModeStore } from "@/stores/modeStore";
+import { 
+  selectBooks, 
+  selectBooksStatus, 
+  selectBooksResponse, 
+  selectBooksSearchQuery, 
+  selectSetBooksSearchQuery,
+  // selectLoadBooks,
+  selectRefreshBooks, 
+  selectLoadMoreBooks,
+} from "@/selectors/booksSelectors";
+import { selectGetMode, selectToggleMode } from "@/selectors/modeSelectors";
 import { colors } from "@/constants/theme";
 import { ADMIN_BOOKS_PAGE_SIZE } from "@/constants/settings";
 import { verticalScale } from "@/helpers/common";
@@ -23,15 +34,26 @@ import FloatingActionButton from "@/components/FloatingButton";
 const BooksAdminScreen = () => {
   const router = useRouter();
   
-  const { t } = useLanguageContext();
-  const { bookList, booksStatus, booksResponse, booksSearchQuery, setBooksSearchQuery, refreshBooks, loadMoreBooks } = useBooksStore();
+  const t = useTranslation();
+  
+  const books = useBooksStore(selectBooks);
+  const booksStatus = useBooksStore(selectBooksStatus);
+  const booksResponse = useBooksStore(selectBooksResponse);
+  const booksSearchQuery = useBooksStore(selectBooksSearchQuery);
 
-  const { getMode, toggleMode } = useModeStore();
+  const setBooksSearchQuery = useBooksStore(selectSetBooksSearchQuery);
+  // const loadBooks = useBooksStore(selectLoadBooks);
+  const refreshBooks = useBooksStore(selectRefreshBooks);
+  const loadMoreBooks = useBooksStore(selectLoadMoreBooks);
+
+  const getMode = useModeStore(selectGetMode);
+  const toggleMode = useModeStore(selectToggleMode);
+  
   const mode = getMode("books-list");
 
   const isLoading = booksStatus === "loading";
   const isFetching = booksStatus === "fetching";
-  const isEmpty = !isLoading && bookList.length === 0;
+  const isEmpty = !isLoading && books.length === 0;
   const isError = !isLoading && booksResponse?.status === "error";
 
   const renderItem = useCallback(({ item }: { item: Book | undefined }) => {
@@ -86,7 +108,7 @@ const BooksAdminScreen = () => {
       <View style={styles.contentContainer}>
         {!isEmpty && !isError && (
           <FlatList
-            data={isLoading ? Array(ADMIN_BOOKS_PAGE_SIZE) : bookList}
+            data={isLoading ? Array(ADMIN_BOOKS_PAGE_SIZE) : books}
             renderItem={renderItem}
             keyExtractor={(item, index) =>
               isLoading ? `skeleton-${index}` : (item?.id || `item-${index}`)

@@ -102,7 +102,7 @@ export type ProfileFieldType = {
 };
 
 // book fields
-export type Book = {
+export type BaseBook = {
   id: string;
   title: string;
   authors: string[];
@@ -130,6 +130,11 @@ export type Book = {
   createdAt: Date;
   updatedAt: Date;
 };
+ 
+export type Book = BaseBook & {
+  isFavorite: boolean;
+  inCart?: boolean;
+};
 
 export type BookPricing = {
   price: number;
@@ -142,10 +147,10 @@ export type BoookImages = {
   additionalImages: string[];
 };
 
-export type CreateBook = Omit<Book, "id" | "createdAt" | "updatedAt">;
+export type CreateBook = Omit<BaseBook, "id" | "createdAt" | "updatedAt">;
 
 export type EditableBookField =
-  | keyof Omit<Book, "price" | "originalPrice" | "discount" | "coverImage" | "additionalImages" | "createdAt" | "updatedAt">
+  | keyof Omit<BaseBook, "price" | "originalPrice" | "discount" | "coverImage" | "additionalImages" | "createdAt" | "updatedAt">
   | "images"
   | "pricing";
 
@@ -166,10 +171,9 @@ export type BookStepComponentType = {
 
 // book responses
 export type BooksResponse = {
-  books: Book[];
+  books: BaseBook[];
   lastDoc: QueryDocumentSnapshot<DocumentData> | null;
 };
-
 
 // categories
 export type CategoriesType = { [key: string]: Book[] };
@@ -183,9 +187,14 @@ export type CategoriesStatusType = "idle" | "loading" | "refreshing";
 
 export type CategoryStatusType = "idle" | "loading" | "fetching" | "refreshing";
 
+export type FavoritesStatusType = "idle" | "loading";
+
+export type ToggleFavoriteStatusType = "idle" | "toggling";
+
+export type ViewingHistoryStatusType = "idle" | "loading";
 
 // others
-export type BookSearchKey = keyof Book;
+export type BookSearchKey = keyof BaseBook;
 
 export type ModeType = "list" | "grid" | "horizontal";
 

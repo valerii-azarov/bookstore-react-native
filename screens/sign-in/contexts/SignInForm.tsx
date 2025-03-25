@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useMemo } from "react";
 import authApi from "@/api/authApi";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/translateContext";
 import { emailRegex } from "@/constants/regex";
 import { ResponseType, SignInForm, SignInErrors } from "@/types";
 
@@ -19,7 +19,7 @@ interface SignInFormContextType {
 const SignInFormContext = createContext<SignInFormContextType>({} as SignInFormContextType);
 
 export const SignInFormProvider = ({ children }: { children: React.ReactNode }) => {
-  const { t } = useLanguageContext();
+  const t = useTranslation();
 
   const [form, setForm] = useState<SignInForm>({ email: "", password: "" });
   const [errors, setErrors] = useState<SignInErrors>({ email: null, password: null });

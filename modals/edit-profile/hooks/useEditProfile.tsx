@@ -1,7 +1,8 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "expo-router";
 import profileApi from "@/api/profileApi";
-import { useAuthContext } from "@/contexts/AuthContext";
+import { useAuthStore } from "@/stores/authStore";
+import { selectUser, selectSetUser } from "@/selectors/authSelectors";
 import { EditFieldType, ResponseType } from "@/types";
 
 type UseEditProfileReturn = {
@@ -15,7 +16,9 @@ type UseEditProfileReturn = {
 
 export const useEditProfile = (field: keyof EditFieldType): UseEditProfileReturn => {
   const router = useRouter();
-  const { user, setUser } = useAuthContext();
+
+  const user = useAuthStore(selectUser);
+  const setUser = useAuthStore(selectSetUser);
 
   const initialValue = user?.[field];
   const [newValue, setNewValue] = useState<string | undefined>(initialValue);

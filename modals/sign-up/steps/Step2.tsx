@@ -1,12 +1,12 @@
 import { View, StyleSheet } from "react-native";
 import Animated, { SlideInRight } from "react-native-reanimated";
 import { colors } from "@/constants/theme";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/translateContext";
 
 import Typography from "@/components/Typography";
 
 const Step2 = () => {
-  const { t } = useLanguageContext();
+  const t = useTranslation();
 
   return (
     <Animated.View entering={SlideInRight.duration(300)} style={styles.container}>

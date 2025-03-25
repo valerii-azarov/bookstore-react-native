@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/translateContext";
 import { colors } from "@/constants/theme";
 import { converter } from "@/helpers/converter";
 
@@ -18,7 +18,7 @@ type BookFieldProps = {
 };
 
 const BookField = ({ field, initialValue, onChange, isLabelColorWhite = false, isNumeric = false, isInteger = false, isEditing = false }: BookFieldProps) => {
-  const { t } = useLanguageContext();
+  const t = useTranslation();
   const [inputValue, setInputValue] = useState(initialValue);
 
   const handleChange = (text: string) => {
