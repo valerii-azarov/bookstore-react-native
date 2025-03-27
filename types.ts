@@ -136,6 +136,13 @@ export type Book = BaseBook & {
   inCart?: boolean;
 };
 
+export type ViewingHistory = {
+  bookId?: string; 
+  timestamp: Date;
+};
+
+export type ViewingHistoryBook = BaseBook & ViewingHistory;
+
 export type BookPricing = {
   price: number;
   originalPrice?: number;
