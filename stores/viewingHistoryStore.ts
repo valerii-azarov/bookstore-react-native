@@ -10,6 +10,7 @@ interface ViewingHistoryStore {
   viewingHistoryStatus: ViewingHistoryStatusType;
   viewingHistoryResponse: ResponseType | null;
   loadViewingHistory: () => Promise<void>;
+  resetViewingHistory: () => void;
 }
 
 export const useViewingHistoryStore = create<ViewingHistoryStore>((set, get) => ({
@@ -40,4 +41,13 @@ export const useViewingHistoryStore = create<ViewingHistoryStore>((set, get) => 
       )
       .finally(() => set({ viewingHistoryStatus: "idle" }));
   },
+
+  resetViewingHistory: () => {
+   set({ 
+      viewingHistoryBooks: [], 
+      viewingHistoryStatus: "idle", 
+      viewingHistoryResponse: null 
+    });
+  },
+
 }));

@@ -963,6 +963,33 @@ const translations: Translations = {
         },
       },
     },
+
+    viewingHistory: {            
+      header: {
+        text: {
+          en: "Viewing History",
+          uk: "Переглянуті книги",
+        },
+      },
+      messages: {       
+        empty: {
+          text: {
+            en: "No viewing history available",
+            uk: "Жодної переглянутої книги",
+          },
+        },
+        error: {
+          text: {
+            en: "An error occurred",
+            uk: "Виникла помилка",
+          },
+          subText: {
+            en: "Something went wrong",
+            uk: "Щось пішло не так",
+          },
+        },
+      },     
+    },
   },
 
   modals: {
@@ -1584,6 +1611,21 @@ const translations: Translations = {
     no: {
       en: "No",
       uk: "Ні",
+    },
+  },
+
+  date: {
+    today: {
+      en: "Today",
+      uk: "Сьогодні",
+    },
+    yesterday: {
+      en: "Yesterday",
+      uk: "Вчора",
+    },
+    dayBeforeYesterday: {
+      en: "The day before yesterday",
+      uk: "Позавчора",
     },
   },
 };
