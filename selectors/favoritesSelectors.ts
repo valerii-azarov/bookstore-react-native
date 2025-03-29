@@ -13,3 +13,4 @@ export const selectToggleFavoriteResponse = (state: FavoritesStoreType) => state
 export const selectSetFavoriteIds = (state: FavoritesStoreType) => state.setFavoriteIds;
 export const selectLoadFavoriteBooks = (state: FavoritesStoreType) => state.loadFavoriteBooks;
 export const selectToggleFavorite = (state: FavoritesStoreType) => state.toggleFavorite;
+export const selectResetFavorites = (state: FavoritesStoreType) => state.resetFavorites;

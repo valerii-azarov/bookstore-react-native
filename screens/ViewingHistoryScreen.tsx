@@ -59,7 +59,7 @@ const ViewingHistoryScreen = () => {
     >      
       {isLoading && <Loading size="small" color={colors.orange} />}
       
-      {isEmpty && (
+      {!isLoading && isEmpty && (
         <View style={styles.overlayContainer}>
           <Typography fontSize={16} fontWeight="medium">
             {t("screens.viewingHistory.messages.empty.text")}
@@ -67,12 +67,12 @@ const ViewingHistoryScreen = () => {
         </View>
       )}
 
-      {isError && (
+      {!isLoading && isError && (
         <View style={styles.overlayContainer}>
           <Icon name="alert-circle-outline" size={32} color={colors.red} style={styles.errorIcon} />
 
           <Typography fontSize={18} fontWeight="medium" color={colors.red}>
-            {viewingHistoryResponse?.message}
+            {viewingHistoryResponse?.message || t("screens.viewingHistory.messages.error.subText")}
           </Typography>
         </View>
       )}

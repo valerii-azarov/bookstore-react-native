@@ -4,10 +4,9 @@ import { ViewingHistoryBook } from "@/types";
 
 type ViewingHistoryStoreType = ReturnType<typeof useViewingHistoryStore.getState>;
 
-export const selectViewingHistoryBooks = createSelector(
-  (state: ViewingHistoryStoreType) => state.viewingHistoryBooks,
-  (books) => books
-);
+export const selectViewingHistoryBooks = (state: ViewingHistoryStoreType) => state.viewingHistoryBooks;
+export const selectViewingHistoryStatus = (state: ViewingHistoryStoreType) => state.viewingHistoryStatus;
+export const selectViewingHistoryResponse = (state: ViewingHistoryStoreType) => state.viewingHistoryResponse;
 
 export const selectViewingHistoryByDate = createSelector(
   [selectViewingHistoryBooks],
@@ -30,16 +29,6 @@ export const selectViewingHistoryByDate = createSelector(
       }))
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }
-);
-
-export const selectViewingHistoryStatus = createSelector(
-  (state: ViewingHistoryStoreType) => state.viewingHistoryStatus,
-  (status) => status
-);
-
-export const selectViewingHistoryResponse = createSelector(
-  (state: ViewingHistoryStoreType) => state.viewingHistoryResponse,
-  (response) => response
 );
 
 export const selectLoadViewingHistory = (state: ViewingHistoryStoreType) => state.loadViewingHistory;

@@ -1,13 +1,14 @@
 import { create } from "zustand";
 import { favoritesApi } from "@/api/favoritesApi";
+import { bookHandler } from "@/helpers/bookHandler";
 import { messageHandler } from "@/helpers/messageHandler";
-import { BaseBook, FavoritesStatusType, ToggleFavoriteStatusType, ResponseType } from "@/types";
+import { Book, FavoritesStatusType, ToggleFavoriteStatusType, ResponseType } from "@/types";
 
 import { useAuthStore } from "./authStore";
 
 interface FavoritesStore {
   favoriteIds: string[];
-  favoriteBooks: BaseBook[];
+  favoriteBooks: Book[];
   favoriteStatus: FavoritesStatusType;
   favoriteResponse: ResponseType | null;
   toggleFavoriteStatus: ToggleFavoriteStatusType;
@@ -15,6 +16,7 @@ interface FavoritesStore {
   setFavoriteIds: (ids: string[]) => void;
   loadFavoriteBooks: () => Promise<void>;
   toggleFavorite: (bookId: string) => Promise<void>;
+  resetFavorites: () => void;
 }
 
 export const useFavoritesStore = create<FavoritesStore>((set, get) => ({
@@ -33,13 +35,16 @@ export const useFavoritesStore = create<FavoritesStore>((set, get) => ({
 
     set({ favoriteStatus: "loading", favoriteResponse: null });
 
+    const { favoriteIds } = get();
+
     favoritesApi.getFavoriteBooks(userId)
-      .then((favoriteBooks) =>
+      .then((favoriteBooks) => {
+        const booksWithFavorite = bookHandler.addIsFavoriteFlag(favoriteBooks, favoriteIds);
         set({
-          favoriteBooks: favoriteBooks.length > 0 ? favoriteBooks : [],
+          favoriteBooks: booksWithFavorite.length > 0 ? booksWithFavorite : [],
           favoriteResponse: { status: "success" },
-        })
-      )
+        });
+      })
       .catch((error) =>
         set({
           favoriteResponse: { status: "error", message: error.message },
@@ -86,4 +91,19 @@ export const useFavoritesStore = create<FavoritesStore>((set, get) => ({
       .finally(() => set({ toggleFavoriteStatus: "idle" }));
   },
 
+  resetFavorites: () => {
+    set({
+      favoriteBooks: [], 
+      favoriteStatus: "idle", 
+      favoriteResponse: null 
+    });
+  },
+
 }));
+
+useFavoritesStore.subscribe((state, prevState) => {
+  if (state.favoriteIds !== prevState.favoriteIds && state.favoriteBooks.length > 0) {
+    const updatedBooks = bookHandler.addIsFavoriteFlag(state.favoriteBooks, state.favoriteIds);
+    useFavoritesStore.setState({ favoriteBooks: updatedBooks });
+  }
+});

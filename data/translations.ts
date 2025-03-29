@@ -401,7 +401,14 @@ const translations: Translations = {
           },
         },
       },
-    }
+    },
+
+    favoriteBookItem: {
+      details: {
+        en: "Details",
+        uk: "Деталі",
+      },
+    },
   },  
   
   tabs: {
@@ -962,6 +969,33 @@ const translations: Translations = {
           uk: "Немає в наявності",
         },
       },
+    },
+
+    favorites: {            
+      header: {
+        text: {
+          en: "Favorites",
+          uk: "Обране",
+        },
+      },
+      messages: {       
+        empty: {
+          text: {
+            en: "No favorites available",
+            uk: "Немає обраних книг",
+          },
+        },
+        error: {
+          text: {
+            en: "An error occurred",
+            uk: "Виникла помилка",
+          },
+          subText: {
+            en: "Something went wrong",
+            uk: "Щось пішло не так",
+          },
+        },
+      },     
     },
 
     viewingHistory: {            
