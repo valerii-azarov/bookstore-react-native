@@ -16,6 +16,7 @@ interface CategoryBooksStore {
   categoryHasMore: boolean;
   loadCategoryBooks: (category: string) => Promise<void>;
   loadMoreCategoryBooks: () => void;
+  refreshCategoryBooks: () => void;
   resetCategory: () => void;
 }
 
@@ -72,6 +73,21 @@ export const useCategoryBooksStore = create<CategoryBooksStore>((set, get) => ({
       set({ categoryStatus: "fetching" });
       get().loadCategoryBooks(currentCategory);
     }
+  },
+
+  refreshCategoryBooks: () => {
+    const { currentCategory, categoryStatus } = get();
+
+    if (!currentCategory || categoryStatus === "refreshing") return;
+    
+    set({
+      categoryStatus: "refreshing",
+      categoryBooks: [],
+      categoryLastDoc: null,
+      categoryHasMore: true,
+      categoryResponse: null,
+    });
+    get().loadCategoryBooks(currentCategory);
   },
 
   resetCategory: () => {
