@@ -149,7 +149,7 @@ const InitialLayout = () => {
         name="(user)/(modals)/cart"
         options={{
           headerShown: false,
-          presentation: "modal",
+          presentation: "transparentModal",
         }}
       />
 

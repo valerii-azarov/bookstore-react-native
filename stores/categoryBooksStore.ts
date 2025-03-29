@@ -5,6 +5,7 @@ import { USER_CATEGORY_BOOKS_PAGE_SIZE } from "@/constants/settings";
 import { bookHandler } from "@/helpers/bookHandler";
 import { Book, CategoryStatusType, ResponseType } from "@/types";
 
+import { useCartStore } from "./cartStore";
 import { useFavoritesStore } from "./favoritesStore";
 
 interface CategoryBooksStore {
@@ -42,13 +43,14 @@ export const useCategoryBooksStore = create<CategoryBooksStore>((set, get) => ({
       }),
     });
 
+    const { cartBooks } = useCartStore.getState();
     const { favoriteIds } = useFavoritesStore.getState();
 
     categoryBooksApi.fetchBooksByCategory(category, isNewCategory ? null : categoryLastDoc, USER_CATEGORY_BOOKS_PAGE_SIZE)
       .then(({ books: newCategoryBooks, lastDoc: newLastDoc }) => {
-        const booksWithFavorite = bookHandler.addIsFavoriteFlag(newCategoryBooks, favoriteIds);
+        const categoryBooksWithFlags = bookHandler.addFavoriteAndCartFlags(newCategoryBooks, cartBooks, favoriteIds);
         set((state) => ({
-          categoryBooks: isNewCategory ? booksWithFavorite : [...state.categoryBooks, ...booksWithFavorite],
+          categoryBooks: isNewCategory ? categoryBooksWithFlags : [...state.categoryBooks, ...categoryBooksWithFlags],
           categoryLastDoc: newLastDoc,
           categoryHasMore: newCategoryBooks.length === USER_CATEGORY_BOOKS_PAGE_SIZE,
           categoryResponse: { status: "success" },
@@ -95,6 +97,16 @@ export const useCategoryBooksStore = create<CategoryBooksStore>((set, get) => ({
   },
 
 }));
+
+useCartStore.subscribe((state) => {
+  const { categoryBooks } = useCategoryBooksStore.getState();
+  
+  if (categoryBooks.length > 0) {
+    useCategoryBooksStore.setState({
+      categoryBooks: bookHandler.addInCartFlag(categoryBooks, state.cartBooks),
+    });
+  }
+});
 
 useFavoritesStore.subscribe((state) => {
   const { categoryBooks } = useCategoryBooksStore.getState();

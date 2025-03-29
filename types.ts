@@ -132,8 +132,9 @@ export type BaseBook = {
 };
  
 export type Book = BaseBook & {
-  isFavorite: boolean;
+  isFavorite?: boolean;
   inCart?: boolean;
+  quantity?: number;
 };
 
 export type ViewingHistory = {

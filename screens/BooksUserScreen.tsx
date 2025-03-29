@@ -3,6 +3,7 @@ import { View, FlatList, ScrollView, RefreshControl, StyleSheet, Platform } from
 import { useRouter } from "expo-router";
 import { useTranslation } from "@/contexts/translateContext";
 import { useCategoriesStore } from "@/stores/categoriesStore";
+import { useCartStore } from "@/stores/cartStore";
 import { useFavoritesStore } from "@/stores/favoritesStore";
 import { 
   selectCategories, 
@@ -11,6 +12,7 @@ import {
   selectLoadCategories, 
   selectRefreshCategories,
 } from "@/selectors/categoriesSelectors";
+import { selectToggleCart, selectGetCartCount } from "@/selectors/cartSelectors";
 import { selectToggleFavorite } from "@/selectors/favoritesSelectors";
 import { colors } from "@/constants/theme";
 import { verticalScale } from "@/helpers/common";
@@ -37,6 +39,9 @@ const BooksUserScreen = () => {
   
   const loadCategories = useCategoriesStore(selectLoadCategories);
   const refreshCategories = useCategoriesStore(selectRefreshCategories);
+  
+  const toggleCart = useCartStore(selectToggleCart);
+  const getCartCount= useCartStore(selectGetCartCount);
   
   const toggleFavorite = useFavoritesStore(selectToggleFavorite);
 
@@ -72,6 +77,7 @@ const BooksUserScreen = () => {
               mode="horizontal"
               onViewDetails={() => router.push(`/(user)/book/${item.id}`)}
               onAddToFavorites={() => toggleFavorite(item.id)}
+              onAddToCart={() => toggleCart(item)}
             />
           )}
           keyExtractor={(item: Book) => item.id}
@@ -98,7 +104,7 @@ const BooksUserScreen = () => {
         titleSize={18}
         iconRight={
           <IconBadge 
-            count={3} 
+            count={getCartCount()} 
             iconName="cart" 
             onPress={() => router.push("/(user)/(modals)/cart")}
           />

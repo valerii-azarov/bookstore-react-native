@@ -6,6 +6,7 @@ import { bookHandler } from "@/helpers/bookHandler";
 import { CategoriesType, CategoriesStatusType, ResponseType } from "@/types";
 
 import { useAuthStore } from "./authStore";
+import { useCartStore } from "./cartStore";
 import { useFavoritesStore } from "./favoritesStore";
 
 interface CategoriesStore {
@@ -27,15 +28,21 @@ export const useCategoriesStore = create<CategoriesStore>((set, get) => ({
 
     set({ categoriesStatus: "loading" });
 
+    const { cartBooks } = useCartStore.getState();
+
     const favoriteIds = await favoritesApi.getFavoriteIds(userId);
     useFavoritesStore.setState({ favoriteIds });
 
     categoriesApi.fetchAllCategories(genresKeys)
       .then((categories) => {
+        const categoriesWithFlags = Object.fromEntries(
+          Object.entries(categories).map(([key, books]) => [
+            key,
+            bookHandler.addFavoriteAndCartFlags(books, cartBooks, favoriteIds),
+          ])
+        );
         set({
-          categories: Object.fromEntries(
-            Object.entries(categories).map(([key, books]) => [key, bookHandler.addIsFavoriteFlag(books, favoriteIds)])
-          ),
+          categories: Object.keys(categoriesWithFlags).length > 0 ? categoriesWithFlags : {},
           categoriesResponse: { status: "success" },
           categoriesStatus: "idle",
         });
@@ -59,6 +66,18 @@ export const useCategoriesStore = create<CategoriesStore>((set, get) => ({
   },
 
 }));
+
+useCartStore.subscribe((state) => {
+  const { categories } = useCategoriesStore.getState();
+  
+  if (Object.keys(categories).length > 0) {
+    useCategoriesStore.setState({
+      categories: Object.fromEntries(
+        Object.entries(categories).map(([key, books]) => [key, bookHandler.addInCartFlag(books, state.cartBooks)])
+      ),
+    });
+  }
+});
 
 useFavoritesStore.subscribe((state) => {
   const { categories } = useCategoriesStore.getState();

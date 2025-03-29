@@ -79,7 +79,11 @@ const BookItem = ({ mode, item, onViewDetails, onAddToFavorites, onAddToCart, is
                       }
                     ]}
                   >
-                    <Icon name="bag-add-outline" size={18} color={colors.white} />
+                    <Icon
+                      name={item?.inCart ? "bag-check" : "bag-add-outline"}
+                      size={18}
+                      color={colors.white}
+                    />
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -218,7 +222,11 @@ const BookItem = ({ mode, item, onViewDetails, onAddToFavorites, onAddToCart, is
                         }
                       ]}
                     >
-                      <Icon name="bag-add-outline" size={18} color={colors.white} />
+                      <Icon
+                        name={item?.inCart ? "bag-check" : "bag-add-outline"}
+                        size={18}
+                        color={colors.white}
+                      />
                     </TouchableOpacity>
                   </>
                 )}
@@ -270,7 +278,11 @@ const BookItem = ({ mode, item, onViewDetails, onAddToFavorites, onAddToCart, is
                       }
                     ]}
                   >
-                    <Icon name="bag-add-outline" size={18} color={colors.white} />
+                    <Icon
+                      name={item?.inCart ? "bag-check" : "bag-add-outline"}
+                      size={18}
+                      color={colors.white}
+                    />
                   </TouchableOpacity>
                 </>
               )}

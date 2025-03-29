@@ -6,6 +6,7 @@ import { Book, CreateBook, BookStatusType, EditableBookField, EditableBookValueT
 
 import { useAuthStore } from "./authStore";
 import { useBooksStore } from "./booksStore";
+import { useCartStore } from "./cartStore";
 import { useFavoritesStore } from "./favoritesStore";
 
 interface BookStore {
@@ -32,12 +33,13 @@ export const useBookStore = create<BookStore>((set, get) => ({
 
     set({ bookStatus: "loading", bookResponse: null, bookId });
 
+    const { cartBooks } = useCartStore.getState();
     const { favoriteIds } = useFavoritesStore.getState();
 
     bookApi.fetchBookById(bookId, userId)
       .then((book) =>
         set({
-          book: book ? bookHandler.addIsFavoriteFlag([book], favoriteIds)[0] : null,
+          book: book ? bookHandler.addFavoriteAndCartFlags([book], cartBooks, favoriteIds)[0] : null,
           bookStatus: "idle",
           bookResponse: { status: "success" },
         })
@@ -160,6 +162,16 @@ export const useBookStore = create<BookStore>((set, get) => ({
   },
   
 }));
+
+useCartStore.subscribe((state) => {
+  const { book } = useBookStore.getState();
+  
+  if (book) {
+    useBookStore.setState({
+      book: bookHandler.addInCartFlag([book], state.cartBooks)[0],
+    });
+  }
+});
 
 useFavoritesStore.subscribe((state) => {
   const { book } = useBookStore.getState();

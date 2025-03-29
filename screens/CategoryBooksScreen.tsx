@@ -3,6 +3,7 @@ import { View, FlatList, StyleSheet } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "@/contexts/translateContext";
 import { useCategoryBooksStore } from "@/stores/categoryBooksStore";
+import { useCartStore } from "@/stores/cartStore";
 import { useFavoritesStore } from "@/stores/favoritesStore";
 import { 
   selectCategoryBooks, 
@@ -13,6 +14,7 @@ import {
   selectRefreshCategoryBooks,
   selectResetCategory,
 } from "@/selectors/categoryBooksSelectors";
+import { selectToggleCart } from "@/selectors/cartSelectors";
 import { selectToggleFavorite } from "@/selectors/favoritesSelectors";
 import { USER_CATEGORY_BOOKS_PAGE_SIZE } from "@/constants/settings";
 import { Book } from "@/types";
@@ -39,6 +41,8 @@ const CategoryBooksScreen = () => {
   const refreshCategoryBooks = useCategoryBooksStore(selectRefreshCategoryBooks);
   const resetCategory = useCategoryBooksStore(selectResetCategory);
 
+  const toggleCart = useCartStore(selectToggleCart);
+
   const toggleFavorite = useFavoritesStore(selectToggleFavorite);
 
   const isLoading = categoryStatus === "loading";
@@ -56,6 +60,7 @@ const CategoryBooksScreen = () => {
         mode="list"
         onViewDetails={() => router.push(`/(user)/book/${item.id}`)}
         onAddToFavorites={() => toggleFavorite(item.id)}
+        onAddToCart={() => toggleCart(item)}
       />
     );
   }, [isLoading, router]);

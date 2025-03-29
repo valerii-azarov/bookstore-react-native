@@ -7,6 +7,7 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "@/contexts/translateContext";
 import { useAuthStore } from "@/stores/authStore";
 import { useBookStore } from "@/stores/bookStore";
+import { useCartStore } from "@/stores/cartStore";
 import { useFavoritesStore } from "@/stores/favoritesStore";
 import { 
   selectBook, 
@@ -16,6 +17,7 @@ import {
   selectDeleteBook, 
   selectRefreshBook,
 } from "@/selectors/bookSelectors";
+import { selectToggleCart } from "@/selectors/cartSelectors";
 import { selectToggleFavorite } from "@/selectors/favoritesSelectors";
 import { selectIsAdmin } from "@/selectors/authSelectors";
 
@@ -46,6 +48,8 @@ const BookDetailsScreen = () => {
   const loadBookById = useBookStore(selectLoadBookById);
   const deleteBook = useBookStore(selectDeleteBook); 
   const refreshBook = useBookStore(selectRefreshBook);
+
+  const toggleCart = useCartStore(selectToggleCart);
 
   const toggleFavorite = useFavoritesStore(selectToggleFavorite);
 
@@ -585,7 +589,7 @@ const BookDetailsScreen = () => {
 
                 <View style={styles.actionButtonsRow}>
                   <TouchableOpacity
-                    onPressIn={() => {}}
+                    onPressIn={() => toggleCart(book)}
                     style={[
                       styles.actionButton,
                       {
@@ -594,7 +598,11 @@ const BookDetailsScreen = () => {
                       },
                     ]}
                   >
-                    <Icon name="bag-add-outline" size={24} color={colors.white} />
+                    <Icon 
+                      name={book?.inCart ? "bag-check" : "bag-add-outline"} 
+                      size={24} 
+                      color={colors.white} 
+                    />
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -871,7 +879,7 @@ const BookDetailsScreen = () => {
         {!isAdmin && (  
           <View style={styles.actionButtonsRow}>
             <TouchableOpacity
-              onPressIn={() => {}}
+              onPressIn={() => toggleCart(book)}
               style={[
                 styles.actionButton,
                 {
@@ -880,7 +888,11 @@ const BookDetailsScreen = () => {
                 },
               ]}
             >
-              <Icon name="bag-add-outline" size={24} color={colors.white} />
+              <Icon 
+                name={book?.inCart ? "bag-check" : "bag-add-outline"} 
+                size={24} 
+                color={colors.white} 
+              />
             </TouchableOpacity>
 
             <TouchableOpacity
