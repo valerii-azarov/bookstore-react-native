@@ -1,18 +1,18 @@
-import { BaseBook, Book } from "@/types";
+import { BaseBook, Book, CartBook, FavoriteBook } from "@/types";
 
 export const bookHandler = {
-  addIsFavoriteFlag: (books: BaseBook[], favoriteIds: string[]): Book[] => {
+  addIsFavoriteFlag: (books: BaseBook[], favoriteIds: string[]): FavoriteBook[] => {
     return books.map((book) => ({
       ...book,
       isFavorite: favoriteIds.includes(book.id),
     }));
   },
 
-  addInCartFlag: (books: BaseBook[], cartBooks: Book[]): Book[] => {
+  addInCartFlag: (books: BaseBook[], cartBooks: Book[]): CartBook[] => {
     return books.map((book) => ({
       ...book,
       inCart: cartBooks.some((cartBook) => cartBook.id === book.id),
-      quantity: cartBooks.find((cartBook) => cartBook.id === book.id)?.quantity || book.quantity,
+      cartQuantity: cartBooks.find((cartBook) => cartBook.id === book.id)?.cartQuantity || 0,
     }));
   },
 
@@ -21,7 +21,7 @@ export const bookHandler = {
       ...book,
       isFavorite: favoriteIds.includes(book.id),
       inCart: cartBooks.some((cartBook) => cartBook.id === book.id),
-      quantity: cartBooks.find((cartBook) => cartBook.id === book.id)?.quantity || book.quantity,
+      cartQuantity: cartBooks.find((cartBook) => cartBook.id === book.id)?.cartQuantity || 0,
     }));
-  },
+  },  
 };

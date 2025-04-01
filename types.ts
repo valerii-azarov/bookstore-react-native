@@ -125,16 +125,19 @@ export type BaseBook = {
   size: string;
   weight: number;
   illustrations: boolean;
-  quantity: number;
+  availableQuantity: number;
   sku: string;
   createdAt: Date;
   updatedAt: Date;
 };
- 
-export type Book = BaseBook & {
-  isFavorite?: boolean;
-  inCart?: boolean;
-  quantity?: number;
+
+export type Cart = {
+  inCart: boolean;
+  cartQuantity: number;
+};
+
+export type Favorite = {
+  isFavorite: boolean;
 };
 
 export type ViewingHistory = {
@@ -142,7 +145,13 @@ export type ViewingHistory = {
   timestamp: Date;
 };
 
+export type CartBook = BaseBook & Cart;
+
+export type FavoriteBook = BaseBook & Favorite;
+
 export type ViewingHistoryBook = BaseBook & ViewingHistory;
+
+export type Book = BaseBook & Partial<Favorite & Cart>;
 
 export type BookPricing = {
   price: number;

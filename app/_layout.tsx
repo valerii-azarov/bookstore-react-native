@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Stack } from "expo-router";
 import { Platform } from "react-native";
 import { useRouter, useSegments } from "expo-router";
@@ -149,9 +150,15 @@ const InitialLayout = () => {
         name="(user)/(modals)/cart"
         options={{
           headerShown: false,
-          presentation: "transparentModal",
+          ...(Platform.OS === "ios"
+            ? { 
+                animation: "slide_from_bottom", 
+                animationDuration: 250,
+              }
+            : {}),
         }}
       />
+
 
       {/* auth screens */}
       <Stack.Screen 
@@ -171,12 +178,14 @@ const InitialLayout = () => {
 
 const RootLayout = () => {
   return (
-    <SafeAreaProvider>
-      <TranslateProvider>
-        <InitialLayout />
-        <StatusBar style={Platform.OS === "ios" ? "dark" : "light"} />
-      </TranslateProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView>
+      <SafeAreaProvider>
+        <TranslateProvider>
+          <InitialLayout />
+          <StatusBar style={Platform.OS === "ios" ? "dark" : "light"} />
+        </TranslateProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView> 
   );
 };
 

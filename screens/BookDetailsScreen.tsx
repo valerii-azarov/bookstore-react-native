@@ -313,7 +313,7 @@ const BookDetailsScreen = () => {
       { 
         field: "quantity",
         label: t("screens.bookDetails.labels.quantity"), 
-        value: book.quantity || 0, 
+        value: book.availableQuantity || 0, 
         isVisible: isAdmin,
         isEditable: true,
       },
@@ -527,7 +527,7 @@ const BookDetailsScreen = () => {
               style={[
                 styles.priceContainer,
                 {
-                  marginBottom: !isAdmin && book.quantity === 0 ? 0 : isAdmin && !isEditing ? 0 : 15,
+                  marginBottom: !isAdmin && book.availableQuantity === 0 ? 0 : isAdmin && !isEditing ? 0 : 15,
                 },
               ]}
             >
@@ -560,13 +560,13 @@ const BookDetailsScreen = () => {
               )}
             </View>
 
-            {!isAdmin && book.quantity === 0 && (
+            {!isAdmin && book.availableQuantity === 0 && (
               <Typography fontSize={16} fontWeight="bold" color={colors.grayTint5}>
                 {t("screens.bookDetails.static.outOfStock")}
               </Typography>
             )}
             
-            {!isAdmin && book.quantity > 0 && (
+            {!isAdmin && book.availableQuantity > 0 && (
               <View style={styles.actionButtonsContainer}>
                 <TouchableOpacity
                   onPressIn={() => {}}

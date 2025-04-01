@@ -148,16 +148,16 @@ const BookItem = ({ mode, item, onViewDetails, onAddToFavorites, onAddToCart, is
               style={[
                 styles.infoBadge,
                 { 
-                  backgroundColor: item.quantity > 0 ? colors.greenTint4 : colors.redTint4,
+                  backgroundColor: item.availableQuantity > 0 ? colors.greenTint4 : colors.redTint4,
                 },
               ]}
             >
               <Typography fontSize={12} color={colors.white}>
-                {item?.quantity > 0 ? (
+                {item?.availableQuantity > 0 ? (
                   <>
                     {`${t("components.bookItem.available")}: `}
                     <Typography fontSize={12} fontWeight="bold" color={colors.white}>
-                      {item?.quantity}
+                      {item?.availableQuantity}
                     </Typography>
                   </>
                 ) : (

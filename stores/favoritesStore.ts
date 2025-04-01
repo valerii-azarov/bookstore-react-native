@@ -2,13 +2,13 @@ import { create } from "zustand";
 import { favoritesApi } from "@/api/favoritesApi";
 import { bookHandler } from "@/helpers/bookHandler";
 import { messageHandler } from "@/helpers/messageHandler";
-import { Book, FavoritesStatusType, ToggleFavoriteStatusType, ResponseType } from "@/types";
+import { FavoriteBook, FavoritesStatusType, ToggleFavoriteStatusType, ResponseType } from "@/types";
 
 import { useAuthStore } from "./authStore";
 
 interface FavoritesStore {
   favoriteIds: string[];
-  favoriteBooks: Book[];
+  favoriteBooks: FavoriteBook[];
   favoriteStatus: FavoritesStatusType;
   favoriteResponse: ResponseType | null;
   toggleFavoriteStatus: ToggleFavoriteStatusType;

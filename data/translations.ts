@@ -1242,6 +1242,57 @@ const translations: Translations = {
         },
       },
     },
+
+    cart: {            
+      header: {
+        text: {
+          en: "Cart",
+          uk: "Кошик",
+        },
+      },
+      titles: {
+        order: {
+          en: "Your order",
+          uk: "Ваше замовлення",
+        },
+      },
+      labels: {
+        subtotal: {
+          text: {
+            en: "Subtotal",
+            uk: "Підсумок",
+          },
+        },
+        discount: {
+          text: {
+            en: "Discount",
+            uk: "Знижка",
+          },
+        },
+        total: {
+          text: {
+            en: "Total",
+            uk: "Загалом",
+          },
+        },
+      },
+      messages: {       
+        empty: {
+          text: {
+            en: "Your cart is empty",
+            uk: "Ваш кошик порожній",
+          },
+        },
+      },
+      buttons: {
+        checkout: {
+          text: {
+            en: "Checkout",
+            uk: "Оформити замовлення",
+          },
+        },
+      },     
+    },
   },
 
   labels: {
@@ -1389,6 +1440,24 @@ const translations: Translations = {
         },
       },
     },
+    confirmDeleteCartBook: {
+      title: {
+        en: "Remove Book",
+        uk: "Видалити книгу",
+      },
+      message: {
+        en: "Do you want to remove this book from your cart?",
+        uk: "Ви хочете видалити цю книгу з кошика?",
+      },
+      confirm: {
+        en: "Remove",
+        uk: "Видалити",
+      },
+      cancel: {
+        en: "Cancel",
+        uk: "Скасувати",
+      },
+    },  
     static: {
       cancel: {
         en: "Cancel",
