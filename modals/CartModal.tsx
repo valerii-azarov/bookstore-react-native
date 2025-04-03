@@ -167,7 +167,17 @@ const CartModal = () => {
                 }
               ]}
             >
-              <Button onPress={() => console.log("Ordering...")}>
+              <Button
+                onPress={() =>
+                  router.push({
+                    pathname: "/(user)/(modals)/checkout",
+                    params: { 
+                      bookIds: JSON.stringify(cartBooks.map(book => book.id)),  
+                      totalPrice: total, 
+                    },
+                  })
+                }
+              >
                 <Typography fontSize={16} fontWeight="bold" color={colors.white}>
                   {t("modals.cart.buttons.checkout.text")}
                 </Typography>

@@ -1,4 +1,4 @@
-import { ViewStyle, TouchableOpacity, TouchableOpacityProps, StyleSheet } from "react-native";
+import { ViewStyle, TouchableOpacity, TouchableOpacityProps, StyleProp, StyleSheet } from "react-native";
 import { colors } from "@/constants/theme";
 import { verticalScale } from "@/helpers/common";
 
@@ -6,7 +6,7 @@ import Loading from "@/components/Loading";
 
 type ButtonProps = TouchableOpacityProps & {
   onPress: () => void;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   loading?: boolean;
   disabled?: boolean;
 };

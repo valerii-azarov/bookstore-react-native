@@ -158,7 +158,18 @@ const InitialLayout = () => {
             : {}),
         }}
       />
-
+      <Stack.Screen
+        name="(user)/(modals)/checkout"
+        options={{
+          headerShown: false,
+          ...(Platform.OS === "ios"
+            ? { 
+                animation: "slide_from_bottom", 
+                animationDuration: 250,
+              }
+            : {}),
+        }}
+      />
 
       {/* auth screens */}
       <Stack.Screen 

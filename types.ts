@@ -173,7 +173,65 @@ export type EditableBookField =
 
 export type EditableBookValueType = string | string[] | number | boolean | BookPricing | BoookImages | null;
 
+// nova post
+export interface BaseNovaPost {
+  ref: string;
+  description: string;
+}
+
+export interface NovaPostCity extends BaseNovaPost {}
+
+export interface NovaPostWarehouse extends BaseNovaPost {
+  cityRef: string;
+}
+
+// order
+export type OrderStateType = "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+
+export interface Order {
+  id: string;
+  userId: string;
+  bookIds: string[];
+  status: OrderStateType;
+  paymentMethod: string;
+  isPaid: boolean;
+  customer: {
+    firstName: string;
+    lastName: string;
+    middleName?: string;
+    phoneNumber: string;
+  };
+  delivery: {
+    city: string;
+    warehouse: string;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface OrderFormValues {
+  city: string;
+  warehouse: string;
+  firstName: string;
+  lastName: string;
+  middleName?: string;
+  phoneNumber: string;
+  paymentMethod: string;
+}
+
+export interface OrderCreation extends Omit<Order, "id" | "userId" | "createdAt" | "updatedAt"> {}
+
 // components
+export interface Step<T> {
+  title: string;
+  hideTitle?: boolean;
+  hideStepCount?: boolean;
+  useFullStepCount?: boolean;
+  component: React.ReactNode;
+  validate?: (form: T) => boolean;
+  scrollEnabled?: boolean;
+}
+
 export type BookFieldComponentType = {
   component: JSX.Element;
 };
@@ -209,6 +267,12 @@ export type FavoritesStatusType = "idle" | "loading";
 export type ToggleFavoriteStatusType = "idle" | "toggling";
 
 export type ViewingHistoryStatusType = "idle" | "loading";
+
+export type NovaPostCityStatusType = "idle" | "loading";
+
+export type NovaPostWarehouseStatusType = "idle" | "loading";
+
+export type OrderStatusType = "idle" | "loading" | "creating";
 
 // others
 export type BookSearchKey = keyof BaseBook;
