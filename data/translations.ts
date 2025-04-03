@@ -1293,6 +1293,241 @@ const translations: Translations = {
         },
       },     
     },
+
+    checkout: {
+      header: {
+        text: {
+          en: "Checkout",
+          uk: "Оформлення",
+        },
+      },
+      titles: {
+        step1: {
+          en: "Delivery",
+          uk: "Доставка",
+        },
+        step2: {
+          en: "Contact Information",
+          uk: "Контактні дані",
+        },
+        step3: {
+          en: "Payment Method",
+          uk: "Спосіб оплати",
+        },
+        step4: {
+          en: "Confirmation",
+          uk: "Підтвердження",
+        },
+        step5: {
+          en: "Payment",
+          uk: "Оплата",
+        },
+      },
+      labels: {
+        city: {
+          en: "Select location",
+          uk: "Оберіть пункт",
+        },
+        warehouse: {
+          en: "Select branch",
+          uk: "Оберіть відділення",
+        },
+        lastName: {
+          en: "Last Name",
+          uk: "Прізвище",
+        },
+        firstName: {
+          en: "First Name",
+          uk: "Ім'я",
+        },
+        middleName: {
+          en: "Middle Name (optional)",
+          uk: "По батькові (необов’язково)",
+        },
+        phoneNumber: {
+          en: "Phone Number",
+          uk: "Номер телефону",
+        },
+        totalAmount: {
+          en: "Total amount to pay:",
+          uk: "Загальна сума до сплати:",
+        },
+        selectPaymentMethod: {
+          en: "Select payment method",
+          uk: "Оберіть спосіб оплати",
+        },
+        deliveryAddress: {
+          en: "Delivery address:",
+          uk: "Адреса доставки:",
+        },
+        recipient: {
+          en: "Recipient:",
+          uk: "Отримувач:",
+        },
+        paymentMethodLabel: {
+          en: "Payment method:",
+          uk: "Спосіб оплати:",
+        },
+        checkData: {
+          en: "Please check your details",
+          uk: "Будь ласка, перевірте ваші дані",
+        },
+      },
+      placeholders: {
+        citySearch: {
+          en: "Search location...",
+          uk: "Пошук пункту...",
+        },
+        warehouseSearch: {
+          en: "Search branch...",
+          uk: "Пошук відділення...",
+        },
+        lastName: {
+          en: "Enter last name",
+          uk: "Введіть прізвище",
+        },
+        firstName: {
+          en: "Enter first name",
+          uk: "Введіть ім'я",
+        },
+        middleName: {
+          en: "Enter middle name",
+          uk: "Введіть по батькові",
+        },
+      },
+      messages: {
+        deliveryInfo: {
+          en: "Select a city and Nova Post branch so we can deliver your order to a convenient location for you.",
+          uk: "Виберіть місто та відділення Нової Пошти, щоб ми доставили замовлення саме туди, де вам зручно.",
+        },
+        paymentNotice: {
+          title: {
+            en: "❗Please note",
+            uk: "❗Зверніть увагу",
+          },
+          text: {
+            en: "Payment by bank card is temporarily unavailable. You can pay for your order upon receipt at a Nova Post branch.",
+            uk: "Оплата банківською карткою тимчасово недоступна. Можна оплатити замовлення при отриманні у відділенні Нова Пошта.",
+          },
+        },
+        paymentSystem: {
+          title: {
+            en: "Payment system under development 🚀",
+            uk: "Платіжна система в розробці 🚀",
+          },
+          text: {
+            en: "Beta testing is currently underway. We are actively working on adding a payment system. A little patience—and everything will be ready! Thank you for your understanding!",
+            uk: "Зараз триває бета-тестування. Ми активно працюємо над додаванням платіжної системи. Трішки терпіння — і все буде готово! Дякуємо за розуміння!",
+          },
+        },
+        success: {
+          title: {
+            en: "Your order has been successfully placed",
+            uk: "Ваше замовлення успішно оформлено",
+          },
+          text: {
+            en: "Await a message with delivery details. Thank you for choosing us!",
+            uk: "Очікуйте на повідомлення з деталями доставки. Дякуємо, що обрали нас!",
+          },
+        },
+        error: {
+          title: {
+            en: "Error ❌",
+            uk: "Помилка ❌",
+          },
+          text: {
+            en: "Please try again later",
+            uk: "Будь ласка, спробуйте ще раз пізніше",
+          },
+        },
+        loadingCities: {
+          en: "Loading locations...",
+          uk: "Завантаження пунктів...",
+        },
+        emptyCities: {
+          en: "Location not found",
+          uk: "Пункт не знайдено",
+        },
+        errorCities: {
+          en: "Error loading locations",
+          uk: "Помилка при завантаженні пунктів",
+        },
+        loadingWarehouses: {
+          en: "Loading branches...",
+          uk: "Завантаження відділень...",
+        },
+        emptyWarehouses: {
+          en: "Branch not found",
+          uk: "Відділення не знайдено",
+        },
+        errorWarehouses: {
+          en: "Error loading branches",
+          uk: "Помилка при завантаженні відділень",
+        },
+        noCityOrWarehouse: {
+          en: "City and branch not specified",
+          uk: "Не вказано місто та відділення",
+        },
+        noName: {
+          en: "Last name and first name not specified",
+          uk: "Не вказано прізвище та ім'я",
+        },
+        noPhone: {
+          en: "Phone number not specified",
+          uk: "Не вказано номер телефону",
+        },
+        noPaymentMethod: {
+          en: "Payment method not selected",
+          uk: "Не обрано спосіб оплати",
+        },
+      },
+      checkboxes: {
+        cash: {
+          en: "Cash",
+          uk: "Готівкою",
+        },
+        cod: {
+          en: "Cash on Delivery",
+          uk: "Накладений платіж",
+        },
+        card: {
+          en: "Bank Card",
+          uk: "Банківською карткою",
+        },
+      },
+      buttons: {
+        back: {
+          text: {
+            en: "Back",
+            uk: "Назад",
+          },
+        },
+        continue: {
+          text: {
+            en: "Continue",
+            uk: "Продовжити",
+          },
+        },
+        confirm: {
+          text: {
+            en: "Confirm",
+            uk: "Підтвердити",
+          },
+        },
+        complete: {
+          text: {
+            en: "Complete",
+            uk: "Завершити",
+          },
+        },
+        return: {
+          text: {
+            en: "Return",
+            uk: "Повернутись",
+          },
+        },
+      },
+    },
   },
 
   labels: {
@@ -1506,6 +1741,12 @@ const translations: Translations = {
       en: "This email is already in use",
       uk: "Ця електронна пошта вже використовується",
     },
+    users: {
+      userNotFound: {
+        en: "User not found",
+        uk: "Користувача не знайдено",
+      },
+    },
     image: {
       invalidImageObject: {
         en: "Invalid image object",
@@ -1544,6 +1785,12 @@ const translations: Translations = {
       bookNotFoundAfterUpdate: {
         en: "Book not found after update",
         uk: "Книга не знайдена після оновлення"
+      },
+    },
+    orders: {
+      createdOrderNotFound: {
+        en: "Order not found after creation",
+        uk: "Замовлення не знайдено після створення",
       },
     },
   },

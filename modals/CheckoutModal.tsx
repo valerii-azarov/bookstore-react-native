@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { View } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
+import { useTranslation } from "@/contexts/translateContext";
 import { useNovaPostStore } from "@/stores/novaPostStore";
 import { useOrderStore } from "@/stores/orderStore";
 import {
@@ -46,6 +47,8 @@ const initialValues: OrderFormValues = {
 const CheckoutModal = () => {
   const router = useRouter();
   const { bookIds, totalPrice } = useLocalSearchParams<{ bookIds?: string; totalPrice?: string }>();
+
+  const t = useTranslation();
 
   const parsedBookIds = bookIds ? JSON.parse(bookIds) : [];
   const parsedTotalPrice = totalPrice ? parseFloat(totalPrice) : 0;
@@ -124,46 +127,46 @@ const CheckoutModal = () => {
 
   const steps = [
     {
-      title: "Доставка",
+      title: t("modals.checkout.titles.step1"),
       component: (
         <View style={{ flexDirection: "column", gap: 15 }}>
           <View style={{ flex: 1, minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              Оберіть пункт
+              {t("modals.checkout.labels.city")}
             </Typography>
 
             <SearchDropdown
               data={cityOptions}
               onSelect={handleCitySelect}
               onSearch={handleCitySearch}
-              searchPlaceholder="Пошук пункту..."
+              searchPlaceholder={t("modals.checkout.placeholders.citySearch")}
               shape="rounded"
               isLoading={isLoadingCities}
               isEmpty={isEmptyCities}
               isError={isErrorCities}
-              loadingMessage="Завантаження пунктів..."
-              emptyMessage="Пункт не знайдено"
-              errorMessage="Помилка при завантаженні пунктів"
+              loadingMessage={t("modals.checkout.messages.loadingCities")}
+              emptyMessage={t("modals.checkout.messages.emptyCities")}
+              errorMessage={t("modals.checkout.messages.errorCities")}
             />
           </View>
           
           <View style={{ flex: 1, minHeight: 75, marginBottom: 10 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              Оберіть відділення
+              {t("modals.checkout.labels.warehouse")}
             </Typography>
 
             <SearchDropdown
               data={warehouseOptions}
               onSelect={handleWarehouseSelect}
               onSearch={handleWarehouseSearch}
-              searchPlaceholder="Пошук відділення..."
+              searchPlaceholder={t("modals.checkout.placeholders.warehouseSearch")}
               shape="rounded"
               isLoading={isLoadingWarehouses}
               isEmpty={isEmptyWarehouses}
               isError={isErrorWarehouses}
-              loadingMessage="Завантаження відділень..."
-              emptyMessage="Відділення не знайдено"
-              errorMessage="Помилка при завантаженні відділень"
+              loadingMessage={t("modals.checkout.messages.loadingWarehouses")}
+              emptyMessage={t("modals.checkout.messages.emptyWarehouses")}
+              errorMessage={t("modals.checkout.messages.errorWarehouses")}
               disabled={!selectedCity}
             />
           </View>
@@ -177,7 +180,7 @@ const CheckoutModal = () => {
             }}
           >
             <Typography fontSize={14} fontWeight="medium" color={colors.gray}>
-              Виберіть місто та відділення Нової Пошти, щоб ми доставили замовлення саме туди, де вам зручно.
+              {t("modals.checkout.messages.deliveryInfo")}
             </Typography>
           </View>
         </View>
@@ -185,51 +188,51 @@ const CheckoutModal = () => {
       validate: (form: OrderFormValues) => !!form.city && !!form.warehouse,
     },
     {
-      title: "Контактні дані",
+      title: t("modals.checkout.titles.step2"),
       component: (
         <View style={{ flexDirection: "column", gap: 15 }}>
           <View style={{ flex: 1, minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              Прізвище
+              {t("modals.checkout.labels.lastName")}
             </Typography>
       
             <Input
               value={formValues.lastName}
               onChangeText={(text) => setFormValues((prev) => ({ ...prev, lastName: text }))}
-              placeholder="Введіть прізвище"
+              placeholder={t("modals.checkout.placeholders.lastName")}
               keyboardType="default"
             />
           </View>
       
           <View style={{ flex: 1, minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              Ім'я
+              {t("modals.checkout.labels.firstName")}
             </Typography>
       
             <Input 
               value={formValues.firstName}
               onChangeText={(text) => setFormValues((prev) => ({ ...prev, firstName: text }))}
-              placeholder="Введіть ім'я"
+              placeholder={t("modals.checkout.placeholders.firstName")}
               keyboardType="default"
             />
           </View>  
       
           <View style={{ flex: 1, minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              По батькові (необов’язково)
+              {t("modals.checkout.labels.middleName")}
             </Typography>
       
             <Input 
               value={formValues.middleName}
               onChangeText={(text) => setFormValues((prev) => ({ ...prev, middleName: text }))}
-              placeholder="Введіть по батькові"
+              placeholder={t("modals.checkout.placeholders.middleName")}
               keyboardType="default"
             />
           </View>
       
           <View style={{ flex: 1, minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              Номер телефону
+              {t("modals.checkout.labels.phoneNumber")}
             </Typography>
       
             <Input 
@@ -245,12 +248,12 @@ const CheckoutModal = () => {
       scrollEnabled: true,
     },
     {
-      title: "Спосіб оплати",
+      title: t("modals.checkout.titles.step3"),
       component: (
         <View>
           <View style={{ flexDirection: "column" }}>
             <Typography fontSize={16} fontWeight="medium" style={{ marginBottom: 5 }}>
-              Загальна сума до сплати: 
+              {t("modals.checkout.labels.totalAmount")}
             </Typography>
             
             <Typography fontSize={28} fontWeight="bold" numberOfLines={1} ellipsizeMode="tail" color={colors.black}>
@@ -267,14 +270,14 @@ const CheckoutModal = () => {
           />
           
           <Typography fontSize={16} fontWeight="medium" color={colors.black} style={{ marginBottom: 10 }}>
-            Оберіть спосіб оплати
+            {t("modals.checkout.labels.selectPaymentMethod")}
           </Typography>
 
           <View style={{ alignItems: "flex-start" }}>
             <Checkbox
               checked={formValues.paymentMethod === "cash"}
               onPress={() => setFormValues((prev) => ({ ...prev, paymentMethod: "cash" }))}
-              label="Готівкою"
+              label={t("modals.checkout.checkboxes.cash")}
               labelSize={16}
               style={{ marginBottom: 15 }}
             />
@@ -282,7 +285,7 @@ const CheckoutModal = () => {
             <Checkbox
               checked={formValues.paymentMethod === "cod"}
               onPress={() => setFormValues((prev) => ({ ...prev, paymentMethod: "cod" }))}
-              label="Накладений платіж"
+              label={t("modals.checkout.checkboxes.cod")}
               labelSize={16}
               style={{ marginBottom: 15 }}
             />
@@ -290,7 +293,7 @@ const CheckoutModal = () => {
             <Checkbox
               checked={formValues.paymentMethod === "card"}
               onPress={() => setFormValues((prev) => ({ ...prev, paymentMethod: "card" }))}
-              label="Банківською карткою"
+              label={t("modals.checkout.checkboxes.card")}
               labelSize={16}
               labelColor={colors.grayTint5}
               style={{
@@ -309,12 +312,11 @@ const CheckoutModal = () => {
             }}
           >
             <Typography fontSize={16} fontWeight="bold" style={{ marginBottom: 5 }}>
-              ❗Зверніть увагу 
+              {t("modals.checkout.messages.paymentNotice.title")} 
             </Typography>
 
             <Typography fontSize={14} fontWeight="medium" color={colors.gray}>
-              Оплата банківською карткою тимчасово недоступна.
-              Можна оплатити замовлення при отриманні у відділенні Нова Пошта.
+              {t("modals.checkout.messages.paymentNotice.text")}
             </Typography>
           </View>
         </View>
@@ -322,57 +324,57 @@ const CheckoutModal = () => {
       validate: (form: OrderFormValues) => !!form.paymentMethod,
     },
     {
-      title: "Підтвердження",
+      title: t("modals.checkout.titles.step4"),
       component: (
         <View>
           <Typography fontSize={16} fontWeight="medium" color={colors.black} style={{ marginBottom: 15 }}>
-            Будь ласка, перевірте ваші дані
+            {t("modals.checkout.labels.checkData")}
           </Typography>
       
           <View style={{ marginBottom: 15 }}>
             <Typography fontSize={16} fontWeight="bold" color={colors.black} style={{ marginBottom: 2.5 }}>
-              Адреса доставки:
+              {t("modals.checkout.labels.deliveryAddress")}
             </Typography>
       
             <Typography fontSize={16} fontWeight="medium" color={colors.black} numberOfLines={2}>
-              {selectedCity?.label && selectedWarehouse?.label ? `${selectedCity.label}, ${selectedWarehouse.label}` : "Не вказано місто та відділення"}
+              {selectedCity?.label && selectedWarehouse?.label ? `${selectedCity.label}, ${selectedWarehouse.label}` : t("modals.checkout.messages.noCityOrWarehouse")}
             </Typography>
           </View>
       
           <View style={{ marginBottom: 15 }}>
             <Typography fontSize={16} fontWeight="bold" color={colors.black} style={{ marginBottom: 2.5 }}>
-              Отримувач:
+              {t("modals.checkout.labels.recipient")}
             </Typography>
       
             <Typography fontSize={16} fontWeight="medium" color={colors.black} numberOfLines={1}>
-              {formValues.lastName || formValues.firstName ? `${formValues.lastName || ""} ${formValues.firstName || ""} ${formValues.middleName || ""}`.trim() : "Не вказано прізвище та ім'я"}
+              {formValues.lastName || formValues.firstName ? `${formValues.lastName || ""} ${formValues.firstName || ""} ${formValues.middleName || ""}`.trim() : t("modals.checkout.messages.noName")}
             </Typography>
           </View>
       
           <View style={{ marginBottom: 15 }}>
             <Typography fontSize={16} fontWeight="bold" color={colors.black} style={{ marginBottom: 2.5 }}>
-              Номер телефону:
+              {t("modals.checkout.labels.phoneNumber")}
             </Typography>
       
             <Typography fontSize={16} fontWeight="medium" color={colors.black} numberOfLines={1}>
-              {formValues.phoneNumber || "Не вказано номер телефону"}
+              {formValues.phoneNumber || t("modals.checkout.messages.noPhone")}
             </Typography>
           </View>
       
           <View style={{ marginBottom: 15 }}>
             <Typography fontSize={16} fontWeight="bold" color={colors.black} style={{ marginBottom: 2.5 }}>
-              Спосіб оплати:
+              {t("modals.checkout.labels.paymentMethodLabel")}
             </Typography>
       
             <Typography fontSize={16} fontWeight="medium" color={colors.black} numberOfLines={1}>
-              {formValues.paymentMethod === "cash" ? "Готівкою" : formValues.paymentMethod === "card" ? "Банківською карткою" : formValues.paymentMethod === "cod" ? "Накладений платіж" : "Не обрано спосіб оплати"}
+              {t(`modals.checkout.checkboxes.${formValues.paymentMethod || "noPaymentMethod"}`)}
             </Typography>
           </View>
         </View>
       ),
     },
     {
-      title: "Оплата",
+      title: t("modals.checkout.titles.step5"),
       component: (
         <View 
           style={{
@@ -382,12 +384,11 @@ const CheckoutModal = () => {
           }}
         > 
           <Typography fontSize={18} fontWeight="bold" style={{ marginBottom: 10 }}>
-            Платіжна система в розробці 🚀
+            {t("modals.checkout.messages.paymentSystem.title")}
           </Typography>
 
           <Typography fontSize={14} fontWeight="medium" color={colors.gray}>
-            Зараз триває бета-тестування. Ми активно працюємо над додаванням платіжної системи.  
-            Трішки терпіння — і все буде готово! Дякуємо за розуміння! 
+            {t("modals.checkout.messages.paymentSystem.text")} 
           </Typography>
         </View>
       ),
@@ -404,11 +405,11 @@ const CheckoutModal = () => {
           }}
         >
           <Typography fontSize={24} fontWeight="bold" style={{ marginBottom: 10, textAlign: "center" }}>
-            {isOrderSuccess ? "Ваше замовлення успішно оформлено" : "Помилка ❌"}
+            {t(`modals.checkout.messages.${isOrderSuccess ? "success" : "error"}.title`)}
           </Typography>
           
           <Typography fontSize={16} fontWeight="medium" color={colors.blackTint5} style={{ textAlign: "center" }}>
-            {isOrderSuccess ? "Очікуйте на повідомлення з деталями доставки. Дякуємо, що обрали нас!" : orderMessage || "Будь ласка, спробуйте ще раз пізніше"}
+            {t(`modals.checkout.messages.${isOrderSuccess ? "success" : "error"}.text`) || orderMessage}
           </Typography>
         </View>
       ),
@@ -446,7 +447,7 @@ const CheckoutModal = () => {
     <ModalWrapper>
       <KeyboardWrapper>
         <Header
-          title="Оформлення"
+          title={t("modals.checkout.header.text")}
           iconLeft={<BackButton />}
           style={{
             paddingHorizontal: 15,
@@ -466,15 +467,12 @@ const CheckoutModal = () => {
           onNext={handleNext}
           onPrevious={handlePrevious}
           form={formValues}
-          buttonLabels={{ 
-            next: isOrderError ? "Повернутись" : isLastStep ? "Завершити" : isSecondToLastStep ? "Підтвердити" : "Продовжити",
-            previous: "Назад",
+          buttonLabels={{
+            next: t(`modals.checkout.buttons.${isOrderError ? "return" : isLastStep ? "complete" : isSecondToLastStep ? "confirm" : "continue"}.text`),
+            previous: t("modals.checkout.buttons.back.text"),
           }}
           buttonProps={{ 
-            next: { 
-              disabled: isOrderCreating, 
-              loading: isOrderCreating,
-            },
+            next: { disabled: isOrderCreating, loading: isOrderCreating },
             previous: { disabled: isFirstStep },
           }}
         />
