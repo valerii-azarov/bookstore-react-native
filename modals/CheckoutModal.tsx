@@ -20,6 +20,7 @@ import {
   selectOrderStatus,
   selectOrderResponse,
   selectCreateOrder,
+  selectResetOrder,
 } from "@/selectors/orderSelectors";
 import { colors } from "@/constants/theme";
 import { OrderFormValues, OptionType, DirectionType } from "@/types";
@@ -70,6 +71,7 @@ const CheckoutModal = () => {
   const orderResponse = useOrderStore(selectOrderResponse);
 
   const createOrder = useOrderStore(selectCreateOrder);
+  const resetOrder = useOrderStore(selectResetOrder);
 
   const isLoadingCities = citiesStatus === "loading";
   const isEmptyCities = !isLoadingCities && cities.length === 0;
@@ -442,6 +444,14 @@ const CheckoutModal = () => {
       setCurrentStep((prev) => prev + 1);
     }
   }, [isOrderCreating, isSecondToLastStep, orderResponse]);
+
+  useEffect(() => {
+    return () => {
+      resetOrder();
+      resetCities();
+      resetWarehouses();
+    };
+  }, []);
 
   return (
     <ModalWrapper>
