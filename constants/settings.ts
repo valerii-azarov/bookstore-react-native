@@ -1,3 +1,7 @@
 export const ADMIN_BOOKS_PAGE_SIZE = 6;
 
 export const USER_CATEGORY_BOOKS_PAGE_SIZE = 4;
+
+export const ADMIN_ORDERS_PAGE_SIZE = 5;
+
+export const USER_ORDER_HISTORY_PAGE_SIZE = 10;

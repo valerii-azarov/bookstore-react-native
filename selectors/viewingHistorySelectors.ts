@@ -1,35 +1,10 @@
-import { createSelector } from "reselect";
 import { useViewingHistoryStore } from "@/stores/viewingHistoryStore";
-import { ViewingHistoryBook } from "@/types";
 
 type ViewingHistoryStoreType = ReturnType<typeof useViewingHistoryStore.getState>;
 
-export const selectViewingHistoryBooks = (state: ViewingHistoryStoreType) => state.viewingHistoryBooks;
+export const selectViewingHistory = (state: ViewingHistoryStoreType) => state.viewingHistory;
 export const selectViewingHistoryStatus = (state: ViewingHistoryStoreType) => state.viewingHistoryStatus;
 export const selectViewingHistoryResponse = (state: ViewingHistoryStoreType) => state.viewingHistoryResponse;
-
-export const selectViewingHistoryByDate = createSelector(
-  [selectViewingHistoryBooks],
-  (books) => {
-    const booksByDate = books.reduce<Record<string, ViewingHistoryBook[]>>((acc, book) => {
-      const date = new Date(book.timestamp).toISOString().split("T")[0];
-      
-      if (!acc[date]) {
-        acc[date] = [];
-      }
-
-      acc[date].push(book);    
-      return acc;
-    }, {});
-
-    return Object.entries(booksByDate)
-      .map(([date, books]) => ({
-        date,
-        books: books.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()),
-      }))
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }
-);
 
 export const selectLoadViewingHistory = (state: ViewingHistoryStoreType) => state.loadViewingHistory;
 export const selectResetViewingHistory = (state: ViewingHistoryStoreType) => state.resetViewingHistory;

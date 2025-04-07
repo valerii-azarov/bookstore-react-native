@@ -2,18 +2,19 @@ import { create } from "zustand";
 import { favoritesApi } from "@/api/favoritesApi";
 import { bookHandler } from "@/helpers/bookHandler";
 import { messageHandler } from "@/helpers/messageHandler";
-import { FavoriteBook, FavoritesStatusType, ToggleFavoriteStatusType, ResponseType } from "@/types";
+import { Favorite, FavoritesStatusType, ToggleFavoriteStatusType, ResponseType } from "@/types";
 
 import { useAuthStore } from "./authStore";
 
 interface FavoritesStore {
   favoriteIds: string[];
-  favoriteBooks: FavoriteBook[];
+  favoriteBooks: Favorite[];
   favoriteStatus: FavoritesStatusType;
   favoriteResponse: ResponseType | null;
   toggleFavoriteStatus: ToggleFavoriteStatusType;
   toggleFavoriteResponse: ResponseType | null;
-  setFavoriteIds: (ids: string[]) => void;
+  favoritesDataLoaded: boolean;
+  initializeFavorites: () => Promise<void>;
   loadFavoriteBooks: () => Promise<void>;
   toggleFavorite: (bookId: string) => Promise<void>;
   resetFavorites: () => void;
@@ -26,8 +27,30 @@ export const useFavoritesStore = create<FavoritesStore>((set, get) => ({
   favoriteResponse: null,
   toggleFavoriteStatus: "idle",
   toggleFavoriteResponse: null,
+  favoritesDataLoaded: false,
 
-  setFavoriteIds: (ids: string[]) => set({ favoriteIds: ids }),
+  initializeFavorites: async () => {
+    if (get().favoritesDataLoaded) return;
+
+    const userId = useAuthStore.getState().user?.uid;
+    if (!userId) {
+      set({ favoritesDataLoaded: true });
+      return;
+    }
+
+    favoritesApi
+      .getFavoriteIds(userId)
+      .then((favoriteIds) => 
+        set({ 
+          favoriteIds: favoriteIds || [], 
+          favoritesDataLoaded: true,
+        })
+      )
+      .catch((error) => {
+        console.error("Error loading favorite IDs:", error);
+        set({ favoritesDataLoaded: true });
+      });
+  },
 
   loadFavoriteBooks: async () => {
     const userId = useAuthStore.getState().user?.uid;
@@ -93,9 +116,11 @@ export const useFavoritesStore = create<FavoritesStore>((set, get) => ({
 
   resetFavorites: () => {
     set({
-      favoriteBooks: [], 
-      favoriteStatus: "idle", 
-      favoriteResponse: null 
+      favoriteIds: [],
+      favoriteBooks: [],
+      favoriteStatus: "idle",
+      favoriteResponse: null,
+      favoritesDataLoaded: false,
     });
   },
 

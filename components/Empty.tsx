@@ -6,18 +6,25 @@ import Typography from "./Typography";
 type EmptyProps = {
   message?: string;
   subMessage?: string;
+  hideSubMessage?: boolean;
 };
 
-const Empty = ({ message = "Nothing found", subMessage = "Try adjusting your search" }: EmptyProps) => {
+const Empty = ({
+  message = "No data found",
+  subMessage = "Please try again later",
+  hideSubMessage = false,
+}: EmptyProps) => {
   return (
     <View style={styles.container}>
       <Typography fontSize={18} fontWeight="medium" color={colors.gray}>
         {message}
       </Typography>
 
-      <Typography fontSize={16} color={colors.grayTint3} style={styles.message}>
-        {subMessage}
-      </Typography>
+      {!hideSubMessage && (
+        <Typography fontSize={16} color={colors.grayTint3} style={styles.message}>
+          {subMessage}
+        </Typography>
+      )}
     </View>
   );
 };

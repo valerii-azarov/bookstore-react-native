@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { View, FlatList, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useRouter } from "expo-router";
-import { Ionicons as Icon } from "@expo/vector-icons";
 import { useTranslation } from "@/contexts/translateContext";
 import { useFavoritesStore } from "@/stores/favoritesStore";
 import { 
@@ -18,7 +17,8 @@ import { colors } from "@/constants/theme";
 import ListViewWrapper from "@/components/ListViewWrapper";
 import Loading from "@/components/Loading";
 import FavoriteBookItem from "@/components/FavoriteBookItem";
-import Typography from "@/components/Typography";
+import Empty from "@/components/Empty";
+import ErrorWithRetry from "@/components/ErrorWithRetry";
 
 const FavoritesScreen = () => {
   const router = useRouter();
@@ -49,20 +49,22 @@ const FavoritesScreen = () => {
     >
       {isLoading && <Loading size="small" color={colors.orange} />}
 
-      {!isLoading && isEmpty && (
+      {isError && !isLoading && (
         <View style={styles.overlayContainer}>
-          <Typography fontSize={16} fontWeight="medium">
-            {t("screens.favorites.messages.empty.text")}
-          </Typography>
+          <ErrorWithRetry 
+            message={t("screens.favorites.messages.error.text")}
+            subMessage={t("screens.favorites.messages.error.subText")}
+            hideButton
+          />
         </View>
       )}
 
-      {!isLoading && isError && (
+      {isEmpty && !isError && !isLoading && (
         <View style={styles.overlayContainer}>
-          <Icon name="alert-circle-outline" size={32} color={colors.red} style={styles.errorIcon} />
-          <Typography fontSize={18} fontWeight="medium" color={colors.red}>
-            {favoriteResponse?.message || t("screens.favorites.messages.error.subText")}
-          </Typography>
+          <Empty 
+            message={t("screens.favorites.messages.empty.text")} 
+            hideSubMessage
+          />
         </View>
       )}
 
@@ -71,7 +73,7 @@ const FavoritesScreen = () => {
           data={favoriteBooks}
           renderItem={({ item, index }) => (  
             <Animated.View
-              entering={FadeInDown.delay(index * 75)}
+              entering={FadeInDown.delay(index * 100)}
             >
               <FavoriteBookItem
                 item={item}
@@ -93,9 +95,6 @@ const FavoritesScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  errorIcon: {
-    marginBottom: 5,
-  },
   overlayContainer: {
     flex: 1,
     justifyContent: "center",

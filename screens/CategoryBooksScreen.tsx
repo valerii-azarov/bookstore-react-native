@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { View, FlatList, StyleSheet } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "@/contexts/translateContext";
@@ -84,22 +84,22 @@ const CategoryBooksScreen = () => {
       title= {t(`genres.${category}`)} 
       onBackPress={() => router.back()}
     >
-      {!isLoading && isEmpty && (
-        <View style={styles.overlayContainer}>
-          <Empty 
-            message={t("screens.categoryBooks.messages.empty.text")}
-            subMessage={t("screens.categoryBooks.messages.empty.subText")} 
-          />
-        </View>
-      )}
-
-      {!isLoading && isError && (
+      {isError && !isLoading && (
         <View style={styles.overlayContainer}>
           <ErrorWithRetry 
             message={t("screens.categoryBooks.messages.error.text")}
             subMessage={t("screens.categoryBooks.messages.error.subText")}
             buttonText={t("screens.categoryBooks.buttons.error.text")}
             onRetry={refreshCategoryBooks}
+          />
+        </View>
+      )}
+
+      {isEmpty && !isError && !isLoading && (
+        <View style={styles.overlayContainer}>
+          <Empty 
+            message={t("screens.categoryBooks.messages.empty.text")}
+            subMessage={t("screens.categoryBooks.messages.empty.subText")} 
           />
         </View>
       )}

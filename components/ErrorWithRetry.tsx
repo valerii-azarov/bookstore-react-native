@@ -9,7 +9,9 @@ type ErrorWithRetryProps = {
   message?: string;
   subMessage?: string;
   buttonText?: string;
-  onRetry: () => void;
+  onRetry?: () => void;
+  hideSubMessage?: boolean;
+  hideButton?: boolean;
 };
 
 const ErrorWithRetry = ({ 
@@ -17,6 +19,8 @@ const ErrorWithRetry = ({
   subMessage = "Something went wrong. Please try again",
   buttonText = "Retry",
   onRetry,
+  hideSubMessage = false,
+  hideButton = false,
 }: ErrorWithRetryProps) => {
   return (
     <View style={styles.container}>
@@ -26,19 +30,21 @@ const ErrorWithRetry = ({
         {message}
       </Typography>
 
-      <Typography fontSize={16} color={colors.grayTint3} style={styles.errorMessage}>
-        {subMessage}
-      </Typography>
-
-      <TouchableOpacity 
-        onPress={onRetry}
-        style={styles.retryButton}
-      >
-        <Icon name="refresh-outline" size={20} color={colors.white} style={styles.retryIcon} />
-        <Typography fontSize={16} fontWeight="medium" color={colors.white} style={styles.retryText}>
-          {buttonText}
+      {!hideSubMessage && (
+        <Typography fontSize={16} color={colors.grayTint3} style={styles.errorMessage}>
+          {subMessage}
         </Typography>
-      </TouchableOpacity>
+      )}
+
+      {onRetry && !hideButton && (
+        <TouchableOpacity onPress={onRetry} style={styles.retryButton}>
+          <Icon name="refresh-outline" size={20} color={colors.white} style={styles.retryIcon} />
+
+          <Typography fontSize={16} fontWeight="medium" color={colors.white} style={styles.retryText}>
+            {buttonText}
+          </Typography>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

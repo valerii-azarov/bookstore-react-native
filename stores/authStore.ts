@@ -10,11 +10,9 @@ interface AuthStore {
   user: UserType | null;
   isLoggedIn: boolean;
   isAdmin: boolean;
-  initialized: boolean;
-  isInitialized: boolean;
-
+  authDataLoaded: boolean;
+  authListenerActive: boolean;
   unsubscribeAuth?: Unsubscribe;
-
   setUser: (user: UserType | null) => void;
   initializeAuth: () => void;
   cleanupAuth: () => void;
@@ -27,8 +25,8 @@ export const useAuthStore = create<AuthStore>()(
         user: null,
         isLoggedIn: false,
         isAdmin: false,
-        initialized: false,
-        isInitialized: false,
+        authDataLoaded: false,
+        authListenerActive: false,
         unsubscribeAuth: undefined,
 
         setUser: (user: UserType | null) => {
@@ -40,7 +38,7 @@ export const useAuthStore = create<AuthStore>()(
         },
 
         initializeAuth: () => {
-          if (get().isInitialized) {
+          if (get().authListenerActive) {
             return;
           }
 
@@ -52,14 +50,14 @@ export const useAuthStore = create<AuthStore>()(
                   user: userData,
                   isLoggedIn: true,
                   isAdmin: userData?.role === Role.Admin,
-                  initialized: true,
+                  authDataLoaded: true,
                 });
               } else {
                 set({
                   user: null,
                   isLoggedIn: false,
                   isAdmin: false,
-                  initialized: true,
+                  authDataLoaded: true,
                 });
               }
             } catch (error) {
@@ -68,12 +66,12 @@ export const useAuthStore = create<AuthStore>()(
                 user: null,
                 isLoggedIn: false,
                 isAdmin: false,
-                initialized: true,
+                authDataLoaded: true,
               });
             }
           });
 
-          set({ unsubscribeAuth: unsubscribe, isInitialized: true });
+          set({ unsubscribeAuth: unsubscribe, authListenerActive: true });
         },
 
         cleanupAuth: () => {
@@ -82,8 +80,8 @@ export const useAuthStore = create<AuthStore>()(
             unsubscribeAuth();
             set({
               unsubscribeAuth: undefined,
-              isInitialized: false,
-              initialized: false,
+              authDataLoaded: false,
+              authListenerActive: false,
               user: null,
               isLoggedIn: false,
               isAdmin: false,

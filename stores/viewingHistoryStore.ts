@@ -1,12 +1,12 @@
 import { create } from "zustand";
 import { viewingHistoryApi } from "@/api/viewingHistoryApi";
 import { viewingHistoryHandler } from "@/helpers/viewingHistoryHandler";
-import { ViewingHistoryBook, ViewingHistoryStatusType, ResponseType } from "@/types";
+import { ViewingHistoryByDate, ViewingHistoryStatusType, ResponseType } from "@/types";
 
 import { useAuthStore } from "./authStore";
 
 interface ViewingHistoryStore {
-  viewingHistoryBooks: ViewingHistoryBook[];
+  viewingHistory: ViewingHistoryByDate[];
   viewingHistoryStatus: ViewingHistoryStatusType;
   viewingHistoryResponse: ResponseType | null;
   loadViewingHistory: () => Promise<void>;
@@ -14,7 +14,7 @@ interface ViewingHistoryStore {
 }
 
 export const useViewingHistoryStore = create<ViewingHistoryStore>((set, get) => ({
-  viewingHistoryBooks: [],
+  viewingHistory: [],
   viewingHistoryStatus: "idle",
   viewingHistoryResponse: null,
   
@@ -29,10 +29,12 @@ export const useViewingHistoryStore = create<ViewingHistoryStore>((set, get) => 
     viewingHistoryApi.getViewingHistoryBooks(userId)
       .then((viewingHistoryBooks) => {
         const booksWithTimestamp = viewingHistoryHandler.addTimestamp(viewingHistoryBooks, history);
+        const groupedViewingHistory = viewingHistoryHandler.groupViewingHistoryByDate(booksWithTimestamp);
+        
         set({
-          viewingHistoryBooks: booksWithTimestamp.length > 0 ? booksWithTimestamp : [],
+          viewingHistory: groupedViewingHistory.length > 0 ? groupedViewingHistory : [],
           viewingHistoryResponse: { status: "success" },
-        })
+        });
       })
       .catch((error) =>
         set({
@@ -44,7 +46,7 @@ export const useViewingHistoryStore = create<ViewingHistoryStore>((set, get) => 
 
   resetViewingHistory: () => {
    set({ 
-      viewingHistoryBooks: [], 
+      viewingHistory: [], 
       viewingHistoryStatus: "idle", 
       viewingHistoryResponse: null 
     });

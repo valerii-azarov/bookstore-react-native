@@ -11,6 +11,6 @@ export const selectToggleCart = (state: CartStoreType) => state.toggleCart;
 export const selectClearCart = (state: CartStoreType) => state.clearCart;
 
 export const selectGetCartCount = (state: CartStoreType) => state.getCartCount;
-export const selectGetDiscountAmount = (state: CartStoreType) => state.getDiscountAmount;
 export const selectGetSubtotal = (state: CartStoreType) => state.getSubtotal;
+export const selectGetDiscountAmount = (state: CartStoreType) => state.getDiscountAmount;
 export const selectGetTotal = (state: CartStoreType) => state.getTotal;

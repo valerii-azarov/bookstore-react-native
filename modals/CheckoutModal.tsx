@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { View } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter } from "expo-router";
 import { useTranslation } from "@/contexts/translateContext";
+import { useCartStore } from "@/stores/cartStore";
 import { useNovaPostStore } from "@/stores/novaPostStore";
 import { useOrderStore } from "@/stores/orderStore";
+import { selectGetTotal } from "@/selectors/cartSelectors";
 import {
   selectCities,
   selectWarehouses,
@@ -47,12 +49,10 @@ const initialValues: OrderFormValues = {
 
 const CheckoutModal = () => {
   const router = useRouter();
-  const { bookIds, totalPrice } = useLocalSearchParams<{ bookIds?: string; totalPrice?: string }>();
 
   const t = useTranslation();
 
-  const parsedBookIds = bookIds ? JSON.parse(bookIds) : [];
-  const parsedTotalPrice = totalPrice ? parseFloat(totalPrice) : 0;
+  const total = useCartStore(selectGetTotal)();
 
   const cities = useNovaPostStore(selectCities);
   const citiesStatus = useNovaPostStore(selectCitiesStatus);
@@ -259,7 +259,7 @@ const CheckoutModal = () => {
             </Typography>
             
             <Typography fontSize={28} fontWeight="bold" numberOfLines={1} ellipsizeMode="tail" color={colors.black}>
-            {`${parsedTotalPrice.toFixed(2)}₴`}  
+              {total.toFixed(2)}₴
             </Typography>
           </View>
 
@@ -428,7 +428,7 @@ const CheckoutModal = () => {
       return isOrderError ? router.back() : router.dismissAll();
     }
     if (isSecondToLastStep && !isOrderCreating) {
-      createOrder(formValues, parsedBookIds);
+      createOrder(formValues);
       return;
     }
     setCurrentStep((prev) => prev + 1);

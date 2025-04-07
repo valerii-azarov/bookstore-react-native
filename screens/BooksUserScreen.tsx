@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { View, FlatList, ScrollView, RefreshControl, StyleSheet, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "@/contexts/translateContext";
@@ -52,8 +52,15 @@ const BooksUserScreen = () => {
 
   const renderCategory = (category: string) => {
     return (
-      <View key={category} style={styles.categoryContainer}>
-        <View style={styles.categoryHeader}>
+      <View key={category} style={{ marginTop: 15 }}>
+        <View 
+          style={{
+            flexDirection: "row", 
+            alignItems: "center", 
+            justifyContent: "space-between",
+            paddingHorizontal: 15,
+          }}
+        >
           <Typography fontSize={18} fontWeight="bold">
             {t(`genres.${category}`)}
           </Typography>
@@ -95,7 +102,7 @@ const BooksUserScreen = () => {
 
   useEffect(() => {
     loadCategories();
-  }, [loadCategories]);
+  }, []);
 
   return (
     <ScreenWrapper statusBarStyle="dark" disableTopInset>
@@ -110,11 +117,8 @@ const BooksUserScreen = () => {
           />
         }
         style={[
-          styles.headerContainer, 
+          styles.header,
           {
-            backgroundColor: colors.white,
-            borderBottomColor: colors.grayTint7,
-            borderBottomWidth: 1,
             minHeight: Platform.OS === "ios" ? verticalScale(100) : verticalScale(85),
           },
         ]}
@@ -122,7 +126,7 @@ const BooksUserScreen = () => {
       />
 
       <ScrollView 
-        contentContainerStyle={styles.scrollViewContent}
+        contentContainerStyle={styles.scrollViewContainer}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
@@ -133,47 +137,42 @@ const BooksUserScreen = () => {
       >
         {isLoading && <SkeletonCategories />}
 
-        {isError && (
+        {isError && !isLoading && (
           <View style={styles.overlayContainer}>
             <ErrorWithRetry 
               message={t("screens.books.messages.error.text")}
               subMessage={t("screens.books.messages.error.subText")}
               buttonText={t("screens.books.buttons.error.text")}
-              onRetry={refreshCategories} 
+              onRetry={() => loadCategories()} 
             />
           </View>
         )}
 
-        {isEmpty && (
+        {isEmpty && !isError && !isLoading && (
           <View style={styles.overlayContainer}>
             <Empty 
-              message={t("screens.books.messages.noData.text")}
-              subMessage={t("screens.books.messages.noData.subText")} 
+              message={t("screens.books.messages.empty.text")}
+              subMessage={t("screens.books.messages.empty.subText")} 
             />
           </View>
         )}
 
-        {!isEmpty && !isError && Object.keys(categories).map(renderCategory)}
+        {!isLoading && !isEmpty && !isError && Object.keys(categories).map(renderCategory)}
       </ScrollView>
     </ScreenWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  headerContainer: { 
+  header: {
+    backgroundColor: colors.white,
+    borderBottomColor: colors.grayTint7,
+    borderBottomWidth: 1,
     paddingHorizontal: 15,
   },
-  scrollViewContent: { 
+  scrollViewContainer: {
     flexGrow: 1,
-  },
-  categoryContainer: { 
-    marginTop: 15,
-  },
-  categoryHeader: { 
-    flexDirection: "row", 
-    alignItems: "center", 
-    justifyContent: "space-between",
-    paddingHorizontal: 15,
+    // padding: 15,
   },
   overlayContainer: {
     flex: 1,

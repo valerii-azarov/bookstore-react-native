@@ -1,14 +1,13 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { format, differenceInCalendarDays } from "date-fns";
 import { enUS, uk } from "date-fns/locale";
 import { View, ScrollView, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useRouter } from "expo-router";
-import { Ionicons as Icon } from "@expo/vector-icons";
 import { useLanguage, useTranslation } from "@/contexts/translateContext";
 import { useViewingHistoryStore } from "@/stores/viewingHistoryStore";
 import {
-  selectViewingHistoryByDate,
+  selectViewingHistory,
   selectViewingHistoryStatus,
   selectViewingHistoryResponse,
   selectLoadViewingHistory,
@@ -19,6 +18,8 @@ import { colors } from "@/constants/theme";
 import ListViewWrapper from "@/components/ListViewWrapper";
 import Loading from "@/components/Loading";
 import ViewingHistoryBookItem from "@/components/ViewingHistoryBookItem";
+import Empty from "@/components/Empty";
+import ErrorWithRetry from "@/components/ErrorWithRetry";
 import Typography from "@/components/Typography";
 
 const ViewingHistoryScreen = () => {
@@ -27,7 +28,7 @@ const ViewingHistoryScreen = () => {
   const language = useLanguage();
   const t = useTranslation();
 
-  const viewingHistoryByDate = useViewingHistoryStore(selectViewingHistoryByDate);
+  const viewingHistory = useViewingHistoryStore(selectViewingHistory);
   const viewingHistoryStatus = useViewingHistoryStore(selectViewingHistoryStatus);
   const viewingHistoryResponse = useViewingHistoryStore(selectViewingHistoryResponse);
 
@@ -35,7 +36,7 @@ const ViewingHistoryScreen = () => {
   const resetViewingHistory = useViewingHistoryStore(selectResetViewingHistory);
 
   const isLoading = viewingHistoryStatus === "loading";
-  const isEmpty = !isLoading && viewingHistoryByDate.length === 0;
+  const isEmpty = !isLoading && viewingHistory.length === 0;
   const isError = !isLoading && viewingHistoryResponse?.status === "error";
 
   const transformToDateString = (date: string) => {
@@ -59,40 +60,41 @@ const ViewingHistoryScreen = () => {
     >      
       {isLoading && <Loading size="small" color={colors.orange} />}
       
-      {!isLoading && isEmpty && (
+      {isError && !isLoading && (
         <View style={styles.overlayContainer}>
-          <Typography fontSize={16} fontWeight="medium">
-            {t("screens.viewingHistory.messages.empty.text")}
-          </Typography>
+          <ErrorWithRetry 
+            message={t("screens.viewingHistory.messages.error.text")}
+            subMessage={t("screens.viewingHistory.messages.error.subText")}
+            hideButton
+          />
         </View>
       )}
 
-      {!isLoading && isError && (
+      {isEmpty && !isError && !isLoading && (
         <View style={styles.overlayContainer}>
-          <Icon name="alert-circle-outline" size={32} color={colors.red} style={styles.errorIcon} />
-
-          <Typography fontSize={18} fontWeight="medium" color={colors.red}>
-            {viewingHistoryResponse?.message || t("screens.viewingHistory.messages.error.subText")}
-          </Typography>
+          <Empty 
+            message={t("screens.viewingHistory.messages.empty.text")} 
+            hideSubMessage
+          />
         </View>
       )}
 
       {!isLoading && !isEmpty && !isError && (
         <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-          {viewingHistoryByDate.map((day, index) => (
+          {viewingHistory.map((history, index) => (
             <Animated.View 
               key={index}
               entering={FadeInDown.delay(index * 100)}
               style={{ 
-                marginBottom: index === viewingHistoryByDate.length - 1 ? 0 : 15 
+                marginBottom: index === viewingHistory.length - 1 ? 0 : 15 
               }}
             >
-              <Typography fontSize={16} fontWeight="bold" style={styles.title}>
-                {transformToDateString(day.date)}
+              <Typography fontSize={16} fontWeight="bold" style={{ marginBottom: 5 }}>
+                {transformToDateString(history.date)}
               </Typography>
               
-              <View style={styles.booksContainer}>  
-                {day.books.map((book, index) => (
+              <View style={styles.historyList}>  
+                {history.books.map((book, index) => (
                   <ViewingHistoryBookItem
                     key={index}
                     item={book}
@@ -113,14 +115,8 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 15,
   },
-  title: {
-    marginBottom: 5,
-  },
-  errorIcon: {
-    marginBottom: 5,
-  },
-  booksContainer: {
-    gap: 5,
+  historyList: {
+    gap: 10,
   },
   overlayContainer: {
     flex: 1,

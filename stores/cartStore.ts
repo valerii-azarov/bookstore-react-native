@@ -2,18 +2,18 @@ import { create } from "zustand";
 import { persist, devtools, createJSONStorage } from "zustand/middleware";
 import { cartHandler } from "@/helpers/cartHandler";
 import { asyncStorage } from "@/storages/asyncStorage";
-import { Book, CartBook } from "@/types";
+import { Book, Cart } from "@/types";
 
 interface CartStore {
-  cartBooks: CartBook[];
+  cartBooks: Cart[];
   addToCart: (book: Book, quantity?: number) => void;
   removeFromCart: (bookId: string) => void;
   updateQuantity: (bookId: string, quantity: number) => void;
   toggleCart: (book: Book, quantity?: number) => void;
   clearCart: () => void;
   getCartCount: () => number;
-  getDiscountAmount: () => number;
   getSubtotal: () => number;
+  getDiscountAmount: () => number;
   getTotal: () => number;
 }
 
@@ -104,26 +104,23 @@ export const useCartStore = create<CartStore>()(
           return get().cartBooks.length;
         },
 
-        getDiscountAmount: () => {
-          return get().cartBooks.reduce((total, book) => {
-            const price = cartHandler.calculatePrice(book);
-            const itemDiscount = (book.originalPrice - price) * book.cartQuantity;
-            
-            return total + itemDiscount;
-          }, 0);
+        getSubtotal: () => {
+          const subtotal = get().cartBooks.reduce(
+            (total, book) => total + book.originalPrice * book.cartQuantity, 0
+          );
+          return cartHandler.roundToTwo(subtotal);
         },
 
-        getSubtotal: () => {
-          return get().cartBooks.reduce((total, book) => {
-            return total + book.originalPrice * book.cartQuantity;
-          }, 0);
+        getDiscountAmount: () => {
+          const discountAmount = get().cartBooks.reduce(
+            (total, book) => total + (book.originalPrice - cartHandler.getDiscountedPrice(book)) * book.cartQuantity, 0
+          );
+          return cartHandler.roundToTwo(discountAmount);
         },
 
         getTotal: () => {
-          const subtotal = get().getSubtotal();
-          const discount = get().getDiscountAmount();
-
-          return subtotal - discount;
+          const total = get().getSubtotal() - get().getDiscountAmount()
+          return cartHandler.roundToTwo(total);
         },
       }),
       {

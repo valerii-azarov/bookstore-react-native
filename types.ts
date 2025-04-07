@@ -131,27 +131,27 @@ export type BaseBook = {
   updatedAt: Date;
 };
 
-export type Cart = {
+export interface CartEntry {
   inCart: boolean;
   cartQuantity: number;
-};
+}
 
-export type Favorite = {
+export interface FavoriteEntry {
   isFavorite: boolean;
-};
+}
 
-export type ViewingHistory = {
-  bookId?: string; 
+export interface ViewingHistoryEntry {
+  bookId?: string;
   timestamp: Date;
-};
+}
 
-export type CartBook = BaseBook & Cart;
+export type Cart = BaseBook & CartEntry;
 
-export type FavoriteBook = BaseBook & Favorite;
+export type Favorite = BaseBook & FavoriteEntry;
 
-export type ViewingHistoryBook = BaseBook & ViewingHistory;
+export type ViewingHistory = BaseBook & ViewingHistoryEntry;
 
-export type Book = BaseBook & Partial<Favorite & Cart>;
+export type Book = BaseBook & Partial<Cart & Favorite>;
 
 export type BookPricing = {
   price: number;
@@ -186,12 +186,24 @@ export interface NovaPostWarehouse extends BaseNovaPost {
 }
 
 // order
-export type OrderStateType = "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+export type OrderStateType = "pending" | "processing" | "shipped" | "delivered" | "received" | "cancelled";
+
+export interface OrderStatusStyle {
+  label: string;
+  backgroundColor: string;
+}
 
 export interface Order {
   id: string;
   userId: string;
-  bookIds: string[];
+  books: { 
+    bookId: string;
+    title: string;
+    quantity: number;
+    price: number;
+    originalPrice: number;
+    coverImage: string;
+  }[];
   status: OrderStateType;
   paymentMethod: string;
   isPaid: boolean;
@@ -205,8 +217,29 @@ export interface Order {
     city: string;
     warehouse: string;
   };
+  subtotal: number;
+  discountAmount: number;
+  total: number;
+  receiptId?: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface OrderReceipt {
+  id: string;
+  orderId: string;
+  books: { 
+    title: string; 
+    quantity: number; 
+    price: number;
+    originalPrice: number;
+    total: number;
+  }[];
+  subtotal: number;
+  discountAmount: number;
+  total: number;
+  paymentMethod: string;
+  createdAt: Date;
 }
 
 export interface OrderFormValues {
@@ -220,6 +253,19 @@ export interface OrderFormValues {
 }
 
 export interface OrderCreation extends Omit<Order, "id" | "userId" | "createdAt" | "updatedAt"> {}
+
+export interface OrderReceiptCreation extends Omit<OrderReceipt, "id" | "orderId" | "createdAt"> {}
+
+// histories
+export interface OrderHistoryByDate {
+  date: string;
+  orders: Order[];
+}
+
+export interface ViewingHistoryByDate {
+  date: string;
+  books: ViewingHistory[];
+};
 
 // components
 export interface Step<T> {
@@ -244,9 +290,14 @@ export type BookStepComponentType = {
   validate?: (form: CreateBook) => boolean;
 };
 
-// book responses
+// other responses
 export type BooksResponse = {
   books: BaseBook[];
+  lastDoc: QueryDocumentSnapshot<DocumentData> | null;
+};
+
+export type OrdersResponse = {
+  orders: Order[];
   lastDoc: QueryDocumentSnapshot<DocumentData> | null;
 };
 
@@ -273,6 +324,10 @@ export type NovaPostCityStatusType = "idle" | "loading";
 export type NovaPostWarehouseStatusType = "idle" | "loading";
 
 export type OrderStatusType = "idle" | "loading" | "creating";
+
+export type OrdersStatusType = "idle" | "loading" | "fetching" | "refreshing";
+
+export type OrdersByUserIdStatusType = "idle" | "loading";
 
 // others
 export type BookSearchKey = keyof BaseBook;

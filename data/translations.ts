@@ -708,24 +708,14 @@ const translations: Translations = {
         },
       },            
       messages: {
-        noData: {
-          text: {
-            en: "Oops",
-            uk: "Упс",
-          },
-          subText: {
-            en: "It seems there is no data available",
-            uk: "Здається, немає даних",
-          },
-        },        
         empty: {
           text: {
-            en: "No books found",
-            uk: "Книги не знайдено",
+            en: "Oops, nothing here!",
+            uk: "Ой, тут порожньо!",
           },
           subText: {
-            en: "Try refining your search",
-            uk: "Спробуйте змінити запит",
+            en: "Looks like we don’t have anything to show yet.",
+            uk: "Здається, нам поки що нічого показати.",
           },
         },
         error: {
@@ -753,12 +743,12 @@ const translations: Translations = {
       messages: {       
         empty: {
           text: {
-            en: "No Books Found",
-            uk: "Книг не знайдено",
+            en: "Nothing here yet!",
+            uk: "Тут поки порожньо!",
           },
           subText: {
-            en: "There are no books in this category yet",
-            uk: "У цій категорії ще немає книг",
+            en: "This category is empty. Explore other categories for more books!",
+            uk: "Ця категорія порожня. Перегляньте інші категорії, щоб знайти книги!",
           },
         },
         error: {
@@ -969,6 +959,47 @@ const translations: Translations = {
           uk: "Немає в наявності",
         },
       },
+    },
+
+    // orders: { },
+
+    orderHistory: {
+      header: {
+        text: {
+          en: "Order History",
+          uk: "Історія замовлень",
+        },
+      },            
+      messages: {        
+        empty: {
+          text: {
+            en: "No orders available",
+            uk: "Немає замовлень",
+          },
+          subText: {
+            en: "You haven't placed any orders yet.",
+            uk: "Ви ще не зробили жодного замовлення.",
+          },
+        },
+        error: {
+          text: {
+            en: "An error occurred",
+            uk: "Виникла помилка",
+          },
+          subText: {
+            en: "Something went wrong. Please try again.",
+            uk: "Щось пішло не так. Спробуйте ще раз.",
+          },
+        },
+      },
+      buttons: {
+        error: {
+          text: {
+            en: "Retry",
+            uk: "Повторіть спробу",
+          },
+        },
+      },     
     },
 
     favorites: {            
@@ -1976,6 +2007,33 @@ const translations: Translations = {
     dayBeforeYesterday: {
       en: "The day before yesterday",
       uk: "Позавчора",
+    },
+  },
+
+  orderStatuses: {
+    pending: {
+      en: "Pending",
+      uk: "Очікується",
+    },
+    processing: {
+      en: "In Process",
+      uk: "В обробці",
+    },
+    shipped: {
+      en: "Shipped",
+      uk: "Відправлено",
+    },
+    delivered: {
+      en: "Delivered",
+      uk: "Доставлено",
+    },
+    received: {
+      en: "Received",
+      uk: "Отримано",
+    },
+    cancelled: {
+      en: "Cancelled",
+      uk: "Скасовано",
     },
   },
 };

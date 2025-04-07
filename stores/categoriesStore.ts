@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { categoriesApi } from "@/api/categoriesApi";
-import { favoritesApi } from "@/api/favoritesApi";
 import { genresKeys } from "@/constants/book";
 import { bookHandler } from "@/helpers/bookHandler";
 import { CategoriesType, CategoriesStatusType, ResponseType } from "@/types";
@@ -29,9 +28,7 @@ export const useCategoriesStore = create<CategoriesStore>((set, get) => ({
     set({ categoriesStatus: "loading" });
 
     const { cartBooks } = useCartStore.getState();
-
-    const favoriteIds = await favoritesApi.getFavoriteIds(userId);
-    useFavoritesStore.setState({ favoriteIds });
+    const { favoriteIds } = useFavoritesStore.getState();
 
     categoriesApi.fetchAllCategories(genresKeys)
       .then((categories) => {

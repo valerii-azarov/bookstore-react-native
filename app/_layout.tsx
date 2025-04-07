@@ -11,7 +11,9 @@ import { useFonts } from "expo-font";
 import { TranslateProvider } from "@/contexts/translateContext";
 
 import { useAuthStore } from "@/stores/authStore";
-import { selectIsLoggedIn, selectIsAdmin, selectInitialized, selectInitializeAuth } from "@/selectors/authSelectors";
+import { useFavoritesStore } from "@/stores/favoritesStore";
+import { selectIsLoggedIn, selectIsAdmin, selectAuthDataLoaded, selectInitializeAuth } from "@/selectors/authSelectors";
+import { selectFavoritesDataLoaded, selectInitializeFavorites } from "@/selectors/favoritesSelectors";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -21,8 +23,11 @@ const InitialLayout = () => {
   
   const isLoggedIn = useAuthStore(selectIsLoggedIn);
   const isAdmin = useAuthStore(selectIsAdmin);
-  const initialized = useAuthStore(selectInitialized);
+  const authDataLoaded = useAuthStore(selectAuthDataLoaded);
   const initializeAuth = useAuthStore(selectInitializeAuth);
+
+  const favoritesDataLoaded = useFavoritesStore(selectFavoritesDataLoaded);
+  const initializeFavorites = useFavoritesStore(selectInitializeFavorites);
   
   const [fontsLoaded, fontsError] = useFonts({
     "Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.ttf"),
@@ -33,10 +38,11 @@ const InitialLayout = () => {
 
   useEffect(() => {
     initializeAuth();
-  }, [initializeAuth]);
+    initializeFavorites();
+  }, []);
   
   useEffect(() => {
-    if (!fontsLoaded || fontsError || !initialized) return;
+    if (fontsError || !fontsLoaded || !authDataLoaded || !favoritesDataLoaded) return;
   
     SplashScreen.hideAsync();
   
@@ -51,9 +57,9 @@ const InitialLayout = () => {
     } else {
       router.replace("/welcome");
     }
-  }, [fontsLoaded, fontsError, isLoggedIn, isAdmin, initialized]);
+  }, [fontsLoaded, fontsError, isLoggedIn, isAdmin, authDataLoaded, favoritesDataLoaded]);
   
-  if (!fontsLoaded || fontsError || !initialized) return null;
+  if (fontsError) return null;
 
   return (
     <Stack>

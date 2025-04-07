@@ -1,6 +1,6 @@
 import { doc, getDoc, getDocs, updateDoc, collection, arrayUnion, query, where } from "@firebase/firestore";
 import { db } from "./firebase";
-import { BaseBook, ViewingHistory } from "@/types";
+import { BaseBook, ViewingHistoryEntry } from "@/types";
 
 export const viewingHistoryApi = {
   addToViewingHistory: async (userId: string, bookId: string): Promise<void> => {
@@ -15,7 +15,7 @@ export const viewingHistoryApi = {
     await updateDoc(userRef, { viewingHistory: arrayUnion({ bookId, timestamp: new Date().toISOString() }) });
   },
   
-  getViewingHistory: async (userId: string): Promise<ViewingHistory[]> => {
+  getViewingHistory: async (userId: string): Promise<ViewingHistoryEntry[]> => {
     const userDoc = await getDoc(doc(db, "users", userId));
     return userDoc.exists() ? userDoc.data()?.viewingHistory || [] : [];
   },

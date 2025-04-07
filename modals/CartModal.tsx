@@ -117,7 +117,7 @@ const CartModal = () => {
                     color={colors.black} 
                     style={styles.totalValue}
                   >
-                    {`${subtotal.toFixed(2)}₴`}
+                    {subtotal.toFixed(2)}₴
                   </Typography>
                 </View>
 
@@ -153,7 +153,7 @@ const CartModal = () => {
                     color={colors.black} 
                     style={styles.totalValue}
                   >
-                    {`${total.toFixed(2)}₴`}
+                    {total.toFixed(2)}₴
                   </Typography>
                 </View>
               </View>
@@ -167,17 +167,7 @@ const CartModal = () => {
                 }
               ]}
             >
-              <Button
-                onPress={() =>
-                  router.push({
-                    pathname: "/(user)/(modals)/checkout",
-                    params: { 
-                      bookIds: JSON.stringify(cartBooks.map(book => book.id)),  
-                      totalPrice: total, 
-                    },
-                  })
-                }
-              >
+              <Button onPress={() => { router.push("/(user)/(modals)/checkout"); }}>
                 <Typography fontSize={16} fontWeight="bold" color={colors.white}>
                   {t("modals.cart.buttons.checkout.text")}
                 </Typography>
