@@ -116,7 +116,6 @@ export const useFavoritesStore = create<FavoritesStore>((set, get) => ({
 
   resetFavorites: () => {
     set({
-      favoriteIds: [],
       favoriteBooks: [],
       favoriteStatus: "idle",
       favoriteResponse: null,
