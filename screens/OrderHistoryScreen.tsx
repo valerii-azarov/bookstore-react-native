@@ -2,6 +2,7 @@ import { useEffect, useCallback } from "react";
 import { format, differenceInCalendarDays } from "date-fns";
 import { enUS, uk } from "date-fns/locale";
 import { View, FlatList, StyleSheet, Platform } from "react-native";
+import { useRouter } from "expo-router";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useLanguage, useTranslation } from "@/contexts/translateContext";
 import { useOrderHistoryStore } from "@/stores/orderHistoryStore";
@@ -28,6 +29,8 @@ import ErrorWithRetry from "@/components/ErrorWithRetry";
 import Typography from "@/components/Typography";
 
 const OrderHistoryScreen = () => {
+  const router = useRouter();
+  
   const language = useLanguage();
   const t = useTranslation();
   
@@ -77,7 +80,12 @@ const OrderHistoryScreen = () => {
             >
               <OrderHistoryItem
                 item={order}
-                onViewDetails={() => {}}
+                onViewDetails={() =>
+                  router.push({
+                    pathname: "/(user)/order/[orderId]",
+                    params: { orderId: order.id },
+                  })
+                }
               />
             </Animated.View>
           ))}

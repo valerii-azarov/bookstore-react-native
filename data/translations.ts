@@ -1002,6 +1002,165 @@ const translations: Translations = {
       },     
     },
 
+    orderDetails: {
+      header: {
+        text: {
+          en: "Order Details",
+          uk: "Деталі замовлення",
+        },
+      },
+      titles: {
+        orderNumber: {
+          en: "Order ID",
+          uk: "ID замовлення",
+        },
+        orderStatus: {
+          en: "Order status",
+          uk: "Статус замовлення",
+        },
+        bookList: {
+          en: "Book list",
+          uk: "Перелік книг",
+        },
+        orderCost: {
+          en: "Order cost",
+          uk: "Вартість замовлення",
+        },
+        payment: {
+          en: "Order payment",
+          uk: "Оплата замовлення",
+        },
+        contactDetails: {
+          en: "Contact details",
+          uk: "Контактні дані",
+        },
+        orderDetails: {
+          en: "Order details",
+          uk: "Деталі замовлення",
+        },
+        receipt: {
+          en: "Receipt",
+          uk: "Квитанція",
+        },
+      },
+      labels: {
+        subtotal: {
+          text: {
+            en: "Subtotal",
+            uk: "Підсумок",
+          },
+        },
+        discount: {
+          text: {
+            en: "Discount",
+            uk: "Знижка",
+          },
+        },
+        total: {
+          text: {
+            en: "Total",
+            uk: "Всього",
+          },
+        },
+        paymentMethod: {
+          text: {
+            en: "Payment method",
+            uk: "Спосіб оплати",
+          },
+        },
+        paymentStatus: {
+          text: {
+            en: "Payment status",
+            uk: "Статус оплати",
+          },
+        },
+        deliveryAddress: {
+          text: {
+            en: "Delivery address",
+            uk: "Адреса доставки",
+          },
+        },
+        fullName: {
+          text: {
+            en: "Full Name",
+            uk: "ПІБ",
+          },
+        },
+        phoneNumber: {
+          text: {
+            en: "Phone number",
+            uk: "Номер телефону",
+          },
+        },
+        createdAt: {
+          text: {
+            en: "Creation date",
+            uk: "Дата створення",
+          },
+        },
+        updatedAt: {
+          text: {
+            en: "Update date",
+            uk: "Дата оновлення",
+          },
+        },
+      },
+      buttons: {
+        viewStatus: {
+          text: {
+            en: "View status",
+            uk: "Переглянути статус",
+          },
+        },
+        viewReceipt: {
+          text: {
+            en: "View receipt",
+            uk: "Переглянути квитанцію",
+          },
+        },
+      },
+      messages: {
+        error: {
+          text: {
+            en: "An error occurred",
+            uk: "Виникла помилка",
+          },
+          subText: {
+            en: "Something went wrong",
+            uk: "Щось пішло не так",
+          },
+        },
+      },
+      paymentMethods: {
+        cod: {
+          text: {
+            en: "Cash on Delivery",
+            uk: "Накладений платіж",
+          },
+        },
+        card: {
+          text: {
+            en: "Bank Card",
+            uk: "Банківською карткою",
+          },
+        },
+      },
+      paymentStatuses: {
+        paid: {
+          text: {
+            en: "Paid",
+            uk: "Оплачено",
+          },
+        },
+        unpaid: {
+          text: {
+            en: "Unpaid",
+            uk: "Не оплачено",
+          },
+        },
+      },
+    },
+
     favorites: {            
       header: {
         text: {
@@ -2017,7 +2176,7 @@ const translations: Translations = {
     },
     processing: {
       en: "In Process",
-      uk: "В обробці",
+      uk: "Обробляється",
     },
     shipped: {
       en: "Shipped",
@@ -2034,6 +2193,10 @@ const translations: Translations = {
     cancelled: {
       en: "Cancelled",
       uk: "Скасовано",
+    },
+    returned: {
+      en: "Returned",
+      uk: "Повернено",
     },
   },
 };

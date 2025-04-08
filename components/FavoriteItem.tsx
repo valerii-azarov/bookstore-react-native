@@ -3,17 +3,17 @@ import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSequence } 
 import { Ionicons as Icon } from "@expo/vector-icons";
 import { useTranslation } from "@/contexts/translateContext";
 import { colors } from "@/constants/theme";
-import { Book } from "@/types";
+import { Favorite } from "@/types";
 
 import Typography from "./Typography";
 
-interface FavoriteBookItemProps {
-  item: Book;
+interface FavoriteItemProps {
+  item: Favorite;
   onViewDetails: () => void;
-  onToggleFavorite?: (item: Book) => void;
+  onToggleFavorite?: (item: Favorite) => void;
 }
 
-const FavoriteBookItem = ({ item, onViewDetails, onToggleFavorite }: FavoriteBookItemProps) => {
+const FavoriteItem = ({ item, onViewDetails, onToggleFavorite }: FavoriteItemProps) => {
   const t = useTranslation();
   
   const translateX = useSharedValue(0);
@@ -130,4 +130,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FavoriteBookItem;
+export default FavoriteItem;

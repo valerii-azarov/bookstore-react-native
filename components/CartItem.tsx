@@ -5,18 +5,18 @@ import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSequence } 
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "@/contexts/translateContext";
 import { colors } from "@/constants/theme";
-import { CartBook } from "@/types";
+import { Cart } from "@/types";
 
 import Typography from "./Typography";
 
-interface CartBookItemProps {
-  item: CartBook;
+interface CartItemProps {
+  item: Cart;
   onViewDetails: () => void;
   onRemoveFromCart: (bookId: string) => void;
   onUpdateQuantity: (bookId: string, quantity: number) => void;
 }
 
-const CartBookItem = ({ item, onRemoveFromCart, onViewDetails, onUpdateQuantity }: CartBookItemProps) => {
+const CartItem = ({ item, onRemoveFromCart, onViewDetails, onUpdateQuantity }: CartItemProps) => {
   const swipeableRef = useRef<Swipeable>(null);
 
   const t = useTranslation();
@@ -34,7 +34,7 @@ const CartBookItem = ({ item, onRemoveFromCart, onViewDetails, onUpdateQuantity 
     );
   };
 
-  const confirmDeleteCartBook = () => {
+  const confirmDeleteCart = () => {
     Alert.alert(
       t("alerts.confirmDeleteCartBook.title"),
       t("alerts.confirmDeleteCartBook.message"),
@@ -63,7 +63,7 @@ const CartBookItem = ({ item, onRemoveFromCart, onViewDetails, onUpdateQuantity 
       ref={swipeableRef} 
       renderRightActions={() => (
         <TouchableOpacity 
-          onPress={confirmDeleteCartBook} 
+          onPress={confirmDeleteCart} 
           style={styles.deleteButton}
         >
           <Ionicons name="trash" size={28} color={colors.white} />
@@ -248,4 +248,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CartBookItem;
+export default CartItem;

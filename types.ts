@@ -186,7 +186,7 @@ export interface NovaPostWarehouse extends BaseNovaPost {
 }
 
 // order
-export type OrderStateType = "pending" | "processing" | "shipped" | "delivered" | "received" | "cancelled";
+export type OrderStateType = "pending" | "processing" | "shipped" | "delivered" | "received" | "cancelled" | "returned";
 
 export interface OrderStatusStyle {
   label: string;
@@ -199,6 +199,7 @@ export interface Order {
   books: { 
     bookId: string;
     title: string;
+    authors: string[];
     quantity: number;
     price: number;
     originalPrice: number;
@@ -227,6 +228,7 @@ export interface Order {
 
 export interface OrderReceipt {
   id: string;
+  userId: string;
   orderId: string;
   books: { 
     title: string; 
@@ -254,7 +256,7 @@ export interface OrderFormValues {
 
 export interface OrderCreation extends Omit<Order, "id" | "userId" | "createdAt" | "updatedAt"> {}
 
-export interface OrderReceiptCreation extends Omit<OrderReceipt, "id" | "orderId" | "createdAt"> {}
+export interface OrderReceiptCreation extends Omit<OrderReceipt, "id" | "userId" | "orderId" | "createdAt"> {}
 
 // histories
 export interface OrderHistoryByDate {
@@ -328,6 +330,8 @@ export type OrderStatusType = "idle" | "loading" | "creating";
 export type OrdersStatusType = "idle" | "loading" | "fetching" | "refreshing";
 
 export type OrdersByUserIdStatusType = "idle" | "loading";
+
+export type OrderReceiptStatusType = "idle" | "loading";
 
 // others
 export type BookSearchKey = keyof BaseBook;

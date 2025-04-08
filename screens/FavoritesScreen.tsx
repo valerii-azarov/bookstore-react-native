@@ -14,9 +14,9 @@ import {
 } from "@/selectors/favoritesSelectors";
 import { colors } from "@/constants/theme";
 
-import ListViewWrapper from "@/components/ListViewWrapper";
+import ViewWrapper from "@/components/ViewWrapper";
 import Loading from "@/components/Loading";
-import FavoriteBookItem from "@/components/FavoriteBookItem";
+import FavoriteItem from "@/components/FavoriteItem";
 import Empty from "@/components/Empty";
 import ErrorWithRetry from "@/components/ErrorWithRetry";
 
@@ -43,7 +43,7 @@ const FavoritesScreen = () => {
   }, []);
 
   return (
-    <ListViewWrapper 
+    <ViewWrapper 
       title= {t("screens.favorites.header.text")} 
       onBackPress={() => router.back()}
     >
@@ -75,7 +75,7 @@ const FavoritesScreen = () => {
             <Animated.View
               entering={FadeInDown.delay(index * 100)}
             >
-              <FavoriteBookItem
+              <FavoriteItem
                 item={item}
                 onViewDetails={() => router.push(`/(user)/book/${item.id}`)}
                 onToggleFavorite={() => toggleFavorite(item.id)}
@@ -90,7 +90,7 @@ const FavoritesScreen = () => {
           }}
         />
       )}
-    </ListViewWrapper>
+    </ViewWrapper>
   );
 };
 

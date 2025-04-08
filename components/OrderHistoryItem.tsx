@@ -1,9 +1,11 @@
 import { View, Image, TouchableOpacity, StyleSheet } from "react-native";
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSequence, interpolate } from "react-native-reanimated";
 import { format } from "date-fns";
+import { orderHandler } from "@/helpers/orderHandler";
 import { useTranslation } from "@/contexts/translateContext";
 import { colors } from "@/constants/theme";
 import { Order, OrderStateType, OrderStatusStyle } from "@/types";
+
 import Typography from "./Typography";
 
 interface OrderHistoryItemProps {
@@ -36,33 +38,6 @@ const OrderHistoryItem = ({ item, onViewDetails }: OrderHistoryItemProps) => {
   const handlePress = () => {
     startAnimation();
     setTimeout(onViewDetails, 500);
-  };
-
-  const statusMap: Record<OrderStateType, OrderStatusStyle> = {
-    pending: {
-      label: t("orderStatuses.pending"),
-      backgroundColor: "#FFC107",
-    },
-    processing: {
-      label: t("orderStatuses.processing"),
-      backgroundColor: "#FF9800",
-    },
-    shipped: {
-      label: t("orderStatuses.shipped"),
-      backgroundColor: "#2196F3",
-    },
-    delivered: {
-      label: t("orderStatuses.delivered"),
-      backgroundColor: "#A5D6A7",
-    },
-    received: {
-      label: t("orderStatuses.received"),
-      backgroundColor: "#4CAF50",
-    },
-    cancelled: {
-      label: t("orderStatuses.cancelled"),
-      backgroundColor: "#F44336"
-    },
   };
 
   const coverBooks = item.books.slice(0, 3);
@@ -122,12 +97,12 @@ const OrderHistoryItem = ({ item, onViewDetails }: OrderHistoryItemProps) => {
               style={[
                 styles.statusBadge,
                 {
-                  backgroundColor: statusMap[item.status].backgroundColor,
+                  backgroundColor: orderHandler.getOrderStatusStyle(item.status, t).backgroundColor,
                 },
               ]}
             >
               <Typography fontSize={14} fontWeight="bold" color={colors.white}>
-                {statusMap[item.status].label}
+                {orderHandler.getOrderStatusStyle(item.status, t).label}
               </Typography>
             </View>
           </View>

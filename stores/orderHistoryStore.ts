@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { QueryDocumentSnapshot, DocumentData } from "@firebase/firestore";
-import { ordersApi } from "@/api/ordersApi";
+import { orderHistoryApi } from "@/api/orderHistoryApi";
 import { orderHandler } from "@/helpers/orderHandler";
 import { USER_ORDER_HISTORY_PAGE_SIZE } from "@/constants/settings";
 import { OrderHistoryByDate, OrdersStatusType, ResponseType } from "@/types";
@@ -37,7 +37,7 @@ export const useOrderHistoryStore = create<OrderHistoryStore>((set, get) => ({
       orderHistoryResponse: null,
     });
 
-    ordersApi
+    orderHistoryApi
       .fetchOrderHistory(
         userId,
         reset ? null : orderHistoryLastDoc,

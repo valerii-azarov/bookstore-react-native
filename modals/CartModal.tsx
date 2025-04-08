@@ -17,7 +17,7 @@ import { colors } from "@/constants/theme";
 import ModalWrapper from "@/components/ModalWrapper";
 import BackButton from "@/components/BackButton";
 import Header from "@/components/Header";
-import CartBookItem from "@/components/CartBookItem";
+import CartItem from "@/components/CartItem";
 import Button from "@/components/Button";
 import Typography from "@/components/Typography";
 
@@ -66,7 +66,7 @@ const CartModal = () => {
                   <Animated.View
                     entering={FadeInDown.delay(index * 100)}
                   >  
-                    <CartBookItem
+                    <CartItem
                       item={item}
                       onViewDetails={() => router.push(`/(user)/book/${item.id}`)}
                       onRemoveFromCart={removeFromCart}

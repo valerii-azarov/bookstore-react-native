@@ -126,11 +126,15 @@ const InitialLayout = () => {
         }}
       />
       <Stack.Screen
+        name="(user)/category-books/[category]"
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
         name="(user)/book/[bookId]"
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="(user)/category-books/[category]"
+        name="(user)/order/[orderId]"
         options={{ headerShown: false }}
       />
       <Stack.Screen

@@ -8,15 +8,16 @@ import { verticalScale } from "@/helpers/common";
 
 import Typography from "./Typography";
 
-interface ListViewWrapperProps {
+interface ViewWrapperProps {
   title: string;
   onBackPress: () => void;
   children: React.ReactNode;
   headerStyle?: StyleProp<ViewStyle>;
   contentStyle?: StyleProp<ViewStyle>;
+  hideFooter?: boolean;
 }
 
-const ListViewWrapper = ({ title, onBackPress, children, headerStyle, contentStyle }: ListViewWrapperProps) => {
+const ViewWrapper = ({ title, onBackPress, children, headerStyle, contentStyle, hideFooter = false }: ViewWrapperProps) => {
   const insets = useSafeAreaInsets();
 
   const translateX = useSharedValue(0);
@@ -91,18 +92,28 @@ const ListViewWrapper = ({ title, onBackPress, children, headerStyle, contentSty
         <View style={styles.spacer} />
       </View>
 
-      <View style={[styles.content, contentStyle]}>
+      <View
+        style={[
+          styles.content,
+          contentStyle,
+          hideFooter && {
+            paddingBottom: insets.bottom,
+          },
+        ]}
+      >
         {children}
       </View>
 
-      <View 
-        style={[
-          styles.footer, 
-          { 
-            paddingBottom: insets.bottom,
-          },
-        ]} 
-      />
+      {!hideFooter && (
+        <View 
+          style={[
+            styles.footer, 
+            { 
+              paddingBottom: insets.bottom,
+            }
+          ]} 
+        />
+      )}
     </View>
   );
 };
@@ -155,4 +166,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ListViewWrapper;
+export default ViewWrapper;

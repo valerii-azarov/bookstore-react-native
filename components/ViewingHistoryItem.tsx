@@ -2,16 +2,16 @@ import { View, Image, StyleSheet, TouchableOpacity } from "react-native";
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSequence, interpolate } from "react-native-reanimated";
 import { format } from "date-fns";
 import { colors } from "@/constants/theme";
-import { ViewingHistoryBook } from "@/types";
+import { ViewingHistory } from "@/types";
 
 import Typography from "./Typography";
 
-interface ViewingHistoryBookItemProps {
-  item: ViewingHistoryBook;
+interface ViewingHistoryItemProps {
+  item: ViewingHistory;
   onViewDetails: () => void;
 }
 
-const ViewingHistoryBookItem = ({ item, onViewDetails }: ViewingHistoryBookItemProps) => {
+const ViewingHistoryItem = ({ item, onViewDetails }: ViewingHistoryItemProps) => {
   const circleScale = useSharedValue(0);
   const circleOpacity = useSharedValue(0);
   const contentOpacity = useSharedValue(1);
@@ -128,4 +128,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ViewingHistoryBookItem;
+export default ViewingHistoryItem;

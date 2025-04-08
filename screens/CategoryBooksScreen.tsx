@@ -19,7 +19,7 @@ import { selectToggleFavorite } from "@/selectors/favoritesSelectors";
 import { USER_CATEGORY_BOOKS_PAGE_SIZE } from "@/constants/settings";
 import { Book } from "@/types";
 
-import ListViewWrapper from "@/components/ListViewWrapper";
+import ViewWrapper from "@/components/ViewWrapper";
 import ListLoader from "@/components/ListLoader";
 import BookItem from "@/components/BookItem";
 import SkeletonBookItem from "@/components/SkeletonBookItem";
@@ -80,7 +80,7 @@ const CategoryBooksScreen = () => {
   }, [category]);
 
   return (
-    <ListViewWrapper 
+    <ViewWrapper 
       title= {t(`genres.${category}`)} 
       onBackPress={() => router.back()}
     >
@@ -122,7 +122,7 @@ const CategoryBooksScreen = () => {
           ListFooterComponent={renderFooter}
         />
       )}
-    </ListViewWrapper>
+    </ViewWrapper>
   );
 };
 

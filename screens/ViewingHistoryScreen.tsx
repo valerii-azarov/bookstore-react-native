@@ -15,9 +15,9 @@ import {
 } from "@/selectors/viewingHistorySelectors";
 import { colors } from "@/constants/theme";
 
-import ListViewWrapper from "@/components/ListViewWrapper";
+import ViewWrapper from "@/components/ViewWrapper";
 import Loading from "@/components/Loading";
-import ViewingHistoryBookItem from "@/components/ViewingHistoryBookItem";
+import ViewingHistoryItem from "@/components/ViewingHistoryItem";
 import Empty from "@/components/Empty";
 import ErrorWithRetry from "@/components/ErrorWithRetry";
 import Typography from "@/components/Typography";
@@ -54,7 +54,7 @@ const ViewingHistoryScreen = () => {
   }, []);
 
   return (
-    <ListViewWrapper 
+    <ViewWrapper 
       title= {t("screens.viewingHistory.header.text")} 
       onBackPress={() => router.back()}
     >      
@@ -95,7 +95,7 @@ const ViewingHistoryScreen = () => {
               
               <View style={styles.historyList}>  
                 {history.books.map((book, index) => (
-                  <ViewingHistoryBookItem
+                  <ViewingHistoryItem
                     key={index}
                     item={book}
                     onViewDetails={() => router.push(`/(user)/book/${book.id}`)}
@@ -106,7 +106,7 @@ const ViewingHistoryScreen = () => {
           ))}
         </ScrollView>
       )}
-    </ListViewWrapper>
+    </ViewWrapper>
   );
 };
 

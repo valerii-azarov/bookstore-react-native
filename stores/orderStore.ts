@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { ordersApi } from "@/api/ordersApi";
+import { orderApi } from "@/api/orderApi";
 import { cartHandler } from "@/helpers/cartHandler";
 import { messageHandler } from "@/helpers/messageHandler";
 import { Order, OrderCreation, OrderReceiptCreation, OrderFormValues, OrderStatusType, ResponseType } from "@/types";
@@ -12,6 +12,7 @@ interface OrderStore {
   order: Order | null;
   orderStatus: OrderStatusType;
   orderResponse: ResponseType | null;
+  loadOrderById: (orderId: string) => Promise<void>;
   createOrder: (formValues: OrderFormValues) => Promise<void>;
   resetOrder: () => void;
 }
@@ -21,6 +22,26 @@ export const useOrderStore = create<OrderStore>((set) => ({
   orderStatus: "idle",
   orderResponse: null,
 
+  loadOrderById: async (orderId: string) => {
+    set({ orderStatus: "loading", orderResponse: null });
+    
+    orderApi.fetchOrderById(orderId)
+      .then((order) =>
+        set({
+          order,
+          orderStatus: "idle",
+          orderResponse: { status: "success" },
+        })
+      )
+      .catch((error) => {
+        set({
+          order: null,
+          orderResponse: { status: "error", message: error.message },
+        });
+      })
+      .finally(() => set({ orderStatus: "idle" }));
+  },
+
   createOrder: async (formValues: OrderFormValues) => {
     const userId = useAuthStore.getState().user?.uid;
     if (!userId) return;
@@ -29,11 +50,12 @@ export const useOrderStore = create<OrderStore>((set) => ({
     if (!cartBooks || cartBooks.length === 0) return;
 
     set({ orderStatus: "creating", orderResponse: null });
-
+    
     const orderData: OrderCreation = {
-      books: cartBooks.map(({ id, title, cartQuantity, price, originalPrice, coverImage }) => ({
+      books: cartBooks.map(({ id, title, authors, cartQuantity, price, originalPrice, coverImage }) => ({
         bookId: id,
         title,
+        authors,
         quantity: cartQuantity,
         price,
         originalPrice,
@@ -71,7 +93,7 @@ export const useOrderStore = create<OrderStore>((set) => ({
       paymentMethod: orderData.paymentMethod,
     };
 
-    ordersApi.createOrder(userId, orderData, receiptData)
+    orderApi.createOrder(userId, orderData, receiptData)
       .then((order) => {
         set({
           orderStatus: "idle",
