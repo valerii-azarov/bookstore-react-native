@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { View, Image, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
+import * as Clipboard from "expo-clipboard";
+import { View, Alert, Image, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
 import { format } from "date-fns";
 import { orderHandler } from "@/helpers/orderHandler";
 import { useTranslation } from "@/contexts/translateContext";
@@ -36,6 +37,14 @@ const OrderDetailsScreen = () => {
 
   const isOrderLoading = orderStatus === "loading";
   const isOrderError = !isOrderLoading && orderResponse?.status === "error";
+
+  const copyOrderId = async (value: string) => {
+    await Clipboard.setStringAsync(value);
+    Alert.alert(
+      t("alerts.orderCopied.title"),
+      t("alerts.orderCopied.message"),
+    );
+  };
 
   useEffect(() => {
     if (orderId) {
@@ -86,7 +95,7 @@ const OrderDetailsScreen = () => {
                   </Typography>
 
                   <IconButton 
-                    onPress={() => {}}
+                    onPress={() => copyOrderId(order.id)}
                     iconName="copy"
                     enableAnimation 
                   />

@@ -1927,6 +1927,16 @@ const translations: Translations = {
         uk: "Скасувати",
       },
     },  
+    orderCopied: {
+      title: {
+        en: "Copied",
+        uk: "Скопійовано",
+      },
+      message: {
+        en: "Order ID copied to clipboard.",
+        uk: "ID замовлення скопійовано.",
+      },
+    },
     static: {
       cancel: {
         en: "Cancel",
