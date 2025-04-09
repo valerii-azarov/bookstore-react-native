@@ -23,7 +23,7 @@ import Typography from "@/components/Typography";
 
 const OrderDetailsScreen = () => {
   const t = useTranslation();
-
+  
   const router = useRouter();
   const { orderId } = useLocalSearchParams<{ orderId: string }>();
 
@@ -121,7 +121,12 @@ const OrderDetailsScreen = () => {
 
                   <RedirectButton
                     title={t("screens.orderDetails.buttons.viewStatus.text")}
-                    onPress={() => {}}
+                    onPress={() => {
+                      router.push({
+                        pathname: "/(user)/(modals)/order-status/[state]",
+                        params: { state: order.status },
+                      })
+                    }}
                   />
                 </View>
               </View>

@@ -1,4 +1,5 @@
 import { ImageSourcePropType } from "react-native";
+import * as IconSets from "@expo/vector-icons";
 import { QueryDocumentSnapshot, DocumentData } from "@firebase/firestore";
 
 export type Language = "en" | "uk";
@@ -185,8 +186,26 @@ export interface NovaPostWarehouse extends BaseNovaPost {
   cityRef: string;
 }
 
+// icon
+export type IconType = {
+  iconSet: keyof typeof IconSets;
+  iconName: string;
+}
+
+// timeline
+export type TimelineType = IconType & {
+  title: string;
+  subtitle: string;
+}
+
+export interface TimelineStep<T> extends TimelineType {
+  id?: string;
+  completed: boolean;
+  state: T;
+}
+
 // order
-export type OrderStateType = "pending" | "processing" | "shipped" | "delivered" | "received" | "cancelled" | "returned";
+export type OrderStateType = "pending" | "processing" | "shipped" | "delivered" | "received";
 
 export interface OrderStatusStyle {
   label: string;

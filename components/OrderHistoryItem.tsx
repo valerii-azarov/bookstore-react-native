@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { orderHandler } from "@/helpers/orderHandler";
 import { useTranslation } from "@/contexts/translateContext";
 import { colors } from "@/constants/theme";
-import { Order, OrderStateType, OrderStatusStyle } from "@/types";
+import { Order } from "@/types";
 
 import Typography from "./Typography";
 

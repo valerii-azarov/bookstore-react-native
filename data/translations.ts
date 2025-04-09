@@ -1718,6 +1718,13 @@ const translations: Translations = {
         },
       },
     },
+
+    orderStatus: {
+      header: {
+        en: "Order status",
+        uk: "Статус замовлення",
+      },
+    },
   },
 
   labels: {
@@ -2170,35 +2177,51 @@ const translations: Translations = {
   },
 
   orderStatuses: {
-    pending: {
-      en: "Pending",
-      uk: "Очікується",
+    titles: {
+      pending: {
+        en: "Pending",
+        uk: "Очікується",
+      },
+      processing: {
+        en: "In process",
+        uk: "Обробляється",
+      },
+      shipped: {
+        en: "Shipped",
+        uk: "Відправлено",
+      },
+      delivered: {
+        en: "Delivered",
+        uk: "Доставлено",
+      },
+      received: {
+        en: "Received",
+        uk: "Отримано",
+      },
     },
-    processing: {
-      en: "In Process",
-      uk: "Обробляється",
+    subtitles: {
+      pending: {
+        en: "We’ve received your order",
+        uk: "Ми отримали ваше замовлення",
+      },
+      processing: {
+        en: "Your order is being processed",
+        uk: "Ваше замовлення обробляється",
+      },
+      shipped: {
+        en: "Your order has been shipped",
+        uk: "Ваше замовлення відправлено",
+      },
+      delivered: {
+        en: "Your order has been delivered",
+        uk: "Ваше замовлення доставлено",
+      },
+      received: {
+        en: "Your order receipt has been confirmed",
+        uk: "Отримання замовлення підтверджено",
+      },
     },
-    shipped: {
-      en: "Shipped",
-      uk: "Відправлено",
-    },
-    delivered: {
-      en: "Delivered",
-      uk: "Доставлено",
-    },
-    received: {
-      en: "Received",
-      uk: "Отримано",
-    },
-    cancelled: {
-      en: "Cancelled",
-      uk: "Скасовано",
-    },
-    returned: {
-      en: "Returned",
-      uk: "Повернено",
-    },
-  },
+  },  
 };
 
 export default translations;

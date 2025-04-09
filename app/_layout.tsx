@@ -138,6 +138,18 @@ const InitialLayout = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
+        name="(user)/(modals)/order-status/[state]"
+        options={{
+          headerShown: false,
+          ...(Platform.OS === "ios"
+            ? { 
+                animation: "slide_from_bottom", 
+                animationDuration: 250,
+              }
+            : {}),
+        }}
+      />
+      <Stack.Screen
         name="(user)/profile"
         options={{ headerShown: false }}
       />
