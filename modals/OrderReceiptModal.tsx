@@ -11,6 +11,7 @@ import {
   selectLoadReceiptById,
   selectResetReceipt,
 } from "@/selectors/orderReceiptSelectors";
+import { companyDetails } from "@/data/companyDetails";
 import { colors } from "@/constants/theme";
 
 import ModalWrapper from "@/components/ModalWrapper";
@@ -85,7 +86,7 @@ const OrderReceiptModal = () => {
                     marginBottom: 5,
                   }}
                 >
-                  ТОВАРИСТВО З ОБМЕЖЕНОЮ ВІДПОВІДАЛЬНІСТЮ "КНИГАРНЯ"
+                  {companyDetails.company}
                 </Typography>
 
                 <Typography
@@ -96,7 +97,7 @@ const OrderReceiptModal = () => {
                     marginBottom: 5,
                   }}
                 >
-                  м. Київ, Голосіївський район, вулиця Жилянська, 5/60
+                  {companyDetails.address}
                 </Typography>
 
                 <Typography
@@ -107,7 +108,7 @@ const OrderReceiptModal = () => {
                     marginBottom: 5,
                   }}
                 >
-                  ПН 382786520308
+                  {companyDetails.registrationNumber}
                 </Typography>
               </View>
 
