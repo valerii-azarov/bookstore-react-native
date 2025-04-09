@@ -1,0 +1,439 @@
+import React, { useEffect } from "react";
+import { View, ScrollView, StyleSheet } from "react-native";
+import { format } from "date-fns";
+import { useLocalSearchParams } from "expo-router";
+import { useTranslation } from "@/contexts/translateContext";
+import { useOrderReceiptStore } from "@/stores/orderReceiptStore";
+import {
+  selectReceipt,
+  selectReceiptStatus,
+  selectReceiptResponse,
+  selectLoadReceiptById,
+  selectResetReceipt,
+} from "@/selectors/orderReceiptSelectors";
+import { colors } from "@/constants/theme";
+
+import ModalWrapper from "@/components/ModalWrapper";
+import BackButton from "@/components/BackButton";
+import Header from "@/components/Header";
+import Loading from "@/components/Loading";
+import DottedLine from "@/components/DottedLine";
+import ErrorWithRetry from "@/components/ErrorWithRetry";
+import Typography from "@/components/Typography";
+
+const OrderReceiptModal = () => {
+  const t = useTranslation();
+  const { receiptId } = useLocalSearchParams<{ receiptId: string }>();
+
+  const receipt = useOrderReceiptStore(selectReceipt);
+  const receiptStatus = useOrderReceiptStore(selectReceiptStatus);
+  const receiptResponse = useOrderReceiptStore(selectReceiptResponse);
+
+  const loadReceiptById = useOrderReceiptStore(selectLoadReceiptById);
+  const resetReceipt = useOrderReceiptStore(selectResetReceipt);
+
+  const isLoading = receiptStatus === "loading";
+  const isError = !isLoading && receiptResponse?.status === "error";
+
+  useEffect(() => {
+    if (receiptId) {
+      loadReceiptById(receiptId);
+    }
+    return () => resetReceipt();
+  }, [receiptId]);
+
+  return (
+    <ModalWrapper>
+      <Header
+        title={t("modals.orderReceipt.header")}
+        titleSize={18}
+        iconLeft={<BackButton />}
+        style={[
+          styles.padded,
+          {
+            marginBottom: 15,
+          },
+        ]}
+      />
+
+      <View style={[styles.content, styles.padded]}>
+        {isLoading && <Loading size="small" color={colors.orange} />}
+
+        {isError && !isLoading && (
+          <View style={[styles.overlayContainer, styles.padded]}>
+            <ErrorWithRetry
+              message={t("modals.orderReceipt.messages.error.text")}
+              subMessage={t("modals.orderReceipt.messages.error.subText")}
+              buttonText={t("modals.orderReceipt.buttons.error.text")}
+              onRetry={() => loadReceiptById(receiptId)}
+            />
+          </View>
+        )}
+
+        {!isLoading && !isError && receipt && (
+          <ScrollView
+            contentContainerStyle={styles.scrollViewContainer}
+            showsVerticalScrollIndicator={false}
+          >            
+            <View style={styles.receiptContainer}>              
+              <View style={[styles.receiptSection, { marginBottom: 15 }]}>
+                <Typography
+                  fontSize={16}
+                  fontWeight="bold"
+                  style={{
+                    textAlign: "center",
+                    marginBottom: 5,
+                  }}
+                >
+                  ТОВАРИСТВО З ОБМЕЖЕНОЮ ВІДПОВІДАЛЬНІСТЮ "КНИГАРНЯ"
+                </Typography>
+
+                <Typography
+                  fontSize={16}
+                  fontWeight="medium"
+                  style={{
+                    textAlign: "center",
+                    marginBottom: 5,
+                  }}
+                >
+                  м. Київ, Голосіївський район, вулиця Жилянська, 5/60
+                </Typography>
+
+                <Typography
+                  fontSize={16}
+                  fontWeight="medium"
+                  style={{
+                    textAlign: "center",
+                    marginBottom: 5,
+                  }}
+                >
+                  ПН 382786520308
+                </Typography>
+              </View>
+
+              <View style={styles.receiptSection}>
+                {receipt.books.map((book, index) => {
+                  const isLast = index === receipt.books.length - 1;
+                  const hasDiscount = book.originalPrice !== book.price;
+                  
+                  return (
+                    <View key={index}>
+                      <Typography
+                        fontSize={16}
+                        fontWeight="medium"
+                        color={colors.black}
+                        style={{
+                          marginBottom: 5,
+                        }}
+                      >
+                        {book.quantity} x {book.originalPrice}₴
+                      </Typography>
+
+                      <View 
+                        style={[
+                          styles.itemRow, 
+                          { 
+                            marginBottom: isLast && !hasDiscount ? 0 : 5,
+                          }
+                        ]}
+                      >
+                        <Typography
+                          fontSize={16}
+                          fontWeight="bold"
+                          color={colors.black}
+                          numberOfLines={2}
+                          style={{
+                            maxWidth: "70%",
+                            textAlign: "left",
+                          }}
+                        >
+                          {book.title}
+                        </Typography>
+
+                        <Typography
+                          fontSize={16}
+                          fontWeight="bold"
+                          color={colors.black}
+                          numberOfLines={1}
+                          style={{
+                            maxWidth: "30%",
+                            textAlign: "right",
+                          }}
+                        >
+                          {(book.quantity * book.originalPrice).toFixed(2)}₴
+                        </Typography>
+                      </View>
+
+                      {hasDiscount && (
+                        <View 
+                          style={[
+                            styles.itemRow, 
+                            { 
+                              marginBottom: isLast ? 0 : 5,
+                            }
+                          ]}
+                        >
+                          <Typography
+                            fontSize={16}
+                            fontWeight="medium"
+                            color={colors.black}
+                            numberOfLines={2}
+                            style={{
+                              maxWidth: "70%",
+                              textAlign: "left",
+                            }}
+                          >
+                            Знижка
+                          </Typography>
+
+                          <Typography
+                            fontSize={16}
+                            fontWeight="medium"
+                            color={colors.black}
+                            numberOfLines={1}
+                            style={{
+                              maxWidth: "30%",
+                              textAlign: "right",
+                            }}
+                          >
+                            -{(book.quantity * (book.originalPrice - book.price)).toFixed(2)}₴
+                          </Typography>
+                        </View>
+                      )}
+                    </View>
+                  );
+                })}
+              </View>
+
+              <DottedLine 
+                style={{
+                  marginTop: 10,
+                  marginBottom: 15,
+                }} 
+              />  
+
+              <View style={styles.receiptSection}>
+                <View style={[styles.itemRow, { marginBottom: 5 }]}>
+                  <Typography
+                    fontSize={18}
+                    fontWeight="bold"
+                    color={colors.black}
+                    numberOfLines={1}
+                    style={{
+                      maxWidth: "40%",
+                      textAlign: "left",
+                    }}
+                  >
+                    СУМА
+                  </Typography>
+
+                  <Typography
+                    fontSize={18}
+                    fontWeight="bold"
+                    color={colors.black}
+                    numberOfLines={1}
+                    style={{
+                      maxWidth: "60%",
+                      textAlign: "right",
+                    }}
+                  >
+                    {receipt.total}₴
+                  </Typography>
+                </View>
+
+                <View style={[styles.itemRow, { marginBottom: 5 }]}>
+                  <Typography
+                    fontSize={16}
+                    fontWeight="medium"
+                    color={colors.black}
+                    numberOfLines={1}
+                    style={{
+                      maxWidth: "40%",
+                      textAlign: "left",
+                    }}
+                  >
+                    Знижка
+                  </Typography>
+
+                  <Typography
+                    fontSize={16}
+                    fontWeight="medium"
+                    color={colors.black}
+                    numberOfLines={1}
+                    style={{
+                      maxWidth: "60%",
+                      textAlign: "right",
+                    }}
+                  >
+                    {receipt.discountAmount}₴
+                  </Typography>
+                </View>
+
+                <View style={[styles.itemRow, { marginBottom: 5 }]}>
+                  <Typography
+                    fontSize={16}
+                    fontWeight="medium"
+                    color={colors.black}
+                    numberOfLines={1}
+                    style={{
+                      maxWidth: "40%",
+                      textAlign: "left",
+                    }}
+                  >
+                    До сплати
+                  </Typography>
+
+                  <Typography
+                    fontSize={16}
+                    fontWeight="medium"
+                    color={colors.black}
+                    numberOfLines={1}
+                    style={{
+                      maxWidth: "60%",
+                      textAlign: "right",
+                    }}
+                  >
+                    {receipt.total}₴
+                  </Typography>
+                </View>
+
+                <View style={styles.itemRow}>
+                  <Typography
+                    fontSize={16}
+                    fontWeight="medium"
+                    color={colors.black}
+                    numberOfLines={1}
+                    style={{
+                      maxWidth: "40%",
+                      textAlign: "left",
+                    }}
+                  >
+                    Спосіб оплати
+                  </Typography>
+
+                  <Typography
+                    fontSize={16}
+                    fontWeight="medium"
+                    color={colors.black}
+                    numberOfLines={1}
+                    style={{
+                      maxWidth: "60%",
+                      textAlign: "right",
+                    }}
+                  >
+                    {receipt.paymentMethod === "cod" ? "Накладений платіж" : "Банківською карткою"}
+                  </Typography>
+                </View>
+              </View>
+
+              <DottedLine 
+                style={{
+                  marginTop: 10,
+                  marginBottom: 15,
+                }} 
+              />
+
+              <View style={styles.receiptSection}>
+                <Typography
+                  fontSize={16}
+                  fontWeight="medium"
+                  color={colors.black}
+                  style={{
+                    marginBottom: 5,
+                  }}
+                >
+                  Коментар:
+                </Typography>
+
+                <Typography
+                  fontSize={16}
+                  fontWeight="medium"
+                  color={colors.black}
+                  style={{
+                    marginBottom: 5,
+                  }}
+                >
+                  Дякуємо за замовлення!
+                </Typography>
+
+                <Typography
+                  fontSize={16}
+                  fontWeight="medium"
+                  color={colors.black}
+                  style={{
+                    marginBottom: 5,
+                  }}
+                >
+                  ЧЕК № {receipt.id}
+                </Typography>
+
+                <Typography
+                  fontSize={16}
+                  fontWeight="medium"
+                  color={colors.black}
+                >
+                  {format(new Date(receipt.createdAt), "dd.MM.yyyy HH-mm-ss")}
+                </Typography>
+              </View>
+            </View>
+
+            <View style={[styles.noticeContainer, { marginTop: 25 }]}>
+              <Typography fontSize={16} fontWeight="bold" style={{ marginBottom: 5 }}>
+                {t("modals.orderReceipt.messages.languageNotice.title")}
+              </Typography>
+
+              <Typography fontSize={14} fontWeight="medium" color={colors.gray}>
+                {t("modals.orderReceipt.messages.languageNotice.text")}
+              </Typography>
+            </View>
+          </ScrollView>
+        )}
+      </View>
+    </ModalWrapper>
+  );
+};
+
+const styles = StyleSheet.create({
+  content: {
+    flex: 1,
+  },
+  scrollViewContainer: {
+    flexGrow: 1,
+  },
+  receiptContainer: {
+    backgroundColor: colors.white,
+    paddingVertical: 25,
+    paddingHorizontal: 15,
+    shadowColor: colors.black,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4,
+  },
+  receiptSection: {
+    flex: 1,
+  },
+  itemRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  noticeContainer: {
+    backgroundColor: colors.orangeTint8,
+    borderRadius: 12,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+  },
+  overlayContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  padded: {
+    paddingHorizontal: 15,
+  },
+});
+
+export default OrderReceiptModal;

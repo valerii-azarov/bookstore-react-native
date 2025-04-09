@@ -150,6 +150,18 @@ const InitialLayout = () => {
         }}
       />
       <Stack.Screen
+        name="(user)/(modals)/order-receipt/[receiptId]"
+        options={{
+          headerShown: false,
+          ...(Platform.OS === "ios"
+            ? { 
+                animation: "slide_from_bottom", 
+                animationDuration: 250,
+              }
+            : {}),
+        }}
+      />
+      <Stack.Screen
         name="(user)/profile"
         options={{ headerShown: false }}
       />

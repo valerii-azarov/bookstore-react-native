@@ -1725,6 +1725,43 @@ const translations: Translations = {
         uk: "Статус замовлення",
       },
     },
+
+    orderReceipt: {
+      header: {
+        en: "Your receipt",
+        uk: "Ваша квитанція",
+      },
+      messages: {
+        languageNotice: {
+          title: {
+            en: "❗Please note",
+            uk: "❗Зверніть увагу"
+          },
+          text: {
+            en: "In accordance with the Law of Ukraine \"On protecting the functioning of the Ukrainian language as the state language\", the receipt is issued in Ukrainian.",
+            uk: "Відповідно до Закону України \"Про забезпечення функціонування української мови як державної\", квитанція видається українською мовою.",
+          }
+        },
+        error: {
+          text: {
+            en: "An error occurred",
+            uk: "Виникла помилка",
+          },
+          subText: {
+            en: "Something went wrong. Please try again.",
+            uk: "Щось пішло не так. Спробуйте ще раз.",
+          },
+        },
+      },
+      buttons: {
+        error: {
+          text: {
+            en: "Retry",
+            uk: "Повторіть спробу",
+          },
+        },
+      },
+    },
   },
 
   labels: {

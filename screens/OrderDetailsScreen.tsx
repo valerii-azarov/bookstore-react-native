@@ -502,7 +502,14 @@ const OrderDetailsScreen = () => {
               <View style={styles.sectionWrapper}>
                 <View style={styles.receiptRow}>
                   <TouchableOpacity
-                    onPressIn={() => console.log(order.receiptId)}
+                    onPress={() => {
+                      router.push({
+                        pathname: "/(user)/(modals)/order-receipt/[receiptId]",
+                        params: { 
+                          receiptId: order.receiptId || "defaultReceiptId", 
+                        },
+                      })
+                    }}
                     activeOpacity={0.7}
                   >
                     <Typography
