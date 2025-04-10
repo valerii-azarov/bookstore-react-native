@@ -404,9 +404,11 @@ const translations: Translations = {
     },
 
     favoriteBookItem: {
-      details: {
-        en: "Details",
-        uk: "Деталі",
+      labels: {
+        favorite: {
+          en: "Favorite",
+          uk: "Обране",
+        },
       },
     },
   },  
