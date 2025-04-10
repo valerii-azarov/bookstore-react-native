@@ -4,16 +4,16 @@ import { onAuthStateChanged, Unsubscribe } from "firebase/auth";
 import { auth } from "@/api/firebase";
 import authApi from "@/api/authApi";
 import { asyncStorage } from "@/storages/asyncStorage"; // import { mmkvStorage } from "@/storages/mmkvStorage";
-import { UserType, Role } from "@/types";
+import { BaseUser, Role } from "@/types";
 
 interface AuthStore {
-  user: UserType | null;
+  user: BaseUser | null;
   isLoggedIn: boolean;
   isAdmin: boolean;
   authDataLoaded: boolean;
   authListenerActive: boolean;
   unsubscribeAuth?: Unsubscribe;
-  setUser: (user: UserType | null) => void;
+  setUser: (user: BaseUser | null) => void;
   initializeAuth: () => void;
   cleanupAuth: () => void;
 }
@@ -29,7 +29,7 @@ export const useAuthStore = create<AuthStore>()(
         authListenerActive: false,
         unsubscribeAuth: undefined,
 
-        setUser: (user: UserType | null) => {
+        setUser: (user: BaseUser | null) => {
           set({
             user,
             isLoggedIn: !!user,

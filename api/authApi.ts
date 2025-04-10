@@ -1,7 +1,7 @@
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { doc, setDoc, getDoc } from "@firebase/firestore";
 import { db, auth } from "./firebase";
-import { UserType } from "@/types";
+import { BaseUser } from "@/types";
 
 const authApi = {
   signIn: async (email: string, password: string) => {
@@ -28,7 +28,7 @@ const authApi = {
 
   getUser: async (uid: string) => {
     const userDoc = await getDoc(doc(db, "users", uid));
-    return userDoc.exists() ? (userDoc.data() as UserType) : null;
+    return userDoc.exists() ? (userDoc.data() as BaseUser) : null;
   },
 };
 

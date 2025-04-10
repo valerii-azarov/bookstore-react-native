@@ -1,114 +1,126 @@
-import { router } from "expo-router";
 import { View, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
-import Animated, { FadeInDown } from "react-native-reanimated";
-import { colors } from "@/constants/theme";
+import { useRouter } from "expo-router";
 import { useTranslation } from "@/contexts/translateContext";
 import { useAuthStore } from "@/stores/authStore";
 import { selectUser } from "@/selectors/authSelectors";
-import { ProfileFieldType } from "@/types";
+import { colors } from "@/constants/theme";
 
-import ScreenWrapper from "@/components/ScreenWrapper";
-import Header from "@/components/Header";
-import BackButton from "@/components/BackButton";
+import ViewWrapper from "@/components/ViewWrapper";
 import Typography from "@/components/Typography";
 
-const ProfileScreen = () => {
+const ProfileScreen = () => {  
   const t = useTranslation();
   const user = useAuthStore(selectUser);
 
-  const profileFields: ProfileFieldType[] = [
+  const router = useRouter();   
+
+  const fields = [
     {
-      field: "firstName",
+      key: "firstName",
       label: t("screens.profile.fields.firstName"),
-      value: user?.firstName || "—",
-      editable: true,
+      value: user?.firstName || "-",
+      isEditable: true,
     },
     {
-      field: "lastName",
+      key: "lastName",
       label: t("screens.profile.fields.lastName"),
-      value: user?.lastName || "—",
-      editable: true,
+      value: user?.lastName || "-",
+      isEditable: true,
     },
     {
-      field: "email",
+      key: "email",
       label: t("screens.profile.fields.email"),
-      value: user?.email || "—",
-      editable: false,
+      value: user?.email || "-",
+      isEditable: false,
     },
   ];
 
   return (
-    <ScreenWrapper statusBarStyle="dark">
-      <Header
-        title={t("screens.profile.header")}
-        iconLeft={
-          <BackButton />
-        }
-        style={styles.headerContainer}
-      />
-
-      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        {profileFields.map(({ field, label, value, editable }, index) => (
-          <Animated.View 
-            key={index}
-            entering={FadeInDown.delay(index * 100)} 
-            style={styles.profileField}
-          >
-            <Typography fontSize={14} fontWeight="medium" color={colors.blackTint5}>
-              {label}
-            </Typography>
-
-            <View style={styles.profileAction}>
-              <Typography fontSize={16} fontWeight="bold">
-                {value}
+    <ViewWrapper 
+      title={t("screens.profile.header")} 
+      onBackPress={() => router.back()}
+      hideFooter
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContainer}
+        showsVerticalScrollIndicator={false}
+      > 
+        <View style={[styles.content, styles.padded]}>
+          {fields.map((field, index) => (
+            <View 
+              key={index} 
+              style={styles.field}
+            >
+              <Typography
+                fontSize={14}
+                fontWeight="medium"
+                color={colors.gray}
+                numberOfLines={1}
+                style={{ marginBottom: 2.5 }}
+              >
+                {field.label}
               </Typography>
 
-              {editable && (
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={() =>
-                    router.push({
-                      pathname: "/(user)/(modals)/edit-profile/[field]",
-                      params: { field },
-                    })
-                  }
+              <View style={styles.fieldRow}>
+                <Typography
+                  fontSize={16}
+                  fontWeight="bold"
+                  color={colors.black}
+                  numberOfLines={1}
+                  style={{ flexShrink: 1 }}
                 >
-                  <Typography fontSize={16} fontWeight="bold" style={styles.linkText}>
-                    {t("screens.profile.button")}
-                  </Typography>
-                </TouchableOpacity>
-              )}
+                  {field.value}
+                </Typography>
+
+                {field.isEditable && (
+                  <TouchableOpacity
+                    onPress={() =>
+                      router.push({
+                        pathname: "/(user)/(modals)/edit-profile/[field]",
+                        params: { field: field.key },
+                      })
+                    }
+                  >
+                    <Typography 
+                      fontSize={16}
+                      fontWeight="bold"
+                      color={colors.black}
+                      numberOfLines={1}
+                      style={{ 
+                        flexShrink: 1,
+                        textDecorationLine: "underline",
+                      }}
+                    >
+                      {t("screens.profile.button")}
+                    </Typography>
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
-          </Animated.View>
-        ))}
-      </ScrollView>
-    </ScreenWrapper>
+          ))}
+        </View>  
+      </ScrollView>     
+    </ViewWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  headerContainer: {
-    paddingHorizontal: 15,
-    marginBottom: 15,
-  },
   scrollViewContainer: {
     flexGrow: 1,
-    paddingHorizontal: 15,
   },
-  profileField: {
-    marginBottom: 25,
+  content: {
+    flex: 1,
   },
-  profileAction: {
+  field: {
+    marginBottom: 15,
+  },
+  fieldRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
   },
-  button: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  linkText: {
-    textDecorationLine: "underline",
+  padded: {
+    padding: 15,
   },
 });
 

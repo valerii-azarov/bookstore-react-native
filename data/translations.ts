@@ -651,45 +651,6 @@ const translations: Translations = {
       },
     },
 
-    editProfile: {
-      header: {
-        firstName: {
-          en: "Change First Name",
-          uk: "Зміна імені",
-        },
-        lastName: {
-          en: "Change Last Name",
-          uk: "Зміна прізвища",          
-        },
-      },
-      fields: {
-        firstName: {
-          label: {
-            en: "New First Name",
-            uk: "Нове ім'я",
-          },
-          placeholder: {
-            en: "Enter your new first name",
-            uk: "Введіть нове ім'я",
-          },
-        },
-        lastName: {
-          label: {
-            en: "New Last Name",
-            uk: "Нове прізвище",
-          },
-          placeholder: {
-            en: "Enter your last name",
-            uk: "Введіть нове прізвище",
-          },
-        },
-      },
-      button: {
-        en: "Save",
-        uk: "Зберегти",
-      },
-    },
-
     books: {
       header: {
         text: {
@@ -1435,6 +1396,55 @@ const translations: Translations = {
       },
     },
 
+    editProfile: {
+      header: {
+        firstName: {
+          en: "Change First Name",
+          uk: "Зміна імені",
+        },
+        lastName: {
+          en: "Change Last Name",
+          uk: "Зміна прізвища",          
+        },
+      },
+      labels: {
+        firstName: {
+          text: {
+            en: "New first name",
+            uk: "Нове ім'я",
+          },
+        },
+        lastName: {
+          text: {
+            en: "New last name",
+            uk: "Нове прізвище",
+          },
+        },
+      },
+      placeholders: {
+        firstName: {
+          text: {
+            en: "Enter your new first name",
+            uk: "Введіть нове ім'я",
+          },
+        },
+        lastName: {
+          text: {
+            en: "Enter your last name",
+            uk: "Введіть нове прізвище",
+          },
+        },
+      },
+      buttons: {
+        save: {
+          text: {
+            en: "Save",
+            uk: "Зберегти",
+          },
+        },
+      },
+    },
+
     cart: {            
       header: {
         text: {
@@ -1929,6 +1939,24 @@ const translations: Translations = {
         uk: "Скасувати",
       },
     },  
+    profileUpdate: {
+      success: {
+        title: {
+          en: "Success",
+          uk: "Успішно",
+        },
+        message: {
+          en: "Your profile has been updated.",
+          uk: "Ваш профіль було оновлено.",
+        },
+      },
+      error: {
+        message: {
+          en: "Failed to update profile. Please try again.",
+          uk: "Не вдалося оновити профіль. Спробуйте ще раз.",
+        },
+      },
+    },    
     orderCopied: {
       title: {
         en: "Copied",
@@ -1947,6 +1975,12 @@ const translations: Translations = {
       confirm: {
         en: "Confirm",
         uk: "Підтвердити",
+      },
+      success: {
+        title: {
+          en: "Success",
+          uk: "Успішно",
+        },
       },
       error: {
         title: {
@@ -1991,6 +2025,10 @@ const translations: Translations = {
       userNotFound: {
         en: "User not found",
         uk: "Користувача не знайдено",
+      },
+      userNotFoundAfterUpdate: {
+        en: "User not found after update",
+        uk: "Користувача не знайдено після оновлення"
       },
     },
     image: {

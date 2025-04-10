@@ -1,24 +1,20 @@
 import { doc, getDoc, updateDoc } from "@firebase/firestore";
 import { db } from "./firebase";
-import { EditFieldType } from "@/types";
+import { BaseUser, ProfileField } from "@/types";
 
-const profileApi = {
-  updateProfile: async (uid: string, updatedData: Partial<EditFieldType>, setUser: Function) => {
-    const userDocRef = doc(db, "users", uid);
-    await updateDoc(userDocRef, updatedData);
-    const updatedUserDocSnap = await getDoc(userDocRef);
-
-    if (updatedUserDocSnap.exists()) {
-      const data = updatedUserDocSnap.data();
-      setUser({
-        uid: data?.uid || "",
-        firstName: data.firstName || "",
-        lastName: data.lastName || "",
-        email: data?.email || "",
-        role: data?.role || 1,
-      });
+export const profileApi = {
+  updateProfile: async (uid: string, field: ProfileField, value: string): Promise<BaseUser> => {
+    const userRef = doc(db, "users", uid);
+    
+    await updateDoc(userRef, {
+      [field]: value,
+    });
+    
+    const updatedUserDoc = await getDoc(userRef);
+    if (!updatedUserDoc.exists()) {
+      throw new Error("UsersError: User not found after update (users/user-not-found-after-update)");
     }
+          
+    return { uid: updatedUserDoc.id, ...updatedUserDoc.data() } as BaseUser;
   },
 };
-
-export default profileApi;

@@ -33,12 +33,14 @@ export type ResponseType = {
   message?: string;
 };
 
+// role
 export enum Role {
   User = 1,
   Admin = 2,
 }
 
-export type UserType = {
+// user
+export interface BaseUser {
   uid?: string;
   firstName: string;
   lastName: string;
@@ -46,6 +48,16 @@ export type UserType = {
   role?: Role;
 };
 
+export interface User extends BaseUser {
+  favorites: string[];
+  viewingHistory: { bookId?: string; timestamp: Date; }[];
+  orders: string[];
+};
+
+// profile fields
+export type ProfileField = keyof Omit<BaseUser, "uid" | "email" | "role">;
+
+// sign in / up
 export interface SignInForm {
   email: string;
   password: string;
@@ -88,18 +100,6 @@ export type MenuOptionsType = {
   icon: React.ReactElement;
   route: any;
   isVisible?: boolean;
-};
-
-export type EditFieldType = {
-  firstName: string;
-  lastName: string;
-};
-
-export type ProfileFieldType = {
-  label: string;
-  value: string;
-  field: keyof UserType;
-  editable: boolean;
 };
 
 // book fields
@@ -351,6 +351,16 @@ export type OrdersStatusType = "idle" | "loading" | "fetching" | "refreshing";
 export type OrdersByUserIdStatusType = "idle" | "loading";
 
 export type OrderReceiptStatusType = "idle" | "loading";
+
+// new status for test
+export type StatusType = 
+  | "idle"
+  | "loading"
+  | "fetching"
+  | "refreshing"
+  | "creating"
+  | "updating"
+  | "deleting";
 
 // others
 export type BookSearchKey = keyof BaseBook;
