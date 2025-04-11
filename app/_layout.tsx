@@ -29,6 +29,8 @@ const InitialLayout = () => {
   const favoritesDataLoaded = useFavoritesStore(selectFavoritesDataLoaded);
   const initializeFavorites = useFavoritesStore(selectInitializeFavorites);
   
+  console.log(isLoggedIn);
+
   const [fontsLoaded, fontsError] = useFonts({
     "Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.ttf"),
     "Montserrat-Light": require("../assets/fonts/Montserrat-Light.ttf"),
@@ -72,15 +74,6 @@ const InitialLayout = () => {
       <Stack.Screen
         name="welcome"
         options={{ headerShown: false }}
-      />
-
-      {/* languages screen */}
-      <Stack.Screen
-        name="languages"
-        options={{
-          ...(isLoggedIn ? {} : { animation: "fade", animationDuration: 200 }),
-          headerShown: false,
-        }}
       />
 
       {/* admin screens */}

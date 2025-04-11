@@ -590,40 +590,62 @@ const translations: Translations = {
           uk: "Вітаю",
         },
       },
-      balance: {
+      titles: {
+        balance: {
+          en: "My balance",
+          uk: "Мій баланс",
+        },
+        settings: {
+          en: "Settings",
+          uk: "Налаштування",
+        },
+      },
+      labels: {
         bonuses: {
-          en: "bonuses",
-          uk: "бонуси",
+          en: "Bonuses",
+          uk: "Бонуси",
         },
         offers: {
-          en: "offers",
-          uk: "пропозиції",
+          en: "Offers",
+          uk: "Пропозиції",
+        },
+        profile: {
+          en: "Profile",
+          uk: "Профіль",
+        },
+        favorites: {
+          en: "Favorites",
+          uk: "Обрані книги",
+        },
+        viewingHistory: {
+          en: "Viewing History",
+          uk: "Переглянуті книги",
+        },
+        language: {
+          en: "Language",
+          uk: "Мова",
+        },
+        logout: {
+          en: "Logout",
+          uk: "Вийти",
         },
       },
-      profile: {
-        en: "Profile",
-        uk: "Профіль",
-      },
-      favorites: {
-        en: "Favorites",
-        uk: "Збережені книги",
-      },
-      viewingHistory: {
-        en: "Viewing History",
-        uk: "Переглянуті книги",
-      },
-      languages: {
-        en: "Language",
-        uk: "Мова",
-      },
-      logout: {
-        en: "Logout",
-        uk: "Вийти",
-      },
       version: {
-        en: "Version",
-        uk: "Версія додатку",
+        text: {
+          en: "Version",
+          uk: "Версія додатку",
+        },
       },
+      // balance: {
+        // bonuses: {
+        //   en: "bonuses",
+        //   uk: "бонуси",
+        // },
+        // offers: {
+        //   en: "offers",
+        //   uk: "пропозиції",
+        // },
+      // },
     },
 
     profile: {
@@ -1890,6 +1912,18 @@ const translations: Translations = {
         en: "Are you sure you want to log out?",
         uk: "Ви впевнені, що хочете вийти?",
       },
+      success: {
+        message: {
+          en: "You have been logged out.",
+          uk: "Ви вийшли з системи.",
+        }
+      },
+      error: {
+        message: {
+          en: "Failed to log out.",
+          uk: "Не вдалося вийти.",
+        },
+      },
     },
     confirmDeleteBook: {
       title: {
@@ -2005,21 +2039,23 @@ const translations: Translations = {
   },
 
   errorMessages: {
-    invalidCredentials: {
-      en: "Invalid email or password",
-      uk: "Неправильний email або пароль",
-    },
-    userDisabled: {
-      en: "Your account has been disabled. Please contact support",
-      uk: "Ваш акаунт заблоковано. Зверніться до підтримки",
-    },
-    networkRequestFailed: {
-      en: "Network error. Please check your internet connection",
-      uk: "Помилка мережі. Перевірте підключення до Інтернету",
-    },
-    emailInUse: {
-      en: "This email is already in use",
-      uk: "Ця електронна пошта вже використовується",
+    auth: {
+      invalidCredentials: {
+        en: "Invalid email or password",
+        uk: "Неправильний email або пароль",
+      },
+      userDisabled: {
+        en: "Your account has been disabled. Please contact support",
+        uk: "Ваш акаунт заблоковано. Зверніться до підтримки",
+      },
+      networkRequestFailed: {
+        en: "Network error. Please check your internet connection",
+        uk: "Помилка мережі. Перевірте підключення до Інтернету",
+      },
+      emailAlreadyInUse: {
+        en: "This email is already in use",
+        uk: "Ця електронна пошта вже використовується",
+      },
     },
     users: {
       userNotFound: {

@@ -1,40 +1,45 @@
 import { View, ViewStyle, TouchableOpacity, StyleSheet } from "react-native";
-import { Ionicons as Icon } from "@expo/vector-icons";
+import * as IconSets from "@expo/vector-icons";
 import { colors } from "@/constants/theme";
 import { horizontalScale, verticalScale } from "@/helpers/common";
 
+import Icon from "./Icon";
 import Typography from "./Typography";
 
-interface IconBadgeProps {
-  count: number;
-  iconName: keyof typeof Icon.glyphMap;
-  iconSize?: number;
-  iconColor?: string;
+type IconBadgeProps = {
+  badgeCount: number;
+  badgeIconSet: keyof typeof IconSets;
+  badgeIconName: string;
+  badgeIconSize?: number;
+  badgeIconColor?: string;
   onPress?: () => void;
   style?: ViewStyle;
-}
-
+};
 
 const IconBadge = ({
-  count,
-  iconName,
-  iconSize = 24,
-  iconColor = colors.orange,
+  badgeCount,
+  badgeIconSet,
+  badgeIconName,
+  badgeIconSize = 24,
+  badgeIconColor = colors.orange,
   onPress,
   style,
 }: IconBadgeProps) => {
-  const displayedCount = count >= 100 ? "99+" : count.toString();
+  const displayedCount = badgeCount >= 100 ? "99+" : badgeCount.toString();
 
   return (
-    <TouchableOpacity 
-      onPress={onPress} 
-      style={[
-        styles.container,
-        style
-      ]}
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.container, style]}
     >
-      <Icon name={iconName} size={iconSize} color={iconColor} />
-      {count > 0 && (
+      <Icon
+        iconSet={badgeIconSet}
+        iconName={badgeIconName}
+        iconSize={badgeIconSize}
+        iconColor={badgeIconColor}
+      />
+
+      {badgeCount > 0 && (
         <View
           style={[
             styles.badge,

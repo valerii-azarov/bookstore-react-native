@@ -2,20 +2,34 @@ import { ImageSourcePropType } from "react-native";
 import * as IconSets from "@expo/vector-icons";
 import { QueryDocumentSnapshot, DocumentData } from "@firebase/firestore";
 
+// route 
+export type AppRoute = "/profile" | "/favorites" | "/viewing-history";
+// type AppRoute = "/profile" | "/favorites" | "/viewing-history" | "/bonuses" | "/offers";
+
+// lang
 export type Language = "en" | "uk";
 
+// fonts
 export type FontWeight = "light" | "regular" | "medium" | "bold";
 
+// tab
 export type TabType = {
   name: string;
   label: string;
   icon: React.ReactElement;
 };
 
+// this needs to be removed
 export type OptionType = {
   label: string;
   value: string;
 };
+
+// new option for test
+export interface Option<T extends string> {
+  label: string;
+  value: T;
+}
 
 export interface ImageBook {
   id: string;
@@ -95,12 +109,26 @@ export interface SignUpValidations {
   confirmMatch: boolean;
 }
 
-export type MenuOptionsType = {
-  title: string;
-  icon: React.ReactElement;
-  route: any;
+// menu
+export interface MenuItem {
+  key: string;
+  label: string;
+  iconSet: keyof typeof IconSets;
+  iconName: string;
+  iconSize?: number;
+  iconColor?: string;
+  textColor?: string;
+  route?: AppRoute;
+  onPress?: () => void;
+  component?: React.ReactNode;
+  hideChevron?: boolean;
   isVisible?: boolean;
-};
+}
+
+export interface MenuSection {
+  title: string;
+  items: MenuItem[];
+}
 
 // book fields
 export type BaseBook = {
@@ -351,6 +379,15 @@ export type OrdersStatusType = "idle" | "loading" | "fetching" | "refreshing";
 export type OrdersByUserIdStatusType = "idle" | "loading";
 
 export type OrderReceiptStatusType = "idle" | "loading";
+
+// auth status
+export type AuthStatusType = 
+  | "idle"
+  | "initializing"
+  | "fetching"
+  | "registering"
+  | "authenticating"
+  | "loggingOut";
 
 // new status for test
 export type StatusType = 

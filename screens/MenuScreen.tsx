@@ -1,76 +1,188 @@
-import React from "react";
+import { View, Alert, TouchableOpacity, ScrollView, StyleSheet, Platform } from "react-native";
 import { Link } from "expo-router";
 import Constants from "expo-constants";
-import { Alert, View, TouchableOpacity, ScrollView, StyleSheet, Platform } from "react-native";
-import Animated, { FadeInDown } from "react-native-reanimated";
-import { Ionicons as Icon } from "@expo/vector-icons";
-import authApi from "@/api/authApi";
-import { colors } from "@/constants/theme";
-import { horizontalScale, verticalScale } from "@/helpers/common";
-import { useTranslation } from "@/contexts/translateContext";
+import {
+  useLanguage,
+  useSetLanguage,
+  useTranslation,
+} from "@/contexts/translateContext";
 import { useAuthStore } from "@/stores/authStore";
-import { selectUser, selectIsAdmin } from "@/selectors/authSelectors";
-import { MenuOptionsType } from "@/types";
+import { 
+  selectUser, 
+  selectIsAdmin,
+  selectLogout,
+  selectClearAuthResponse, 
+} from "@/selectors/authSelectors";
+import { colors } from "@/constants/theme";
+import { verticalScale } from "@/helpers/common";
+import { Option, Language, MenuSection } from "@/types";
 
 import ScreenWrapper from "@/components/ScreenWrapper";
 import Header from "@/components/Header";
+import Icon from "@/components/Icon";
 import IconBadge from "@/components/IconBadge";
-import Button from "@/components/Button";
+import Switcher from "@/components/Switcher";
 import Typography from "@/components/Typography";
 
 const MenuScreen = () => {
   const t = useTranslation();
 
+  const language = useLanguage();
+  const setLanguage = useSetLanguage();
+
   const user = useAuthStore(selectUser);
   const isAdmin = useAuthStore(selectIsAdmin);
 
-  const confirmLogout = () => {
-    Alert.alert(
-      t("alerts.confirmLogout.title"),
-      t("alerts.confirmLogout.message"),
-      [
-        {
-          text: t("alerts.static.cancel"),
-          style: "cancel",
-        },
-        {
-          text: t("alerts.static.confirm"),
-          style: "destructive",
-          onPress: async () => await authApi.logout(),
-        },
-      ],
-      { cancelable: false }
-    );
-  };
+  const logout = useAuthStore(selectLogout);
+  const clearAuthResponse = useAuthStore(selectClearAuthResponse);
 
-  const menuOptions: MenuOptionsType[] = [
-    {
-      title: t("screens.menu.profile"),
-      icon: <Icon name="person-sharp" size={24} color={colors.orange} />,
-      route: "/profile",
-      isVisible: !isAdmin,
-    },
-    {
-      title: t("screens.menu.favorites"),
-      icon: <Icon name="heart" size={24} color={colors.orange} />,
-      route: "/favorites",
-      isVisible: !isAdmin,
-    },
-    {
-      title: t("screens.menu.viewingHistory"),
-      icon: <Icon name="time" size={24} color={colors.orange} />,
-      route: "/viewing-history",
-      isVisible: !isAdmin,
-    },
-    {
-      title: t("screens.menu.languages"),
-      icon: <Icon name="globe-outline" size={24} color={colors.orange} />,
-      route: "/languages",
-    },
+  const languageOptions: Option<Language>[] = [
+    { label: "Укр", value: "uk" },
+    { label: "En", value: "en" },
   ];
 
-  const fadeDuration = menuOptions.filter(option => option.isVisible !== false).length * 100;
-  const adjustedFadeDuration = fadeDuration === 100 ? 0 : fadeDuration;
+  const menuItems: MenuSection[] = [
+    // uncomment this in the future
+    
+    // {
+    //   title: t("screens.menu.titles.balance"),
+    //   items: [
+    //     {
+    //       key: "bonuses",
+    //       label: t("screens.menu.labels.bonuses"),
+    //       iconSet: "MaterialIcons",
+    //       iconName: "star-outline",
+    //       iconSize: 28,
+    //       iconColor: colors.black,
+    //       route: "/bonuses",
+    //       isVisible: !isAdmin,
+    //     },
+    //     {
+    //       key: "offers",
+    //       label: t("screens.menu.labels.offers"),
+    //       iconSet: "MaterialIcons",
+    //       iconName: "local-offer",
+    //       iconSize: 28,
+    //       iconColor: colors.black,
+    //       route: "/offers",
+    //       isVisible: !isAdmin,
+    //     },
+    //   ],
+    // },
+    
+    {
+      title: "",
+      items: [
+        {
+          key: "profile",
+          label: t("screens.menu.labels.profile"),
+          iconSet: "MaterialIcons",
+          iconName: "perm-identity",
+          iconSize: 28,
+          iconColor: colors.black,
+          route: "/profile",
+          isVisible: !isAdmin,
+        },
+      ],
+    },
+    {
+      title: "",
+      items: [
+        {
+          key: "favorites",
+          label: t("screens.menu.labels.favorites"),
+          iconSet: "MaterialIcons",
+          iconName: "bookmark-outline",
+          iconSize: 28,
+          iconColor: colors.black,
+          route: "/favorites",
+          isVisible: !isAdmin,
+        },
+        {
+          key: "viewingHistory",
+          label: t("screens.menu.labels.viewingHistory"),
+          iconSet: "MaterialIcons",
+          iconName: "access-time",
+          iconSize: 28,
+          iconColor: colors.black,
+          route: "/viewing-history",
+          isVisible: !isAdmin,
+        },
+      ],
+    },
+    {
+      title: t("screens.menu.titles.settings"),
+      items: [
+        {
+          key: "language",
+          label: t("screens.menu.labels.language"),
+          iconSet: "MaterialIcons",
+          iconName: "language",
+          iconSize: 28,
+          iconColor: colors.black,
+          component: (
+            <Switcher<Language>
+              options={languageOptions}
+              selectedValue={language}
+              onChange={(value) => {
+                if (value !== language) {
+                  setLanguage(value);
+                }
+              }}
+            />
+          ),
+        },
+      ],
+    },
+    {
+      title: "",
+      items: [
+        {
+          key: "logout",
+          label: t("screens.menu.labels.logout"),
+          iconSet: "MaterialIcons",
+          iconName: "logout",
+          iconSize: 28,
+          iconColor: colors.red,
+          textColor: colors.red,
+          onPress: () => {
+            Alert.alert(
+              t("alerts.confirmLogout.title"),
+              t("alerts.confirmLogout.message"),
+              [
+                {
+                  text: t("alerts.static.cancel"),
+                  style: "cancel",
+                },
+                {
+                  text: t("alerts.static.confirm"),
+                  style: "destructive",
+                  onPress: async () => {
+                    await logout()
+                      .then(() => {
+                        Alert.alert(
+                          t("alerts.static.success.title"),
+                          t("alerts.confirmLogout.success.message"),
+                          [{ text: "OK", onPress: () => setTimeout(() => clearAuthResponse(), 500) }]
+                        );
+                      })
+                      .catch((error) => {
+                        Alert.alert(
+                          t("alerts.static.error.title"),
+                          error.message || t("alerts.confirmLogout.error.message")
+                        );
+                      });
+                  },
+                },
+              ],
+              { cancelable: false }
+            );
+          },
+          hideChevron: true,
+        },
+      ],
+    },
+  ];
 
   return (
     <ScreenWrapper statusBarStyle="dark" disableTopInset>
@@ -78,86 +190,119 @@ const MenuScreen = () => {
         title={`${t("screens.menu.header.welcome")}, ${user?.firstName}`}
         titleSize={18}
         iconRight={
-          <IconBadge count={5} iconName="notifications" />
+          <IconBadge 
+            badgeCount={5} 
+            badgeIconSet="MaterialIcons"
+            badgeIconName="notifications" 
+          />
         }
         style={[
-          styles.headerContainer, 
+          styles.header,
           {
-            backgroundColor: colors.white,
-            borderBottomColor: colors.grayTint7,
-            borderBottomWidth: 1,
             minHeight: Platform.OS === "ios" ? verticalScale(100) : verticalScale(85),
-          }
+          },
         ]}
         enableTopInset
       />
-      
-      <ScrollView contentContainerStyle={styles.scrollViewContainer}>   
-        <View style={styles.contentContainer}>
-          {!isAdmin && (
-            <Animated.View
-              entering={FadeInDown.duration(adjustedFadeDuration)}
-              style={styles.infoContainer}
-            >
-              <TouchableOpacity style={styles.infoItem} activeOpacity={0.8}>
-                <Typography fontSize={28} fontWeight="bold" color={colors.orange}>
-                  0
-                </Typography>
-                <Typography fontSize={12} fontWeight="regular">
-                  {t("screens.menu.balance.bonuses")}
-                </Typography>
-              </TouchableOpacity>
 
-              <TouchableOpacity style={styles.infoItem} activeOpacity={0.8}>
-                <Typography fontSize={28} fontWeight="bold" color={colors.orange}>
-                  0/0
-                </Typography>
-                <Typography fontSize={12} fontWeight="regular">
-                  {t("screens.menu.balance.offers")}
-                </Typography>
-              </TouchableOpacity>
-            </Animated.View>
-          )}
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={[styles.content, styles.padded]}>
+          {menuItems
+            .map((section, sectionIndex) => {
+              const visibleItems = section.items.filter((item) => item.isVisible !== false);
 
-          <View style={styles.menuContainer}>
-            {menuOptions.map((option, index) => {
-              if (option.isVisible !== false) {
-                return (
-                  <Animated.View
-                    key={index}
-                    entering={FadeInDown.delay(index * 100)}
-                  >
-                    <Link href={option.route} asChild>
-                      <TouchableOpacity
-                        style={styles.menuItem}
-                        activeOpacity={0.6}
-                      >
-                        {option.icon}
-                        <Typography fontSize={16} fontWeight="medium">
-                          {option.title}
-                        </Typography>
-                      </TouchableOpacity>
-                    </Link>
-                  </Animated.View>
-                );
-              }
-              return null;
-            })}
-          </View>
-        </View> 
+              if (visibleItems.length === 0) return null;
 
-        <View style={styles.versionContainer}>
-          <Typography fontSize={12} fontWeight="medium" color={colors.gray}>
-            {`${t("screens.menu.version")} ${Constants.expoConfig?.version}`}
-          </Typography>
+              return (
+                <View key={`section-${sectionIndex}`} style={styles.sectionContainer}>
+                  {section.title && (
+                    <Typography
+                      fontSize={16}
+                      fontWeight="medium"
+                      color={colors.black}
+                      style={styles.sectionTitle}>
+                      {section.title}
+                    </Typography>
+                  )}
+
+                  <View style={styles.sectionWrapper}>
+                    {visibleItems.map((item, itemIndex, filteredItems) => {
+                      const content = (
+                        <TouchableOpacity
+                          style={styles.menuItem}
+                          onPress={item.onPress}
+                          activeOpacity={0.7}
+                          disabled={!!item.component}
+                        >
+                          <View style={styles.menuItemLeft}>
+                            <Icon
+                              iconSet={item.iconSet}
+                              iconName={item.iconName}
+                              iconSize={item.iconSize}
+                              iconColor={item.iconColor}
+                            />
+
+                            <Typography
+                              fontSize={16}
+                              fontWeight="bold"
+                              color={item.textColor || colors.black}
+                              style={{ marginLeft: 10 }}
+                            >
+                              {item.label}
+                            </Typography>
+                          </View>
+
+                          <View style={styles.menuItemRight}>
+                            {item.component || (!item.hideChevron && (
+                              <Icon
+                                iconSet="Ionicons"
+                                iconName="chevron-forward"
+                                iconSize={24}
+                                iconColor={colors.black}
+                              />
+                            ))}
+                          </View>
+                        </TouchableOpacity>
+                      );
+
+                      return (
+                        <View key={`item-${itemIndex}`}>
+                          {item.route ? <Link href={item.route} asChild>{content}</Link> : content}
+
+                          {itemIndex < filteredItems.length - 1 && (
+                            <View
+                              style={[
+                                styles.divider,
+                                {
+                                  marginVertical: 15,
+                                },
+                              ]}
+                            />
+                          )}
+                        </View>
+                      );
+                    })}
+                  </View>
+                </View>
+              );
+            })
+            .filter(Boolean)}
         </View>
 
-        <View style={styles.buttonContainer}>
-          <Button onPress={confirmLogout} style={styles.button}>
-            <Typography fontSize={16} fontWeight="bold" color={colors.white}>
-              {t("screens.menu.logout")}
-            </Typography>
-          </Button>
+        <View 
+          style={[
+            styles.padded,
+            { 
+              alignItems: "center",
+            }
+          ]}
+        >
+          <Typography fontSize={14} fontWeight="medium" color={colors.gray}>
+            {`${t("screens.menu.version.text")} ${Constants.expoConfig?.version}`}
+          </Typography>
         </View>
       </ScrollView>
     </ScreenWrapper>
@@ -165,64 +310,69 @@ const MenuScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  headerContainer: {
+  header: {
+    backgroundColor: colors.white,
+    borderBottomColor: colors.grayTint7,
+    borderBottomWidth: 1,
     paddingHorizontal: 15,
-    // marginBottom: 15,
   },
   scrollViewContainer: {
     flexGrow: 1,
-    padding: 15,
   },
-  contentContainer: {
+  content: {
     flex: 1,
   },
-  title: {
-    marginBottom: 5,
-    marginLeft: 5,
+  sectionContainer: {
+    marginBottom: 25,
   },
-  infoContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: verticalScale(15),
-    gap: 15,
-  },
-  infoItem: {
-    flex: 1,
+  sectionWrapper: {
     backgroundColor: colors.white,
     borderRadius: 10,
-    paddingVertical: verticalScale(25),
-    paddingHorizontal: horizontalScale(20),
-    flexDirection: "column",
+    padding: 15,
   },
-  menuContainer: {
-    flexDirection: "column",
-    gap: 15,
+  sectionTitle: {
+    marginBottom: 5,
   },
   menuItem: {
     flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: colors.white,
-    borderRadius: 10,
-    padding: verticalScale(20),
-    gap: 15,
-  },
-  versionContainer: {
-    marginTop: verticalScale(10),
+    justifyContent: "space-between",
     alignItems: "center",
   },
-  buttonContainer: {
-    gap: 10,
-    paddingTop: 10,
+  menuItemLeft: {
     flexDirection: "row",
+    alignItems: "center",
+  },
+  menuItemRight: {
     justifyContent: "center",
     alignItems: "center",
   },
-  button: {
-    flex: 1,
+  divider: {
+    height: 1.5,
+    backgroundColor: colors.grayTint5,
+    opacity: 0.3,
+  },
+  padded: {
+    padding: 15,
   },
 });
 
 export default MenuScreen;
+
+//   const confirmLogout = () => {
+//     Alert.alert(
+//       t("alerts.confirmLogout.title"),
+//       t("alerts.confirmLogout.message"),
+//       [
+//         {
+//           text: t("alerts.static.cancel"),
+//           style: "cancel",
+//         },
+//         {
+//           text: t("alerts.static.confirm"),
+//           style: "destructive",
+//           onPress: async () => await authApi.logout(),
+//         },
+//       ],
+//       { cancelable: false }
+//     );
+//   };

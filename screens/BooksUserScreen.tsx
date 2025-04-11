@@ -111,8 +111,9 @@ const BooksUserScreen = () => {
         titleSize={18}
         iconRight={
           <IconBadge 
-            count={getCartCount()} 
-            iconName="cart" 
+            badgeCount={getCartCount()} 
+            badgeIconSet="MaterialIcons"
+            badgeIconName="shopping-cart" 
             onPress={() => router.push("/(user)/(modals)/cart")}
           />
         }

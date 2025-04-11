@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useMemo } from "react";
-import authApi from "@/api/authApi";
+import { authApi } from "@/api/authApi";
 import { useTranslation } from "@/contexts/translateContext";
 import { emailRegex } from "@/constants/regex";
 import { ResponseType, SignInForm, SignInErrors } from "@/types";
@@ -42,15 +42,15 @@ export const SignInFormProvider = ({ children }: { children: React.ReactNode }) 
         let message = error.message;
         
         if (error.message.includes("auth/invalid-credential")) {
-          message = t("errorMessages.invalidCredentials");
+          message = t("errorMessages.auth.invalidCredentials");
         }
 
         if (error.message.includes("auth/user-disabled")) {
-          message = t("errorMessages.userDisabled");
+          message = t("errorMessages.auth.userDisabled");
         }
 
         if (error.message.includes("auth/network-request-failed")) {
-          message = t("errorMessages.networkRequestFailed");
+          message = t("errorMessages.auth.networkRequestFailed");
         }
         
         setResponse({ status: "error", message });

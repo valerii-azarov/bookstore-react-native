@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from "react";
-import authApi from "@/api/authApi";
+import { authApi } from "@/api/authApi";
 import { useTranslation } from "@/contexts/translateContext";
 import { emailRegex, passwordRegex } from "@/constants/regex";
 import { ResponseType, SignUpForm, SignUpErrors, SignUpVisibility, SignUpValidations } from "@/types";
@@ -66,7 +66,7 @@ export const SignUpFormProvider = ({ children }: { children: React.ReactNode }) 
         let message = error.message;
         
         if (error.message.includes("auth/email-already-in-use")) {
-          message = t("errorMessages.emailInUse");
+          message = t("errorMessages.auth.emailAlreadyInUse");
         }
         
         setResponse({ status: "error", message });
