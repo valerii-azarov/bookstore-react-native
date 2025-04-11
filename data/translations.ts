@@ -1903,6 +1903,14 @@ const translations: Translations = {
   },
 
   alerts: {
+    login: {
+      error: {
+        message: {
+          en: "Failed to log in",
+          uk: "Не вдалося увійти",
+        },
+      },
+    },
     confirmLogout: {
       title: {
         en: "Confirm",

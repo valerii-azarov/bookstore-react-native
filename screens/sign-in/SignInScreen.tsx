@@ -1,24 +1,81 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+import { View, Alert, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { Link } from "expo-router";
-import { Alert, View, Image, TouchableOpacity, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import { Ionicons as Icon } from "@expo/vector-icons";
-import { colors } from "@/constants/theme";
-import { verticalScale } from "@/helpers/common";
 import { useTranslation } from "@/contexts/translateContext";
-import { SignInFormProvider } from "./contexts/SignInForm";
-import { useSignInFormContext } from "./contexts/SignInForm";
+import { useAuthStore } from "@/stores/authStore";
+import { 
+  selectAuthStatus, 
+  selectAuthResponse,
+  selectLogin,
+  selectClearAuthResponse, 
+} from "@/selectors/authSelectors";
+import { colors } from "@/constants/theme";
+import { emailRegex } from "@/constants/regex";
+import { verticalScale } from "@/helpers/common";
+import { LoginField } from "@/types";
 
 import Button from "@/components/Button";
 import Field from "@/components/Field";
+import Icon from "@/components/Icon";
 import Typography from "@/components/Typography";
 import ScreenWrapper from "@/components/ScreenWrapper";
 
 const SignInScreen = () => {
   const t = useTranslation();
-  const { form, errors, isPasswordVisible, isIncomplete, isLoading, response, handleSubmit, handleInputChange, handleToggle } = useSignInFormContext();
+  
+  const authStatus = useAuthStore(selectAuthStatus);
+  const authResponse = useAuthStore(selectAuthResponse);
+  
+  const login = useAuthStore(selectLogin);
+  const clearAuthResponse = useAuthStore(selectClearAuthResponse);
 
-  const handleGoogleSignIn = () => {
+  const [form, setForm] = useState<LoginField>({ email: "", password: "" });
+  const [errors, setErrors] = useState<{ [K in keyof LoginField]: string | null }>({
+    email: null,
+    password: null,
+  });
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+
+  const isAuthenticating = authStatus === "authenticating";
+  const isError = authResponse?.status === "error";
+  const errorMessage = authResponse?.message;
+
+  const validateField = (field: keyof LoginField, value: string): string | null => {
+    if (!value) return t(`validators.${field}Required`);
+
+    if (field === "email") {
+      return emailRegex.test(value) ? null : t("validators.emailInvalid");
+    }
+
+    if (field === "password") {
+      return value.length >= 6 ? null : t("validators.passwordTooShort");
+    }
+
+    return null;
+  };
+
+  const validateForm = () => {
+    return (
+      Object.values(form).some((value) => !value) || Object.values(errors).some((error) => !!error)
+    );
+  };
+
+  const handleInputChange = (field: keyof LoginField, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [field]: validateField(field, value),
+    }));
+  };
+
+  const handleLogin = async () => {
+    if (isAuthenticating || validateForm()) return;
+
+    await login(form.email, form.password);
+  };
+
+  const handleGoogleLogin = () => {
     console.log("Signing in with Google...");
   };
 
@@ -27,14 +84,15 @@ const SignInScreen = () => {
   };
 
   useEffect(() => {
-    const isError = response?.status === "error";
-    const errorMessage = response?.message;
-
-    if (isError && errorMessage) {
-      Alert.alert(t("alerts.error.title"), response.message);
+    if (isError) {
+      Alert.alert(
+        t("alerts.static.error.title"),
+        errorMessage || t("alerts.login.error.message")
+      );
+      clearAuthResponse();
     }
-  }, [response]);
-
+  }, [isError, errorMessage]);
+  
   return (
     <ScreenWrapper statusBarStyle="dark">
       <View style={styles.container}>
@@ -61,7 +119,14 @@ const SignInScreen = () => {
             onChangeText={(value) => handleInputChange("email", value)}
             error={errors.email!}
             placeholder={t("placeholders.email")}
-            iconLeft={<Icon name="mail-outline" size={24} color={colors.grayTint3} />}
+            iconLeft={
+              <Icon
+                iconSet="Ionicons" 
+                iconName="mail-outline" 
+                iconSize={24} 
+                iconColor={colors.grayTint3} 
+              />
+            }
             returnKeyType="next"
           />
 
@@ -71,13 +136,25 @@ const SignInScreen = () => {
             onChangeText={(value) => handleInputChange("password", value)}
             error={errors.password!}
             placeholder={t("placeholders.password")}
-            iconLeft={<Icon name="lock-closed-outline" size={24} color={colors.grayTint3} />}
+            iconLeft={
+              <Icon
+                iconSet="Ionicons" 
+                iconName="lock-closed-outline" 
+                iconSize={24} 
+                iconColor={colors.grayTint3} 
+              />
+            }
             iconRight={
               <TouchableOpacity
                 style={styles.toggleButton}
-                onPress={handleToggle}
+                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
               >
-                <Icon name={isPasswordVisible ? "eye-off-outline" : "eye-outline"} size={24} color={colors.gray} />
+                <Icon
+                  iconSet="Ionicons" 
+                  iconName={isPasswordVisible ? "eye-off-outline" : "eye-outline"}
+                  iconSize={24} 
+                  iconColor={colors.gray} 
+                />
               </TouchableOpacity>
             }
             secureTextEntry={!isPasswordVisible}
@@ -87,9 +164,8 @@ const SignInScreen = () => {
 
         <Animated.View entering={FadeInDown.delay(300).springify()} style={styles.signInContainer}>
           <Button 
-            onPress={handleSubmit} 
-            loading={isLoading}
-            disabled={isIncomplete}
+            onPress={handleLogin} 
+            loading={isAuthenticating}
           >
             <Typography fontSize={16} fontWeight="bold" color={colors.white}>
               {t("screens.signIn.signIn")}
@@ -122,7 +198,7 @@ const SignInScreen = () => {
         </Animated.View>
 
         <Animated.View entering={FadeInDown.delay(400).springify()} style={styles.gooogleSignInContainer}>
-          <Button style={styles.button} onPress={handleGoogleSignIn}>
+          <Button style={styles.button} onPress={handleGoogleLogin}>
             <Image 
               style={styles.icon}
               source={require("@/assets/images/icons/google.png")} 
@@ -217,12 +293,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const SignInContainer = () => {
-  return (
-    <SignInFormProvider>
-      <SignInScreen />
-    </SignInFormProvider>
-  );
-};
-
-export default SignInContainer;
+export default SignInScreen;

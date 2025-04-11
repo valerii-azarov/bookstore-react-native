@@ -71,6 +71,12 @@ export interface User extends BaseUser {
 // profile fields
 export type ProfileField = keyof Omit<BaseUser, "uid" | "email" | "role">;
 
+// login fields
+export interface LoginField {
+  email: string;
+  password: string;
+}
+
 // sign in / up
 export interface SignInForm {
   email: string;
