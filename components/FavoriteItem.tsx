@@ -1,5 +1,5 @@
 import { View, StyleSheet, TouchableOpacity } from "react-native";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSequence } from "react-native-reanimated";
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, withRepeat, withSequence } from "react-native-reanimated";
 import { useTranslation } from "@/contexts/translateContext";
 import { colors } from "@/constants/theme";
 import { Favorite } from "@/types";
@@ -16,30 +16,54 @@ interface FavoriteItemProps {
 const FavoriteItem = ({ item, onViewDetails, onToggleFavorite }: FavoriteItemProps) => {
   const t = useTranslation();
   
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
+  const imageScale = useSharedValue(1);
+  const favoriteScale = useSharedValue(1);
+  
+  const imageAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: imageScale.value }],
   }));
 
-  const startAnimation = () => {
-    scale.value = withSequence(
+  const favoriteAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: favoriteScale.value }],
+  }));
+
+  const startImageAnimation = () => {
+    imageScale.value = withSequence(
       withTiming(0.9, { duration: 250 }),
       withTiming(1, { duration: 250 })
     );
   };
+
+  const startFavoriteAnimation = (isFavorite: boolean) => {
+    favoriteScale.value = isFavorite
+      ? withSequence(
+          withTiming(1.2, { duration: 150 }),
+          withTiming(1, { duration: 150 }),
+          withRepeat(withTiming(1.1, { duration: 200 }), 2, true)
+        )
+      : withSequence(
+          withTiming(0.8, { duration: 150 }),
+          withTiming(1, { duration: 150 })
+        );
+  };
   
-  const handlePress = () => {
-    startAnimation();
+  const handleDetailsPress = () => {
+    startImageAnimation();
     setTimeout(onViewDetails, 500);
+  };
+
+  const handleFavoritePress = () => {
+    const newFavoriteState = !item.isFavorite;
+    startFavoriteAnimation(newFavoriteState);
+    onToggleFavorite?.({ ...item, isFavorite: newFavoriteState });
   };
 
   return (
     <View style={styles.container}>      
       <View style={styles.imageWrapper}>
-        <TouchableOpacity onPress={handlePress} activeOpacity={0.7}>
+        <TouchableOpacity onPress={handleDetailsPress} activeOpacity={0.7}>
           <Animated.Image
-            style={[styles.coverImage, animatedStyle]}
+            style={[styles.coverImage, imageAnimatedStyle]}
             source={{ uri: item.coverImage }}
             resizeMode="cover"
           />
@@ -56,23 +80,25 @@ const FavoriteItem = ({ item, onViewDetails, onToggleFavorite }: FavoriteItemPro
         </Typography>
 
         <View style={{ alignItems: "flex-start" }}>
-          <View style={styles.favoriteRow}>
-            <TouchableOpacity  
-              onPress={() => onToggleFavorite?.(item)}
-              style={styles.favoriteButton}
-            >
-              <Icon 
-                iconSet="Ionicons"
-                iconName={item?.isFavorite ? "heart" : "heart-outline"} 
-                iconSize={24}
-                iconColor={item?.isFavorite ? colors.red : colors.black}
-              />
-            </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleFavoritePress}
+            activeOpacity={0.7}
+          >
+            <View style={styles.favoriteRow}>
+              <Animated.View style={[styles.favoriteButton, favoriteAnimatedStyle]}>
+                <Icon 
+                  iconSet="Ionicons"
+                  iconName={item?.isFavorite ? "heart" : "heart-outline"} 
+                  iconSize={24}
+                  iconColor={item?.isFavorite ? colors.red : colors.black}
+                />
+              </Animated.View>
 
-            <Typography fontSize={14} fontWeight="bold" color={colors.black}>
-              {t("components.favoriteBookItem.labels.favorite")}
-            </Typography>
-          </View>
+              <Typography fontSize={14} fontWeight="bold" color={colors.black}>
+                {t("components.favoriteBookItem.labels.favorite")}
+              </Typography>
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
