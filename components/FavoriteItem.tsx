@@ -5,6 +5,7 @@ import { colors } from "@/constants/theme";
 import { Favorite } from "@/types";
 
 import Icon from "./Icon";
+import Image from "./Image";
 import Typography from "./Typography";
 
 interface FavoriteItemProps {
@@ -62,11 +63,14 @@ const FavoriteItem = ({ item, onViewDetails, onToggleFavorite }: FavoriteItemPro
     <View style={styles.container}>      
       <View style={styles.imageWrapper}>
         <TouchableOpacity onPress={handleDetailsPress} activeOpacity={0.7}>
-          <Animated.Image
-            style={[styles.coverImage, imageAnimatedStyle]}
-            source={{ uri: item.coverImage }}
-            resizeMode="cover"
-          />
+          <Animated.View style={imageAnimatedStyle}>
+            <Image
+              source={{ uri: item.coverImage }}
+              style={styles.coverImage}
+              textSize={6}
+              resizeMode="cover"
+            />
+          </Animated.View>
         </TouchableOpacity>
       </View>
       

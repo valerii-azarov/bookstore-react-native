@@ -1,9 +1,10 @@
-import { View, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSequence, interpolate } from "react-native-reanimated";
 import { format } from "date-fns";
 import { colors } from "@/constants/theme";
 import { ViewingHistory } from "@/types";
 
+import Image from "./Image";
 import Typography from "./Typography";
 
 interface ViewingHistoryItemProps {
@@ -63,8 +64,9 @@ const ViewingHistoryItem = ({ item, onViewDetails }: ViewingHistoryItemProps) =>
       
       <Animated.View style={[styles.contentWrapper, contentStyle]}>
         <Image
-          style={styles.coverImage}
           source={{ uri: item.coverImage }}
+          style={styles.coverImage}
+          textSize={6}
           resizeMode="cover"
         />
         

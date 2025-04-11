@@ -6,6 +6,15 @@ export type Translations = {
 
 const translations: Translations = {
   components: {
+    image: {
+      failedToLoad: {
+        text: {
+          en: "Image failed to load",
+          uk: "Не вдалося завантажити зображення",
+        },
+      },
+    },
+    
     bookItem: {
       available: {
         en: "Quantity",

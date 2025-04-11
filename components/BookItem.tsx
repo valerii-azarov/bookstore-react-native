@@ -1,10 +1,12 @@
 import React from "react";
-import { View, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons as Icon } from "@expo/vector-icons";
 import { useTranslation } from "@/contexts/translateContext";
 import { colors } from "@/constants/theme";
+import { colorConverter } from "@/helpers/colorConverter";
 import { Book, ModeType } from "@/types";
 
+import Image from "./Image";
 import Typography from "@/components/Typography";
 
 interface BookItemProps {
@@ -53,8 +55,15 @@ const BookItem = ({ mode, item, onViewDetails, onAddToFavorites, onAddToCart, is
         >
           <View style={styles.imageContainer}>
             <Image
-              style={styles.coverImage}
               source={{ uri: item?.coverImage }}
+              style={styles.coverImage}
+              textSize={10}
+              textColor={colors.white}
+              fallbackColor={
+                item.backgroundColor
+                  ? colorConverter.lighterHexColor(item.backgroundColor)
+                  : colors.grayTint4
+              }
               resizeMode="cover"
             />
 

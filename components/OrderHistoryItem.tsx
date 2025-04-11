@@ -1,4 +1,4 @@
-import { View, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSequence, interpolate } from "react-native-reanimated";
 import { format } from "date-fns";
 import { orderHandler } from "@/helpers/orderHandler";
@@ -6,6 +6,7 @@ import { useTranslation } from "@/contexts/translateContext";
 import { colors } from "@/constants/theme";
 import { Order } from "@/types";
 
+import Image from "./Image";
 import Typography from "./Typography";
 
 interface OrderHistoryItemProps {
@@ -62,6 +63,7 @@ const OrderHistoryItem = ({ item, onViewDetails }: OrderHistoryItemProps) => {
           {coverBooks.map((book, index) => (
             <Image
               key={index}
+              source={{ uri: book.coverImage }}
               style={[
                 styles.coverImage,
                 {
@@ -69,7 +71,7 @@ const OrderHistoryItem = ({ item, onViewDetails }: OrderHistoryItemProps) => {
                   transform: [{ translateX: offset + index * overlapOffset }],
                 },
               ]}
-              source={{ uri: book.coverImage }}
+              textSize={6}
               resizeMode="cover"
             />
           ))}

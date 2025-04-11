@@ -7,6 +7,7 @@ import { useTranslation } from "@/contexts/translateContext";
 import { colors } from "@/constants/theme";
 import { Cart } from "@/types";
 
+import Image from "./Image";
 import Typography from "./Typography";
 
 interface CartItemProps {
@@ -73,11 +74,14 @@ const CartItem = ({ item, onRemoveFromCart, onViewDetails, onUpdateQuantity }: C
       <View style={styles.container}>
         <View style={styles.imageContainer}>
           <TouchableOpacity onPress={handlePress} activeOpacity={0.7}>
-            <Animated.Image
-              style={[styles.image, animatedStyle]}
-              source={{ uri: item.coverImage }}
-              resizeMode="cover"
-            />
+            <Animated.View style={animatedStyle}>
+              <Image
+                source={{ uri: item.coverImage }}
+                style={styles.image}
+                textSize={8}
+                resizeMode="cover"
+              />
+            </Animated.View>
           </TouchableOpacity>
 
           {item.discount > 0 && (

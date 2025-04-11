@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import * as Clipboard from "expo-clipboard";
-import { View, Alert, Image, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Alert, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
 import { format } from "date-fns";
 import { orderHandler } from "@/helpers/orderHandler";
 import { useTranslation } from "@/contexts/translateContext";
@@ -17,6 +17,7 @@ import { colors } from "@/constants/theme";
 
 import ViewWrapper from "@/components/ViewWrapper";
 import Loading from "@/components/Loading";
+import Image from "@/components/Image";
 import IconButton from "@/components/IconButton";
 import RedirectButton from "@/components/RedirectButton";
 import ErrorWithRetry from "@/components/ErrorWithRetry";
@@ -152,8 +153,9 @@ const OrderDetailsScreen = () => {
                     <View style={styles.bookRow}>
                       <View style={styles.imageWrapper}>
                         <Image
-                          style={styles.coverImage}
                           source={{ uri: book.coverImage }}
+                          style={styles.coverImage}
+                          textSize={6}
                           resizeMode="cover"
                         />
                       </View>
