@@ -1150,7 +1150,7 @@ const translations: Translations = {
       header: {
         text: {
           en: "Favorites",
-          uk: "Обране",
+          uk: "Обрані книги",
         },
       },
       messages: {       
