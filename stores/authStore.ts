@@ -92,15 +92,17 @@ export const useAuthStore = create<AuthStore>()(
           set({ authStatus: "authenticating" });
           
           await authApi.signIn(email, password)
-            .then((userData) =>
+            .then((userData) => {
               set({
                 user: userData,
                 isLoggedIn: true,
                 isAdmin: userData.role === Role.Admin,
+                authDataLoaded: true,
                 authStatus: "idle",
                 authResponse: { status: "success" },
-              })
-            )
+              });
+              get().initializeAuth();
+            })
             .catch((error) => {
               console.error("Error during login:", error);
               set({
