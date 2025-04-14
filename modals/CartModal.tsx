@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { View, FlatList, Platform, StyleSheet } from "react-native";
+import { View, FlatList, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import { useTranslation } from "@/contexts/translateContext";
@@ -15,16 +14,16 @@ import {
 import { colors } from "@/constants/theme";
 
 import ModalWrapper from "@/components/ModalWrapper";
+import Button from "@/components/Button";
 import BackButton from "@/components/BackButton";
 import Header from "@/components/Header";
 import CartItem from "@/components/CartItem";
-import Button from "@/components/Button";
 import Typography from "@/components/Typography";
 
-const CartModal = () => {
-  const router = useRouter();
-  
+const CartModal = () => { 
   const t = useTranslation();
+
+  const router = useRouter();
   
   const cartBooks = useCartStore(selectCartBooks);
   
@@ -34,8 +33,6 @@ const CartModal = () => {
   const discountAmount = useCartStore(selectGetDiscountAmount)();
   const subtotal = useCartStore(selectGetSubtotal)();
   const total = useCartStore(selectGetTotal)();
-
-  const [footerHeight, setFooterHeight] = useState<number>(0);
   
   const isHasItems = cartBooks.length > 0;
   const isEmpty = cartBooks.length === 0;
@@ -44,8 +41,12 @@ const CartModal = () => {
     <ModalWrapper>
       <Header
         title={t("modals.cart.header.text")}
+        titleSize={18}
         iconLeft={<BackButton />}
-        style={styles.header}
+        style={{
+          paddingHorizontal: 15,
+          marginBottom: 10,
+        }}
       />
 
       <View 
@@ -58,123 +59,121 @@ const CartModal = () => {
         ]}
       >
         {isHasItems && (
-          <View style={styles.listWrapper}>
-            <View style={styles.listContainer}>
-              <FlatList
-                data={cartBooks}
-                renderItem={({ item, index }) => (  
-                  <Animated.View
-                    entering={FadeInDown.delay(index * 100)}
-                  >  
-                    <CartItem
-                      item={item}
-                      onViewDetails={() => router.push(`/(user)/book/${item.id}`)}
-                      onRemoveFromCart={removeFromCart}
-                      onUpdateQuantity={updateQuantity}
-                    />
-                  </Animated.View>
-                )}
-                keyExtractor={(item) => item.id}
-                numColumns={1}
-                contentContainerStyle={{
-                  paddingHorizontal: 15,
-                  paddingBottom: footerHeight + 15,
-                  gap: 10,
-                }}
-              />
+          <View style={styles.listContainer}>
+            <FlatList
+              data={cartBooks}
+              renderItem={({ item, index }) => (  
+                <Animated.View
+                  entering={FadeInDown.delay(index * 100)}
+                >  
+                  <CartItem
+                    item={item}
+                    onViewDetails={() => router.push(`/(user)/book/${item.id}`)}
+                    onRemoveFromCart={removeFromCart}
+                    onUpdateQuantity={updateQuantity}
+                  />
+                </Animated.View>
+              )}
+              keyExtractor={(item) => item.id}
+              numColumns={1}
+              contentContainerStyle={{
+                paddingHorizontal: 15,
+                gap: 10,
+              }}
+            />
+
+            <View style={styles.totalContainer}>
+              <Typography 
+                fontSize={18} 
+                fontWeight="bold" 
+                color={colors.black} 
+                numberOfLines={1}
+                style={styles.totalTitle}
+              >
+                {t("modals.cart.titles.order")}
+              </Typography>
 
               <View 
-                style={styles.totalContainer}
-                onLayout={(e) => setFooterHeight(e.nativeEvent.layout.height)}
+                style={[
+                  styles.totalRow, 
+                  {
+                    marginBottom: discountAmount > 0 ? 15 : 0,
+                  },
+                ]}
               >
-                <Typography 
-                  fontSize={22} 
-                  fontWeight="bold" 
-                  numberOfLines={1} 
-                  color={colors.black} 
-                  style={styles.totalTitle}
-                >
-                  {t("modals.cart.titles.order")}
+                <Typography fontSize={14} fontWeight="medium" color={colors.gray}>
+                  {t("modals.cart.labels.subtotal.text")}
                 </Typography>
 
-                <View 
-                  style={[
-                    styles.totalRow, 
-                    {
-                      marginBottom: 10,
-                    },
-                  ]}
+                <Typography 
+                  fontSize={16} 
+                  fontWeight="bold"
+                  color={colors.black}
+                  numberOfLines={1} 
+                  style={styles.totalValue}
                 >
-                  <Typography fontSize={16} fontWeight="medium" color={colors.gray}>
-                    {t("modals.cart.labels.subtotal.text")}
-                  </Typography>
+                  {subtotal.toFixed(2)}₴
+                </Typography>
+              </View>
 
-                  <Typography 
-                    fontSize={20} 
-                    fontWeight="bold" 
-                    numberOfLines={1} 
-                    ellipsizeMode="tail" 
-                    color={colors.black} 
-                    style={styles.totalValue}
-                  >
-                    {subtotal.toFixed(2)}₴
-                  </Typography>
-                </View>
-
+              {discountAmount > 0 && (  
                 <View style={styles.totalRow}>
-                  <Typography fontSize={16} fontWeight="medium" color={colors.gray}>
+                  <Typography fontSize={14} fontWeight="medium" color={colors.gray}>
                     {t("modals.cart.labels.discount.text")}
                   </Typography>
 
                   <Typography 
-                    fontSize={20} 
+                    fontSize={16} 
                     fontWeight="bold" 
-                    numberOfLines={1} 
-                    ellipsizeMode="tail" 
-                    color={discountAmount > 0 ? colors.red : colors.black} 
+                    color={colors.red}
+                    numberOfLines={1}  
                     style={styles.totalValue}
                   >
-                    {discountAmount > 0 ? `-${discountAmount.toFixed(2)}₴` : "0₴"}
+                    -{discountAmount.toFixed(2)}₴
                   </Typography>
                 </View>
+              )}
 
-                <View style={styles.divider} />
+              <View
+                style={[
+                  styles.divider,
+                  {
+                    marginTop: 15,
+                    marginBottom: 10,
+                  },
+                ]}
+              />
 
-                <View style={styles.totalRow}>
-                  <Typography fontSize={16} fontWeight="medium" color={colors.gray}>
-                    {t("modals.cart.labels.total.text")}
-                  </Typography>
+              <View style={styles.totalRow}>
+                <Typography fontSize={14} fontWeight="medium" color={colors.gray}>
+                  {t("modals.cart.labels.total.text")}
+                </Typography>
 
-                  <Typography 
-                    fontSize={20} 
-                    fontWeight="bold" 
-                    numberOfLines={1} 
-                    ellipsizeMode="tail" 
-                    color={colors.black} 
-                    style={styles.totalValue}
-                  >
-                    {total.toFixed(2)}₴
-                  </Typography>
-                </View>
+                <Typography 
+                  fontSize={16} 
+                  fontWeight="bold" 
+                  numberOfLines={1}
+                  color={colors.black} 
+                  style={styles.totalValue}
+                >
+                  {total.toFixed(2)}₴
+                </Typography>
               </View>
             </View>
 
-            <View 
-              style={[
-                styles.buttonContainer,
-                {
-                  paddingBottom: Platform.OS === "android" ? 0 : 15,
-                }
-              ]}
-            >
-              <Button onPress={() => { router.push("/(user)/(modals)/checkout"); }}>
+            <View style={styles.buttonContainer}>
+              <Button
+                onPress={() => {
+                  router.push("/(user)/(modals)/checkout");
+                }}
+              >
                 <Typography fontSize={16} fontWeight="bold" color={colors.white}>
                   {t("modals.cart.buttons.checkout.text")}
                 </Typography>
               </Button>
             </View>
           </View>
-        )} 
+        )}
 
         {isEmpty && (
           <Typography fontSize={16} fontWeight="medium" color={colors.gray}>
@@ -187,38 +186,26 @@ const CartModal = () => {
 };
 
 const styles = StyleSheet.create({
-  header: {
-    paddingHorizontal: 15,
-    marginBottom: 10,
-  },
   content: {
     flex: 1,
   },
-  listWrapper: {
-    flex: 1,
-    width: "100%",
-  },
   listContainer: {
     flex: 1,
-    position: "relative",
   },
   totalContainer: {
     backgroundColor: colors.white,
     borderRadius: 10,
     padding: 15,
+    marginVertical: 10,
     marginHorizontal: 15,
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
   },
   totalTitle: {
-    marginBottom: 5,
+    marginBottom: 10,
   },
   totalRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "baseline",
+    alignItems: "flex-end",
   },
   totalValue: {
     maxWidth: 200,
@@ -226,11 +213,11 @@ const styles = StyleSheet.create({
   divider: {
     height: 1.5,
     backgroundColor: colors.grayTint5,
-    marginTop: 15,
-    marginBottom: 10,
+    opacity: 0.3,
   },
   buttonContainer: {
-    paddingTop: 10,
+    backgroundColor: colors.grayTint9,
+    padding: 10,
     paddingHorizontal: 15,
   },
 });
