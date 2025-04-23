@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from "react";
-import { View, FlatList, StyleSheet } from "react-native";
+import { FlatList, StyleSheet } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "@/contexts/translateContext";
 import { useCategoryBooksStore } from "@/stores/categoryBooksStore";
@@ -10,19 +10,18 @@ import {
   selectCategoryStatus, 
   selectCategoryResponse, 
   selectLoadCategoryBooks, 
-  selectLoadMoreCategoryBooks, 
-  selectRefreshCategoryBooks,
+  selectLoadMoreCategoryBooks,
   selectResetCategory,
 } from "@/selectors/categoryBooksSelectors";
 import { selectToggleCart } from "@/selectors/cartSelectors";
 import { selectToggleFavorite } from "@/selectors/favoritesSelectors";
-import { USER_CATEGORY_BOOKS_PAGE_SIZE } from "@/constants/settings";
+import { colors } from "@/constants/theme";
 import { Book } from "@/types";
 
 import ViewWrapper from "@/components/ViewWrapper";
+import CategoryBookItem from "@/components/CategoryBookItem";
+import Loading from "@/components/Loading";
 import ListLoader from "@/components/ListLoader";
-import BookItem from "@/components/BookItem";
-import SkeletonBookItem from "@/components/SkeletonBookItem";
 import Empty from "@/components/Empty";
 import ErrorWithRetry from "@/components/ErrorWithRetry";
 
@@ -38,7 +37,6 @@ const CategoryBooksScreen = () => {
   
   const loadCategoryBooks = useCategoryBooksStore(selectLoadCategoryBooks);
   const loadMoreCategoryBooks = useCategoryBooksStore(selectLoadMoreCategoryBooks);
-  const refreshCategoryBooks = useCategoryBooksStore(selectRefreshCategoryBooks);
   const resetCategory = useCategoryBooksStore(selectResetCategory);
 
   const toggleCart = useCartStore(selectToggleCart);
@@ -50,20 +48,17 @@ const CategoryBooksScreen = () => {
   const isEmpty = !isLoading && categoryBooks.length === 0;
   const isError = !isLoading && categoryResponse?.status === "error";
 
-  const renderItem = useCallback(({ item }: { item: Book | undefined }) => {
-    if (isLoading || !item) {
-      return <SkeletonBookItem mode="list" />;
-    }
+  const renderItem = useCallback(({ item }: { item: Book }) => {
     return (
-      <BookItem
+      <CategoryBookItem
         item={item}
         mode="list"
-        onViewDetails={() => router.push(`/(user)/book/${item.id}`)}
-        onAddToFavorites={() => toggleFavorite(item.id)}
-        onAddToCart={() => toggleCart(item)}
+        onView={() => router.push(`/(user)/book/${item.id}`)}
+        onAddToFavorites={(bookId) => toggleFavorite(bookId)}
+        onAddToCart={(item) => toggleCart(item)}
       />
     );
-  }, [isLoading, router]);
+  }, [router]);
 
   const renderFooter = useCallback(() => {
     if (isFetching) {
@@ -84,35 +79,31 @@ const CategoryBooksScreen = () => {
       title= {t(`genres.${category}`)} 
       onBackPress={() => router.back()}
     >
+      {isLoading && <Loading size="small" color={colors.orange} />}
+
       {isError && !isLoading && (
-        <View style={styles.overlayContainer}>
-          <ErrorWithRetry 
-            message={t("screens.categoryBooks.messages.error.text")}
-            subMessage={t("screens.categoryBooks.messages.error.subText")}
-            buttonText={t("screens.categoryBooks.buttons.error.text")}
-            onRetry={refreshCategoryBooks}
-          />
-        </View>
+        <ErrorWithRetry 
+          message={t("screens.categoryBooks.messages.error.text")}
+          subMessage={t("screens.categoryBooks.messages.error.subText")}
+          containerStyle={styles.padded}
+          hideButton
+        />
       )}
 
       {isEmpty && !isError && !isLoading && (
-        <View style={styles.overlayContainer}>
-          <Empty 
-            message={t("screens.categoryBooks.messages.empty.text")}
-            subMessage={t("screens.categoryBooks.messages.empty.subText")} 
-          />
-        </View>
+        <Empty 
+          message={t("screens.categoryBooks.messages.empty.text")}
+          subMessage={t("screens.categoryBooks.messages.empty.subText")} 
+          containerStyle={styles.padded}
+        />
       )}
 
-      {!isEmpty && !isError && (
+      {!isLoading && !isEmpty && !isError && (
         <FlatList
-          data={isLoading ? Array(USER_CATEGORY_BOOKS_PAGE_SIZE) : categoryBooks}
+          data={categoryBooks}
           renderItem={renderItem}
-          keyExtractor={(item, index) =>
-            isLoading ? `skeleton-${index}` : (item?.id || `item-${index}`)
-          }
+          keyExtractor={(item) => item.id}
           numColumns={1}
-          key="list"
           contentContainerStyle={{
             padding: 15,
             gap: 10,
@@ -127,11 +118,8 @@ const CategoryBooksScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  overlayContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 15,
+  padded: {
+    padding: 15,
   },
 });
 

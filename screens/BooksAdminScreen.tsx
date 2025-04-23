@@ -1,74 +1,105 @@
-import React, { useCallback, useEffect } from "react";
-import { View, FlatList, StyleSheet, Platform } from "react-native";
+import { useCallback, useEffect } from "react";
+import { View, Alert, FlatList, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import { Ionicons as Icon } from "@expo/vector-icons";
 import { useTranslation } from "@/contexts/translateContext";
+import { useBookStore } from "@/stores/bookStore";
 import { useBooksStore } from "@/stores/booksStore";
-import { useModeStore } from "@/stores/modeStore";
-import { 
-  selectBooks, 
-  selectBooksStatus, 
-  selectBooksResponse, 
-  selectBooksSearchQuery, 
-  selectSetBooksSearchQuery,
-  // selectLoadBooks,
-  selectRefreshBooks, 
+import { selectDeleteBook } from "@/selectors/bookSelectors";
+import {
+  selectBooks,
+  selectBooksStatus,
+  selectBooksResponse,
+  selectBooksHasMore,
+  selectLoadBooks,
   selectLoadMoreBooks,
+  selectRefreshBooks,
 } from "@/selectors/booksSelectors";
-import { selectGetMode, selectToggleMode } from "@/selectors/modeSelectors";
 import { colors } from "@/constants/theme";
-import { ADMIN_BOOKS_PAGE_SIZE } from "@/constants/settings";
-import { verticalScale } from "@/helpers/common";
-import { Book } from "@/types";
+import { DEFAULT_BOOKS_LIMIT } from "@/constants/settings";
+import { BaseBook } from "@/types";
 
 import ScreenWrapper from "@/components/ScreenWrapper";
-import Header from "@/components/Header";
-import SearchBar from "@/components/SearchBar";
 import BookItem from "@/components/BookItem";
 import SkeletonBookItem from "@/components/SkeletonBookItem";
+import Icon from "@/components/Icon";
 import ListLoader from "@/components/ListLoader";
 import Empty from "@/components/Empty";
 import ErrorWithRetry from "@/components/ErrorWithRetry";
+import Typography from "@/components/Typography";
 import FloatingActionButton from "@/components/FloatingButton";
 
 const BooksAdminScreen = () => {
   const router = useRouter();
-  
+
   const t = useTranslation();
-  
+
+  const deleteBook = useBookStore(selectDeleteBook);
+
   const books = useBooksStore(selectBooks);
   const booksStatus = useBooksStore(selectBooksStatus);
   const booksResponse = useBooksStore(selectBooksResponse);
-  const booksSearchQuery = useBooksStore(selectBooksSearchQuery);
+  const booksHasMore = useBooksStore(selectBooksHasMore);
 
-  const setBooksSearchQuery = useBooksStore(selectSetBooksSearchQuery);
-  // const loadBooks = useBooksStore(selectLoadBooks);
-  const refreshBooks = useBooksStore(selectRefreshBooks);
+  const loadBooks = useBooksStore(selectLoadBooks);
   const loadMoreBooks = useBooksStore(selectLoadMoreBooks);
-
-  const getMode = useModeStore(selectGetMode);
-  const toggleMode = useModeStore(selectToggleMode);
-  
-  const mode = getMode("books-list");
+  const refreshBooks = useBooksStore(selectRefreshBooks);
 
   const isLoading = booksStatus === "loading";
   const isFetching = booksStatus === "fetching";
+  const isRefreshing = booksStatus === "refreshing"; 
   const isEmpty = !isLoading && books.length === 0;
   const isError = !isLoading && booksResponse?.status === "error";
 
-  const renderItem = useCallback(({ item }: { item: Book | undefined }) => {
+  const confirmDeleteBook = (bookId: string) => {
+    Alert.alert(
+      t("alerts.confirmDeleteBook.title"),
+      t("alerts.confirmDeleteBook.message"),
+      [
+        {
+          text: t("alerts.static.cancel"),
+          style: "cancel",
+        },
+        {
+          text: t("alerts.confirmDeleteBook.confirm"),
+          style: "destructive",
+          onPress: async () => {
+            await deleteBook(bookId)
+              .then(() => {
+                Alert.alert(
+                  t("alerts.confirmDeleteBook.success.title"),
+                  t("alerts.confirmDeleteBook.success.message"),
+                  [{ text: "OK" }]
+                );
+              })
+              .catch((error) => {
+                Alert.alert(
+                  t("alerts.static.error.title"),
+                  error.message || t("alerts.confirmDeleteBook.error.message")
+                );
+              });
+          },
+        },
+      ]
+    );
+  };
+
+  const renderItem = useCallback(({ item }: { item: BaseBook }) => {
     if (isLoading || !item) {
-      return <SkeletonBookItem mode={mode} isOwner />;
+      return <SkeletonBookItem isOwner />;
     }
     return (
       <BookItem
         item={item}
-        mode={mode}
-        onViewDetails={() => router.push(`/(admin)/book/${item.id}`)}
         isOwner
+        onView={() => router.push(`/book/${item.id}`)}
+        onEdit={(bookId) => {
+          // this needs to add a screen edit book in future
+          console.log(`redirect to /edit-book/${bookId}`);
+        }}
+        onDelete={(bookId) => confirmDeleteBook(bookId)}
       />
     );
-  }, [isLoading, mode, router]);
+  }, [isLoading, router]);
 
   const renderFooter = useCallback(() => {
     if (isFetching) {
@@ -76,100 +107,129 @@ const BooksAdminScreen = () => {
     }
     return null;
   }, [isFetching]);
-
+  
   useEffect(() => {
-    refreshBooks();
-  }, [refreshBooks]);
-
+    loadBooks(true);
+  }, []);
+  
   return (
-    <ScreenWrapper statusBarStyle="dark" disableTopInset>
-      <Header
-        title={t("screens.books.header.text")}
-        titleSize={18}
-        style={[
-          styles.headerContainer,
-          {
-            backgroundColor: colors.white,
-            minHeight: Platform.OS === "ios" ? verticalScale(100) : verticalScale(85),
-          },
-        ]}
-        enableTopInset
-      />
+    <ScreenWrapper hideStatusBarBorder>
+      <View style={styles.header}>
+        <Typography 
+          fontSize={24} 
+          fontWeight="bold" 
+          color={colors.black} 
+          style={{ marginBottom: 5 }}
+        >
+          {t("screens.books.headers.titleAdmin")}
+        </Typography>
 
-      <SearchBar
-        searchText={booksSearchQuery}
-        onSearchChange={(text) => setBooksSearchQuery(text, ["title", "sku"])}
-        placeholder={t("screens.books.search.placeholder")}
-        size="medium"
-        mode={mode}
-        onToggleMode={() => toggleMode("books-list")}
-      />
+        <TouchableOpacity
+          style={styles.searchInput}
+          onPress={() => router.push("/(admin)/books-search")}
+          activeOpacity={0.7}
+        >
+          <Icon
+            iconSet="Ionicons"
+            iconName="search-outline"
+            iconSize={24}
+            iconColor={colors.grayTint3}
+          />
 
-      <View style={styles.contentContainer}>
+          <Typography
+            fontSize={14}
+            fontWeight="medium"
+            color={colors.grayTint3}
+            style={{ marginLeft: 10 }}
+          >
+            {t(`screens.books.placeholders.titleAndSku.text`)}
+          </Typography>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.content}>
+        {isError && !isLoading && (
+          <ErrorWithRetry
+            message={t("screens.books.messages.error.text")}
+            subMessage={t("screens.books.messages.error.subText")}
+            buttonText={t("screens.books.buttons.error.text")}
+            containerStyle={styles.padded}
+            onRetry={() => loadBooks(true)}
+          />
+        )}
+
+        {isEmpty && !isError && !isLoading && (
+          <Empty 
+            message={t("screens.books.messages.empty.text")}
+            subMessage={t("screens.books.messages.empty.subText")}
+            containerStyle={styles.padded}
+          />
+        )}
+        
         {!isEmpty && !isError && (
           <FlatList
-            data={isLoading ? Array(ADMIN_BOOKS_PAGE_SIZE) : books}
+            data={isLoading ? Array(DEFAULT_BOOKS_LIMIT) : books}
             renderItem={renderItem}
             keyExtractor={(item, index) =>
               isLoading ? `skeleton-${index}` : (item?.id || `item-${index}`)
             }
-            numColumns={mode === "grid" ? 2 : 1}
-            key={mode}
-            columnWrapperStyle={mode === "grid" ? { justifyContent: "space-between" } : undefined}
+            numColumns={1}
             contentContainerStyle={{
-              paddingVertical: 10,
-              paddingHorizontal: 15,
+              padding: 15,
               gap: 10,
             }}
-            refreshing={booksStatus === "refreshing"}
+            refreshing={isRefreshing}
             onRefresh={refreshBooks}
-            onEndReached={loadMoreBooks}
+            onEndReached={booksHasMore ? loadMoreBooks : undefined}
             onEndReachedThreshold={0.1}
             ListFooterComponent={renderFooter}
           />
-        )}
-
-        {isEmpty && (
-          <View style={styles.overlayContainer}>
-            <Empty 
-              message={t("screens.books.messages.empty.text")}
-              subMessage={t("screens.books.messages.empty.subText")} 
-            />
-          </View>
-        )}
-
-        {isError && (
-          <View style={styles.overlayContainer}>
-            <ErrorWithRetry 
-              message={t("screens.books.messages.error.text")}
-              subMessage={t("screens.books.messages.error.subText")}
-              buttonText={t("screens.books.buttons.error.text")}
-              onRetry={refreshBooks} 
-            />
-          </View>
         )}
       </View>
 
       <FloatingActionButton
         onPress={() => router.push("/(admin)/(modals)/create-book")}
-        icon={<Icon name="add" size={32} color={colors.white} />}
+        icon={
+          <Icon 
+            iconSet="MaterialIcons"  
+            iconName="add" 
+            iconSize={28}
+            iconColor={colors.white} 
+          />
+        }
       />
     </ScreenWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  headerContainer: {
+  header: {
+    backgroundColor: colors.white,
+    borderBottomColor: colors.grayTint7,
+    borderBottomWidth: 1,
+    paddingVertical: 10,
     paddingHorizontal: 15,
   },
-  contentContainer: {
-    flex: 1,
-  },
-  overlayContainer: {
-    flex: 1,
-    justifyContent: "center",
+  searchInput: {
+    height: 50,
+    backgroundColor: colors.grayTint9,
+    borderColor: colors.grayTint5,
+    borderRadius: 16,
+    borderWidth: 1,
+    paddingHorizontal: 15,
+    flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 15,
+  },
+  content: {
+    flex: 1,
+  },
+  clearButton: {
+    backgroundColor: colors.grayTint8,
+    borderRadius: 12,
+    padding: 4,
+  },
+  padded: {
+    padding: 15,
   },
 });
 

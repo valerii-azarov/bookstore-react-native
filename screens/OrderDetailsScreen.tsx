@@ -23,11 +23,11 @@ import RedirectButton from "@/components/RedirectButton";
 import ErrorWithRetry from "@/components/ErrorWithRetry";
 import Typography from "@/components/Typography";
 
-const OrderDetailsScreen = () => {
-  const t = useTranslation();
-  
+const OrderDetailsScreen = () => { 
   const router = useRouter();
   const { orderId } = useLocalSearchParams<{ orderId: string }>();
+
+  const t = useTranslation();
 
   const order = useOrderStore(selectOrder);
   const orderStatus = useOrderStore(selectOrderStatus);
@@ -63,13 +63,12 @@ const OrderDetailsScreen = () => {
       {isOrderLoading && <Loading size="small" color={colors.orange} />}
 
       {isOrderError && !isOrderLoading && (
-        <View style={styles.overlayContainer}>
-          <ErrorWithRetry 
-            message={t("screens.orderDetails.messages.error.text")}
-            subMessage={t("screens.orderDetails.messages.error.subText")}
-            hideButton 
-          />
-        </View>
+        <ErrorWithRetry 
+          message={t("screens.orderDetails.messages.error.text")}
+          subMessage={t("screens.orderDetails.messages.error.subText")}
+          containerStyle={styles.padded}
+          hideButton 
+        />
       )}
 
       {!isOrderLoading && !isOrderError && order && (
@@ -621,11 +620,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.grayTint5,
     opacity: 0.3,
   },
-  overlayContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 15,
+  padded: {
+    padding: 15,
   },
 });
 

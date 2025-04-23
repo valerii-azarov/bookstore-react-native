@@ -9,10 +9,10 @@ import ViewWrapper from "@/components/ViewWrapper";
 import Typography from "@/components/Typography";
 
 const ProfileScreen = () => {  
+  const router = useRouter();   
+  
   const t = useTranslation();
   const user = useAuthStore(selectUser);
-
-  const router = useRouter();   
 
   const fields = [
     {

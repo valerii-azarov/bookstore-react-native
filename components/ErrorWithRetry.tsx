@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, StyleSheet } from "react-native";
+import { View, ViewStyle, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons as Icon } from "@expo/vector-icons";
 import { colors } from "@/constants/theme";
 import { verticalScale } from "@/helpers/common";
@@ -9,6 +9,7 @@ type ErrorWithRetryProps = {
   message?: string;
   subMessage?: string;
   buttonText?: string;
+  containerStyle?: ViewStyle;
   onRetry?: () => void;
   hideSubMessage?: boolean;
   hideButton?: boolean;
@@ -18,12 +19,13 @@ const ErrorWithRetry = ({
   message = "Error occurred", 
   subMessage = "Something went wrong. Please try again",
   buttonText = "Retry",
+  containerStyle,
   onRetry,
   hideSubMessage = false,
   hideButton = false,
 }: ErrorWithRetryProps) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyle]}>
       <Icon name="alert-circle-outline" size={32} color={colors.red} style={styles.errorIcon} />
       
       <Typography fontSize={18} fontWeight="medium" color={colors.red}>
@@ -54,8 +56,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 20,
-    paddingHorizontal: 15,
   },
   errorIcon: {
     marginBottom: 5,

@@ -1,15 +1,34 @@
-import { TouchableOpacity, StyleSheet } from "react-native";
+import { ViewStyle, TouchableOpacity, StyleProp, StyleSheet } from "react-native";
 import Animated, { useSharedValue, useAnimatedStyle, withSequence, withTiming } from "react-native-reanimated";
-import { Ionicons as Icon } from "@expo/vector-icons";
 import { colors } from "@/constants/theme";
+import { FontWeight } from "@/types";
+
+import Icon from "./Icon";
 import Typography from "@/components/Typography";
 
 type RedirectButtonProps = {
   title: string;
   onPress: () => void;
+  style?: StyleProp<ViewStyle>;
+  textSize?: number;
+  textWeight?: FontWeight;
+  textColor?: string;
+  textSpacing?: number;
+  arrowSize?: number;
+  arrowColor?: string;
 };
 
-const RedirectButton = ({ title, onPress }: RedirectButtonProps) => {
+const RedirectButton = ({ 
+  title, 
+  onPress, 
+  style, 
+  textSize = 14,
+  textWeight = "medium",
+  textColor = colors.black,
+  textSpacing = 10,
+  arrowSize = 20,
+  arrowColor = colors.black
+}: RedirectButtonProps) => {
   const translateX = useSharedValue(0);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -18,7 +37,7 @@ const RedirectButton = ({ title, onPress }: RedirectButtonProps) => {
 
   const startAnimation = () => {
     translateX.value = withSequence(
-      withTiming(-10, { duration: 250 }),
+      withTiming(-textSpacing, { duration: 250 }),
       withTiming(0, { duration: 250 }),
     );
   };
@@ -30,15 +49,26 @@ const RedirectButton = ({ title, onPress }: RedirectButtonProps) => {
 
   return (
     <TouchableOpacity
-      style={styles.button}
+      style={[styles.button, style]}
       onPress={handlePress}
       activeOpacity={0.7}
     >
-      <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginRight: 10 }}>
+      <Typography 
+        fontSize={textSize} 
+        fontWeight={textWeight} 
+        color={textColor} 
+        style={{ marginRight: textSpacing }}
+      >
         {title}
       </Typography>
+
       <Animated.View style={animatedStyle}>
-        <Icon name="arrow-forward-sharp" size={20} color={colors.black} />
+        <Icon 
+          iconSet="Ionicons"
+          iconName="arrow-forward-sharp" 
+          iconSize={arrowSize} 
+          iconColor={arrowColor} 
+        />
       </Animated.View>
     </TouchableOpacity>
   );
@@ -48,6 +78,7 @@ const styles = StyleSheet.create({
   button: { 
     flexDirection: "row", 
     alignItems: "center",
+    justifyContent: "center",
   },
 });
 

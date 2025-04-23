@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { QueryDocumentSnapshot, DocumentData } from "@firebase/firestore";
 import { categoryBooksApi } from "@/api/categoryBooksApi";
-import { USER_CATEGORY_BOOKS_PAGE_SIZE } from "@/constants/settings";
+import { DEFAULT_BOOKS_LIMIT } from "@/constants/settings";
 import { bookHandler } from "@/helpers/bookHandler";
 import { Book, CategoryStatusType, ResponseType } from "@/types";
 
@@ -46,13 +46,13 @@ export const useCategoryBooksStore = create<CategoryBooksStore>((set, get) => ({
     const { cartBooks } = useCartStore.getState();
     const { favoriteIds } = useFavoritesStore.getState();
 
-    categoryBooksApi.fetchBooksByCategory(category, isNewCategory ? null : categoryLastDoc, USER_CATEGORY_BOOKS_PAGE_SIZE)
+    categoryBooksApi.fetchBooksByCategory(category, isNewCategory ? null : categoryLastDoc, DEFAULT_BOOKS_LIMIT)
       .then(({ books: newCategoryBooks, lastDoc: newLastDoc }) => {
         const categoryBooksWithFlags = bookHandler.addFavoriteAndCartFlags(newCategoryBooks, cartBooks, favoriteIds);
         set((state) => ({
           categoryBooks: isNewCategory ? categoryBooksWithFlags : [...state.categoryBooks, ...categoryBooksWithFlags],
           categoryLastDoc: newLastDoc,
-          categoryHasMore: newCategoryBooks.length === USER_CATEGORY_BOOKS_PAGE_SIZE,
+          categoryHasMore: newCategoryBooks.length === DEFAULT_BOOKS_LIMIT,
           categoryResponse: { status: "success" },
           categoryStatus: "idle",
         }));

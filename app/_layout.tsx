@@ -29,8 +29,6 @@ const InitialLayout = () => {
   const favoritesDataLoaded = useFavoritesStore(selectFavoritesDataLoaded);
   const initializeFavorites = useFavoritesStore(selectInitializeFavorites);
   
-  console.log(isLoggedIn);
-
   const [fontsLoaded, fontsError] = useFonts({
     "Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.ttf"),
     "Montserrat-Light": require("../assets/fonts/Montserrat-Light.ttf"),
@@ -83,6 +81,10 @@ const InitialLayout = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
+        name="(admin)/books-search"
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
         name="(admin)/order/[id]"
         options={{
           headerShown: true,
@@ -114,9 +116,7 @@ const InitialLayout = () => {
       {/* user screens */}
       <Stack.Screen
         name="(user)/(tabs)"
-        options={{
-          headerShown: false,
-        }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="(user)/category-books/[category]"
@@ -124,6 +124,10 @@ const InitialLayout = () => {
       />
       <Stack.Screen
         name="(user)/book/[bookId]"
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="(user)/books-search"
         options={{ headerShown: false }}
       />
       <Stack.Screen

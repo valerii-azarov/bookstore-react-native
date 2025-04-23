@@ -1,61 +1,67 @@
-import React from "react";
-import { View, ViewStyle, TextStyle, TextInput, TextInputProps, StyleSheet, Platform } from "react-native";
+import React, { forwardRef } from "react";
+import Animated from "react-native-reanimated";
+import { View, ViewStyle, TextStyle, TextInput, TextInputProps, StyleSheet, StyleProp, Platform } from "react-native";
 import { colors } from "@/constants/theme";
 import { HeightEnum } from "@/constants/common";
 import { verticalScale } from "@/helpers/common";
 import { HeightType } from "@/types";
 
+const AnimatedView = Animated.createAnimatedComponent(View);
+
 type InputProps = TextInputProps & {
   iconLeft?: React.ReactElement;
   iconRight?: React.ReactElement;
-  containerStyle?: ViewStyle;
-  inputStyle?: TextStyle;
+  containerStyle?: StyleProp<ViewStyle>;
+  inputStyle?: StyleProp<TextStyle>;
   inputHeight?: HeightType;
   isSquared?: boolean;
-  inputRef?: React.Ref<TextInput>;
 };
 
-const Input = ({
-  iconLeft,
-  iconRight,
-  containerStyle,
-  inputStyle,
-  inputHeight = "large",
-  isSquared = false,
-  inputRef,
-  ...props
-}: InputProps) => {
-  return (
-    <View 
-      style={[
-        styles.container,
-        {
-          borderRadius: isSquared ? 0 : 16,
-          height: verticalScale(HeightEnum[inputHeight]),
-        },
-        containerStyle,
-      ]}
-    >
-      {iconLeft && <View style={styles.iconLeft}>{iconLeft}</View>}
-
-      <TextInput
+const Input = forwardRef<TextInput, InputProps>(
+  (
+    {
+      iconLeft,
+      iconRight,
+      containerStyle,
+      inputStyle,
+      inputHeight = "large",
+      isSquared = false,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <AnimatedView
         style={[
-          styles.input, 
-          Platform.OS === "android" && {
-            includeFontPadding: false,
-            paddingVertical: 0,
+          styles.container,
+          {
+            borderRadius: isSquared ? 0 : 16,
+            height: verticalScale(HeightEnum[inputHeight]),
           },
-          inputStyle
+          containerStyle,
         ]}
-        placeholderTextColor={colors.grayTint2}
-        ref={inputRef}
-        {...props}
-      />
+      >
+        {iconLeft && <View style={styles.iconLeft}>{iconLeft}</View>}
 
-      {iconRight && <View style={styles.iconRight}>{iconRight}</View>}
-    </View>
-  );
-};
+        <TextInput
+          style={[
+            styles.input,
+            Platform.OS === "android" && {
+              includeFontPadding: false,
+              paddingVertical: 0,
+            },
+            inputStyle,
+          ]}
+          placeholderTextColor={colors.grayTint2}
+          ref={ref}
+          {...props}
+        />
+
+        {iconRight && <View style={styles.iconRight}>{iconRight}</View>}
+      </AnimatedView>
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   container: {

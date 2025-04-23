@@ -1,4 +1,4 @@
-import { View, Alert, TouchableOpacity, ScrollView, StyleSheet, Platform } from "react-native";
+import { View, Alert, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
 import { Link } from "expo-router";
 import Constants from "expo-constants";
 import {
@@ -185,7 +185,7 @@ const MenuScreen = () => {
   ];
 
   return (
-    <ScreenWrapper statusBarStyle="dark" disableTopInset>
+    <ScreenWrapper hideStatusBarBorder>
       <Header
         title={`${t("screens.menu.header.welcome")}, ${user?.firstName}`}
         titleSize={18}
@@ -199,10 +199,9 @@ const MenuScreen = () => {
         style={[
           styles.header,
           {
-            minHeight: Platform.OS === "ios" ? verticalScale(100) : verticalScale(85),
+            minHeight: verticalScale(40),
           },
         ]}
-        enableTopInset
       />
 
       <ScrollView
@@ -357,22 +356,3 @@ const styles = StyleSheet.create({
 });
 
 export default MenuScreen;
-
-//   const confirmLogout = () => {
-//     Alert.alert(
-//       t("alerts.confirmLogout.title"),
-//       t("alerts.confirmLogout.message"),
-//       [
-//         {
-//           text: t("alerts.static.cancel"),
-//           style: "cancel",
-//         },
-//         {
-//           text: t("alerts.static.confirm"),
-//           style: "destructive",
-//           onPress: async () => await authApi.logout(),
-//         },
-//       ],
-//       { cancelable: false }
-//     );
-//   };

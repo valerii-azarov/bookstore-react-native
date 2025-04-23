@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { View, FlatList, ScrollView, RefreshControl, StyleSheet, Platform } from "react-native";
+import { View, FlatList, ScrollView, RefreshControl, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "@/contexts/translateContext";
 import { useCategoriesStore } from "@/stores/categoriesStore";
@@ -19,10 +19,10 @@ import { verticalScale } from "@/helpers/common";
 import { Book } from "@/types";
 
 import ScreenWrapper from "@/components/ScreenWrapper";
+import CategoryBookItem from "@/components/CategoryBookItem";
 import SkeletonCategories from "@/components/SkeletonCategories";
 import Header from "@/components/Header";
 import IconBadge from "@/components/IconBadge";
-import BookItem from "@/components/BookItem";
 import Empty from "@/components/Empty";
 import ErrorWithRetry from "@/components/ErrorWithRetry";
 import RedirectButton from "@/components/RedirectButton";
@@ -50,23 +50,19 @@ const BooksUserScreen = () => {
   const isEmpty = !isLoading && Object.keys(categories).length === 0;
   const isError = !isLoading && categoriesResponse?.status === "error";
 
-  const renderCategory = (category: string) => {
+  const renderCategory = (category: string, index: number) => {
     return (
-      <View key={category} style={{ marginTop: 15 }}>
-        <View 
-          style={{
-            flexDirection: "row", 
-            alignItems: "center", 
-            justifyContent: "space-between",
-            paddingHorizontal: 15,
-          }}
-        >
-          <Typography fontSize={18} fontWeight="bold">
+      <View 
+        key={index}
+        style={{ marginTop: 15 }}
+      >
+        <View style={styles.categoryHeader}>
+          <Typography fontSize={18} fontWeight="bold" color={colors.black}>
             {t(`genres.${category}`)}
           </Typography>
 
           <RedirectButton 
-            title={t("screens.books.showAll.text")}
+            title={t("screens.books.buttons.showAll.text")}
             onPress={() =>
               router.push({
                 pathname: "/(user)/category-books/[category]",
@@ -79,19 +75,19 @@ const BooksUserScreen = () => {
         <FlatList
           data={categories[category]}
           renderItem={({ item }: { item: Book }) => (
-            <BookItem
+            <CategoryBookItem
               item={item}
               mode="horizontal"
-              onViewDetails={() => router.push(`/(user)/book/${item.id}`)}
-              onAddToFavorites={() => toggleFavorite(item.id)}
-              onAddToCart={() => toggleCart(item)}
+              onView={() => router.push(`/(user)/book/${item.id}`)}
+              onAddToFavorites={(bookId) => toggleFavorite(bookId)}
+              onAddToCart={(item) => toggleCart(item)}
             />
           )}
           keyExtractor={(item: Book) => item.id}
           horizontal
           contentContainerStyle={{
-            paddingHorizontal: 15,
             paddingVertical: 10,
+            paddingHorizontal: 15,
             gap: 15,
           }}
           showsHorizontalScrollIndicator={false}
@@ -105,9 +101,9 @@ const BooksUserScreen = () => {
   }, []);
 
   return (
-    <ScreenWrapper statusBarStyle="dark" disableTopInset>
+    <ScreenWrapper hideStatusBarBorder>
       <Header
-        title={t("screens.books.header.text")}
+        title={t("screens.books.headers.titleUser")}
         titleSize={18}
         iconRight={
           <IconBadge 
@@ -120,10 +116,9 @@ const BooksUserScreen = () => {
         style={[
           styles.header,
           {
-            minHeight: Platform.OS === "ios" ? verticalScale(100) : verticalScale(85),
+            minHeight: verticalScale(40),
           },
         ]}
-        enableTopInset
       />
 
       <ScrollView 
@@ -134,28 +129,26 @@ const BooksUserScreen = () => {
             onRefresh={refreshCategories}
           />
         }
-        scrollEnabled={!isEmpty && !isError}
+        scrollEnabled={!isEmpty && !isError && !isRefreshing}
       >
         {isLoading && <SkeletonCategories />}
 
         {isError && !isLoading && (
-          <View style={styles.overlayContainer}>
-            <ErrorWithRetry 
-              message={t("screens.books.messages.error.text")}
-              subMessage={t("screens.books.messages.error.subText")}
-              buttonText={t("screens.books.buttons.error.text")}
-              onRetry={() => loadCategories()} 
-            />
-          </View>
+          <ErrorWithRetry 
+            message={t("screens.books.messages.error.text")}
+            subMessage={t("screens.books.messages.error.subText")}
+            buttonText={t("screens.books.buttons.error.text")}
+            containerStyle={styles.padded}
+            onRetry={() => loadCategories()} 
+          />
         )}
 
         {isEmpty && !isError && !isLoading && (
-          <View style={styles.overlayContainer}>
-            <Empty 
-              message={t("screens.books.messages.empty.text")}
-              subMessage={t("screens.books.messages.empty.subText")} 
-            />
-          </View>
+          <Empty 
+            message={t("screens.books.messages.empty.text")}
+            subMessage={t("screens.books.messages.empty.subText")} 
+            containerStyle={styles.padded}
+          />
         )}
 
         {!isLoading && !isEmpty && !isError && Object.keys(categories).map(renderCategory)}
@@ -173,13 +166,15 @@ const styles = StyleSheet.create({
   },
   scrollViewContainer: {
     flexGrow: 1,
-    // padding: 15,
   },
-  overlayContainer: {
-    flex: 1,
-    justifyContent: "center",
+  categoryHeader: {
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 15,
+  },
+  padded: {
+    padding: 15,
   },
 });
 

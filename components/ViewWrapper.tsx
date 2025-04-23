@@ -14,10 +14,19 @@ interface ViewWrapperProps {
   children: React.ReactNode;
   headerStyle?: StyleProp<ViewStyle>;
   contentStyle?: StyleProp<ViewStyle>;
+  hideHeaderBorder?: boolean;
   hideFooter?: boolean;
 }
 
-const ViewWrapper = ({ title, onBackPress, children, headerStyle, contentStyle, hideFooter = false }: ViewWrapperProps) => {
+const ViewWrapper = ({ 
+  title, 
+  onBackPress, 
+  children, 
+  headerStyle, 
+  contentStyle, 
+  hideHeaderBorder = false, 
+  hideFooter = false 
+}: ViewWrapperProps) => {
   const insets = useSafeAreaInsets();
 
   const translateX = useSharedValue(0);
@@ -63,6 +72,7 @@ const ViewWrapper = ({ title, onBackPress, children, headerStyle, contentStyle, 
         style={[
           styles.header,
           {
+            borderBottomWidth: hideHeaderBorder ? 0 : 1,
             paddingTop: Platform.OS === "ios" ? insets.top : 15 + insets.top,
             minHeight: Platform.OS === "ios" ? verticalScale(100) : verticalScale(85),
           },
@@ -126,7 +136,6 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: colors.white,
     borderBottomColor: colors.grayTint7,
-    borderBottomWidth: 1,
     paddingBottom: 10,
     paddingHorizontal: 16,
     flexDirection: "row",

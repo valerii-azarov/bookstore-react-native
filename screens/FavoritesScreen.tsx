@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { View, FlatList, StyleSheet } from "react-native";
+import { FlatList, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import { useTranslation } from "@/contexts/translateContext";
@@ -49,23 +49,21 @@ const FavoritesScreen = () => {
     >
       {isLoading && <Loading size="small" color={colors.orange} />}
 
-      {isError && !isLoading && (
-        <View style={styles.overlayContainer}>
-          <ErrorWithRetry 
-            message={t("screens.favorites.messages.error.text")}
-            subMessage={t("screens.favorites.messages.error.subText")}
-            hideButton
-          />
-        </View>
+      {isError && !isLoading && (   
+        <ErrorWithRetry 
+          message={t("screens.favorites.messages.error.text")}
+          subMessage={t("screens.favorites.messages.error.subText")}
+          containerStyle={styles.padded}
+          hideButton
+        />
       )}
 
       {isEmpty && !isError && !isLoading && (
-        <View style={styles.overlayContainer}>
-          <Empty 
-            message={t("screens.favorites.messages.empty.text")} 
-            hideSubMessage
-          />
-        </View>
+        <Empty 
+          message={t("screens.favorites.messages.empty.text")} 
+          containerStyle={styles.padded}
+          hideSubMessage
+        />
       )}
 
       {!isLoading && !isEmpty && !isError && (
@@ -95,11 +93,8 @@ const FavoritesScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  overlayContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 15,
+  padded: {
+    padding: 15,
   },
 });
 

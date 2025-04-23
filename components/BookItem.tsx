@@ -1,322 +1,266 @@
-import React from "react";
-import { View, TouchableOpacity, StyleSheet } from "react-native";
-import { Ionicons as Icon } from "@expo/vector-icons";
+import { View, TouchableOpacity, Dimensions, StyleSheet } from "react-native";
+import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSequence } from "react-native-reanimated";
 import { useTranslation } from "@/contexts/translateContext";
 import { colors } from "@/constants/theme";
-import { colorConverter } from "@/helpers/colorConverter";
-import { Book, ModeType } from "@/types";
+import { BaseBook } from "@/types";
 
+import Icon from "./Icon";
 import Image from "./Image";
-import Typography from "@/components/Typography";
+import Typography from "./Typography";
 
-interface BookItemProps {
-  mode: ModeType;
-  item: Book;
-  onViewDetails: () => void;
-  onAddToFavorites?: (item: Book) => void;
-  onAddToCart?: (item: Book) => void;
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+
+type BookItemProps = {
+  item: BaseBook;
   isOwner?: boolean;
+  disableSwipe?: boolean;
+  onView: () => void;
+  onEdit?: (bookId: string) => void;
+  onDelete?: (bookId: string) => void;
 }
 
-const BookItem = ({ mode, item, onViewDetails, onAddToFavorites, onAddToCart, isOwner = false }: BookItemProps) => {
+const BookItem = ({ 
+  item, 
+  isOwner = false,
+  disableSwipe = false,
+  onView, 
+  onEdit, 
+  onDelete
+}: BookItemProps) => {
   const t = useTranslation();
 
-  return (
-    <View
-      style={[
-        styles.container,
-        mode === "horizontal" && { flex: 1 },
-        {
-          width: mode === "horizontal" 
-            ? 200 
-            : mode === "list" 
-              ? "100%" 
-              : "48%",
-          height: mode === "list" ? 180 : 280,
-          flexDirection: mode === "list" ? "row" : "column",
-        },
-      ]}
-    >
-      <View
-        style={[
-          styles.imageWrapper,
-          { 
-            width: mode === "list" ? "44%" : "100%",
-          },
-        ]}
-      >
-        <View
-          style={[
-            styles.imageBackground,
-            { 
-              backgroundColor: item?.backgroundColor || colors.creamTint3,
-            },
-          ]}
-        >
-          <View style={styles.imageContainer}>
-            <Image
-              source={{ uri: item?.coverImage }}
-              style={styles.coverImage}
-              textSize={10}
-              textColor={colors.white}
-              fallbackColor={
-                item.backgroundColor
-                  ? colorConverter.lighterHexColor(item.backgroundColor)
-                  : colors.grayTint4
-              }
-              resizeMode="cover"
-            />
+  const imageScale = useSharedValue(1);
+  
+  const imageAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: imageScale.value }],
+  }));
 
-            <View style={styles.overlayButtons}>
-              {item?.discount > 0 && (
-                <View style={styles.discountBadge}>
-                  <Typography fontSize={12} fontWeight="bold" color={colors.white}>
-                    {`-${item?.discount}%`}
-                  </Typography>
-                </View>
-              )}
+  const startAnimation = () => {
+    imageScale.value = withSequence(
+      withTiming(0.9, { duration: 250 }),
+      withTiming(1, { duration: 250 })
+    );
+  };
 
-              {mode === "grid" && !isOwner && (
-                <View style={styles.gridButtons}>
-                  <TouchableOpacity
-                    onPress={() => onAddToCart?.(item)}
-                    style={[
-                      styles.actionButton, 
-                      { 
-                        backgroundColor: "rgba(0, 0, 0, 0.6)", 
-                        borderRadius: 10,
-                      }
-                    ]}
-                  >
-                    <Icon
-                      name={item?.inCart ? "bag-check" : "bag-add-outline"}
-                      size={18}
-                      color={colors.white}
-                    />
-                  </TouchableOpacity>
+  const handlePress = () => {
+    startAnimation();
+    setTimeout(onView, 500);
+  };
 
-                  <TouchableOpacity
-                    onPress={() => onAddToFavorites?.(item)}
-                    style={[
-                      styles.actionButton, 
-                      { 
-                        backgroundColor: "rgba(0, 0, 0, 0.6)", 
-                        borderRadius: 10,
-                      }
-                    ]}
-                  >
-                    <Icon 
-                      name={item?.isFavorite ? "heart" : "heart-outline"} 
-                      size={18} 
-                      color={item?.isFavorite ? colors.red : colors.white} 
-                    />
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>
-          </View>
-        </View>
+  const renderRightActions = () => {
+    if (!isOwner) return null;
+
+    const actions = [
+      {
+        iconName: "edit",
+        label: t("components.searchedBooksItem.actions.edit"),
+        backgroundColor: colors.orangeTint1,
+        onPress: () => onEdit?.(item.id),
+      },
+      {
+        iconName: "delete",
+        label: t("components.searchedBooksItem.actions.delete"),
+        backgroundColor: colors.redTint1,
+        onPress: () => onDelete?.(item.id),
+      },
+    ];
+  
+    return (
+      <View style={styles.rightActionsContainer}>
+        {actions.map((action, index) => {
+          const buttonScale = useSharedValue(1);
+  
+          const buttonAnimatedStyle = useAnimatedStyle(() => ({
+            transform: [{ scale: buttonScale.value }],
+          }));
+  
+          const handlePressIn = () => {
+            buttonScale.value = withTiming(0.95, { duration: 100 });
+          };
+  
+          const handlePressOut = () => {
+            buttonScale.value = withTiming(1, { duration: 100 });
+          };
+  
+          return (
+            <Animated.View
+              key={index}
+              style={[styles.actionButton, buttonAnimatedStyle]}
+            >
+              <TouchableOpacity
+                style={[
+                  styles.actionButtonInner,
+                  { 
+                    backgroundColor: action.backgroundColor 
+                  },
+                ]}
+                onPress={action.onPress}
+                onPressIn={handlePressIn}
+                onPressOut={handlePressOut}
+                activeOpacity={0.7}
+              >
+                <Icon
+                  iconSet="MaterialIcons"
+                  iconName={action.iconName}
+                  iconSize={20}
+                  iconColor={colors.white}
+                />
+
+                <Typography fontSize={12} fontWeight="medium" color={colors.white}>
+                  {action.label}
+                </Typography>
+              </TouchableOpacity>
+            </Animated.View>
+          );
+        })}
       </View>
+    );
+  };
 
-      <View
-        style={[
-          styles.contentWrapper,
-          mode === "list" ? { paddingLeft: 15 } : { paddingTop: 10 },
-        ]}
-      >
-        <Typography fontSize={10} fontWeight="bold" color={colors.gray} numberOfLines={1}>
-          {item?.authors.join(", ")}
-        </Typography>
-
-        <Typography fontSize={14} fontWeight="bold" numberOfLines={1} style={styles.title}>
-          {item?.title}
-        </Typography>
-
-        <View style={styles.priceContainer}>
-          <Typography fontSize={16} fontWeight="bold" color={item?.discount > 0 ? colors.red : colors.black}>
-            {`${item?.price}₴`}
-          </Typography>
-
-          {item?.discount > 0 && (
-            <Typography fontSize={12} color={colors.gray} style={styles.originalPrice}>
-              {item?.originalPrice}
-            </Typography>
-          )}
-        </View>
-
-        {mode === "list" && isOwner && (
-          <View 
-            style={[
-              styles.infoContainer, 
-              { 
-                marginTop: 5,
-              }
-            ]}
-          >
+  return (
+    <ReanimatedSwipeable
+      rightThreshold={40}
+      renderRightActions={isOwner && !disableSwipe ? () => renderRightActions() : undefined}
+      enabled={isOwner && !disableSwipe}
+    >
+      <View style={styles.container}>
+        <View style={styles.imageWrapper}>
+          <TouchableOpacity onPress={handlePress} activeOpacity={0.7}>
             <View
               style={[
-                styles.infoBadge,
-                { 
-                  backgroundColor: item.availableQuantity > 0 ? colors.greenTint4 : colors.redTint4,
+                styles.imageBackground,
+                {
+                  backgroundColor: item?.backgroundColor || colors.grayTint5,
                 },
               ]}
             >
-              <Typography fontSize={12} color={colors.white}>
-                {item?.availableQuantity > 0 ? (
-                  <>
-                    {`${t("components.bookItem.available")}: `}
-                    <Typography fontSize={12} fontWeight="bold" color={colors.white}>
-                      {item?.availableQuantity}
-                    </Typography>
-                  </>
-                ) : (
-                  t("components.bookItem.unavailable")
-                )}
-              </Typography>
+              <View style={styles.imageContainer}>
+                <Animated.View style={imageAnimatedStyle}>
+                  <Image
+                    source={{ uri: item.coverImage }}
+                    style={styles.coverImage}
+                    textSize={6}
+                    resizeMode="cover"
+                  />
+                </Animated.View>
+
+                {!isOwner && item?.discount > 0 && (
+                  <View style={styles.discountBadgeContainer}>
+                    <View style={styles.discountBadge}>
+                      <Typography fontSize={10} fontWeight="bold" color={colors.white}>
+                        -{item.discount}%
+                      </Typography>
+                    </View>
+                  </View>
+                )}               
+              </View>
             </View>
+          </TouchableOpacity>
+        </View>
 
-            <View 
-              style={[
-                styles.infoBadge, 
-                { 
-                  backgroundColor: colors.creamTint4,
-                }
-              ]}
-            >
-              <Typography fontSize={12} color={colors.gray}>
-                {`${t("components.bookItem.article")}: `}
-                <Typography fontSize={12} fontWeight="bold" color={colors.black}>
-                  {item?.sku}
-                </Typography>
-              </Typography>
-            </View>
-          </View>
-        )}
+        <View style={styles.contentWrapper}>
+          <Typography fontSize={12} fontWeight="bold" color={colors.gray} numberOfLines={1}>
+            {item.authors?.join(", ")}
+          </Typography>
 
-        <View style={styles.actionsContainer}>
-          {mode === "list" ? (
-            <View style={styles.listActionsWrapper}>
-              <View
-                style={[
-                  styles.listButtons, 
-                  isOwner && { justifyContent: "flex-end" },
-                ]}
-              >
-                {!isOwner && (
-                  <>
-                    <TouchableOpacity
-                      onPress={() => onAddToFavorites?.(item)}
-                      style={[
-                        styles.actionButton, 
-                        { 
-                          backgroundColor: colors.black,
-                          borderRadius: 15,
-                        }
-                      ]}
-                    >
-                      <Icon 
-                        name={item?.isFavorite ? "heart" : "heart-outline"} 
-                        size={18} 
-                        color={item?.isFavorite ? colors.red : colors.white} 
-                      />
-                    </TouchableOpacity>
+          <Typography fontSize={16} fontWeight="bold" numberOfLines={1} style={{ flex: 1 }}>
+            {item.title}
+          </Typography>
 
-                    <TouchableOpacity
-                      onPress={() => onAddToCart?.(item)}
-                      style={[
-                        styles.actionButton, 
-                        { 
-                          backgroundColor: colors.black, 
-                          borderRadius: 15,
-                        }
-                      ]}
-                    >
-                      <Icon
-                        name={item?.inCart ? "bag-check" : "bag-add-outline"}
-                        size={18}
-                        color={colors.white}
-                      />
-                    </TouchableOpacity>
-                  </>
-                )}
-
-                <TouchableOpacity
-                  onPress={onViewDetails}
+          {isOwner && (
+            <View style={styles.detailsContainer}>
+              <View style={{ alignSelf: "flex-start" }}>
+                <View
                   style={[
-                    styles.detailsButton, 
+                    styles.detailBadge,
                     { 
-                      paddingHorizontal: 15,
+                      backgroundColor: item.availableQuantity > 0 ? colors.greenTint1 : colors.redTint1,
+                    },
+                  ]}
+                >
+                  {item?.availableQuantity > 0 && (
+                    <View style={styles.detailBadgeRow}>
+                      <Typography fontSize={12} fontWeight="medium" color={colors.white}>
+                        {t("components.searchedBooksItem.labels.available")}:
+                      </Typography>
+
+                      <Typography 
+                        fontSize={12} 
+                        fontWeight="bold" 
+                        color={colors.white}
+                        numberOfLines={1}
+                        style={{ maxWidth: 120 }}
+                      >
+                        {item?.availableQuantity}
+                      </Typography>
+                    </View>
+                  )}
+
+                  {item?.availableQuantity === 0 && (
+                    <Typography fontSize={12} color={colors.white}>
+                      {t("components.searchedBooksItem.labels.unavailable")}
+                    </Typography>
+                  )}
+                </View>
+              </View>
+
+              <View style={{ alignSelf: "flex-start" }}> 
+                <View 
+                  style={[
+                    styles.detailBadge, 
+                    { 
+                      backgroundColor: colors.creamTint1,
                     }
                   ]}
                 >
-                  <Typography fontSize={12} fontWeight="bold" color={colors.black}>
-                    {t("components.bookItem.details")}
-                  </Typography>
-                  <Icon name="arrow-forward-outline" size={16} color={colors.black} />
-                </TouchableOpacity>
+                  <View style={styles.detailBadgeRow}>
+                    <Typography fontSize={12} fontWeight="medium" color={colors.black}>
+                      {t("components.searchedBooksItem.labels.article")}:
+                    </Typography>
+                    
+                    <Typography 
+                      fontSize={12} 
+                      fontWeight="bold" 
+                      color={colors.black} 
+                      numberOfLines={1} 
+                      style={{ maxWidth: 120 }}
+                    >
+                      {item?.sku}
+                    </Typography>
+                  </View>
+                </View>
               </View>
             </View>
-          ) : (
-            <View style={styles.nonListActions}>
-              {mode === "horizontal" && !isOwner && (
-                <>
-                  <TouchableOpacity
-                    onPress={() => onAddToFavorites?.(item)}
-                    style={[
-                      styles.actionButton, 
-                      { 
-                        backgroundColor: colors.black, 
-                        borderRadius: 15,
-                      }
-                    ]}
-                  >
-                    <Icon 
-                      name={item?.isFavorite ? "heart" : "heart-outline"} 
-                      size={18} 
-                      color={item?.isFavorite ? colors.red : colors.white} 
-                    />
-                  </TouchableOpacity>
+          )}
 
-                  <TouchableOpacity
-                    onPress={() => onAddToCart?.(item)}
-                    style={[
-                      styles.actionButton, 
-                      { 
-                        backgroundColor: colors.black, 
-                        borderRadius: 15,
-                      }
-                    ]}
-                  >
-                    <Icon
-                      name={item?.inCart ? "bag-check" : "bag-add-outline"}
-                      size={18}
-                      color={colors.white}
-                    />
-                  </TouchableOpacity>
-                </>
-              )}
-
-              <TouchableOpacity
-                onPress={onViewDetails}
-                style={[
-                  styles.detailsButton, 
-                  { 
-                    flex: 1,
-                  }
-                ]}
+          {!isOwner && (    
+            <View style={styles.priceContainer}>
+              <Typography 
+                fontSize={18}
+                fontWeight="bold" 
+                color={item?.discount > 0 ? colors.red : colors.black}
+                numberOfLines={1}
+                style={{ maxWidth: 120 }}
               >
-                <View style={styles.detailsContent}>
-                  <Typography fontSize={12} fontWeight="bold" color={colors.black}>
-                    {t("components.bookItem.details")}
-                  </Typography>
-                  <Icon name="arrow-forward-outline" size={16} color={colors.black} />
-                </View>
-              </TouchableOpacity>
+                {item?.price}₴
+              </Typography>
+
+              {item?.discount > 0 && (
+                <Typography 
+                  fontSize={12} 
+                  color={colors.gray} 
+                  numberOfLines={1}
+                  style={{ maxWidth: 120, textDecorationLine: "line-through" }}
+                >
+                  {item?.originalPrice}₴
+                </Typography>
+              )}
             </View>
           )}
         </View>
       </View>
-    </View>
+    </ReanimatedSwipeable>
   );
 };
 
@@ -325,12 +269,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: 10,
     padding: 15,
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 15,
   },
   imageWrapper: {
-    height: 150,
-    borderRadius: 12,
-    overflow: "hidden",
-    position: "relative",
+    width: 95,
+    height: 95,
   },
   imageBackground: {
     height: "100%",
@@ -339,14 +284,12 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
-    padding: 20,
     justifyContent: "center",
     alignItems: "center",
-    position: "relative",
   },
   coverImage: {
-    width: 80,
-    height: 125,
+    width: 48,
+    height: 75,
     borderColor: colors.gray,
     borderTopLeftRadius: 1,
     borderTopRightRadius: 4,
@@ -354,87 +297,57 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 1,
     borderWidth: 0.5,
   },
-  overlayButtons: {
+  discountBadgeContainer: {
     position: "absolute",
     top: 5,
     right: 10,
-    flexDirection: "column",
-    alignItems: "flex-end",
-    gap: 5,
   },
   discountBadge: {
     backgroundColor: colors.red,
     borderRadius: 4,
-    paddingHorizontal: 5,
-    paddingVertical: 2,
-  },
-  gridButtons: {
-    flexDirection: "column",
-    gap: 5,
-  },
-  actionButton: {
-    width: 30,
-    height: 30,
-    justifyContent: "center",
-    alignItems: "center",
+    paddingVertical: 3,
+    paddingHorizontal: 6,
   },
   contentWrapper: {
     flex: 1,
   },
-  title: {
-    marginBottom: 5,
+  detailsContainer: {
+    flexDirection: "column",
+    gap: 5,
+  },
+  detailBadge: {
+    borderRadius: 4,
+    paddingVertical: 3,
+    paddingHorizontal: 6,
+  },
+  detailBadgeRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 5,
   },
   priceContainer: {
     flexDirection: "row",
     alignItems: "baseline",
     gap: 5,
   },
-  originalPrice: {
-    textDecorationLine: "line-through",
-  },
-  infoContainer: {
-    flexDirection: "column",
-    gap: 5,
-  },
-  infoBadge: {
-    borderRadius: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    alignSelf: "flex-start",
-  },
-  actionsContainer: {
-    flex: 1,
-    marginTop: 5,
-  },
-  listActionsWrapper: {
-    flex: 1,
-    justifyContent: "flex-end",
-  },
-  listButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  detailsButton: {
-    height: 30,
-    backgroundColor: colors.white,
-    borderColor: colors.black,
-    borderWidth: 1,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 5,
-  },
-  nonListActions: {
-    flex: 1,
+  rightActionsContainer: {
+    height: "100%",
+    paddingLeft: 15,
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
   },
-  detailsContent: {
-    flexDirection: "row",
+  actionButton: {
+    width: SCREEN_WIDTH * 0.2,
+    maxWidth: 100,
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+  actionButtonInner: {
+    flex: 1,
+    paddingVertical: 10,
     alignItems: "center",
+    justifyContent: "center",
     gap: 5,
   },
 });

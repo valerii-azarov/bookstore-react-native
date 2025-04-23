@@ -61,22 +61,20 @@ const ViewingHistoryScreen = () => {
       {isLoading && <Loading size="small" color={colors.orange} />}
       
       {isError && !isLoading && (
-        <View style={styles.overlayContainer}>
-          <ErrorWithRetry 
-            message={t("screens.viewingHistory.messages.error.text")}
-            subMessage={t("screens.viewingHistory.messages.error.subText")}
-            hideButton
-          />
-        </View>
+        <ErrorWithRetry 
+          message={t("screens.viewingHistory.messages.error.text")}
+          subMessage={t("screens.viewingHistory.messages.error.subText")}
+          containerStyle={styles.padded}
+          hideButton
+        />
       )}
 
       {isEmpty && !isError && !isLoading && (
-        <View style={styles.overlayContainer}>
-          <Empty 
-            message={t("screens.viewingHistory.messages.empty.text")} 
-            hideSubMessage
-          />
-        </View>
+        <Empty 
+          message={t("screens.viewingHistory.messages.empty.text")} 
+          containerStyle={styles.padded}
+          hideSubMessage
+        />
       )}
 
       {!isLoading && !isEmpty && !isError && (
@@ -118,11 +116,8 @@ const styles = StyleSheet.create({
   historyList: {
     gap: 10,
   },
-  overlayContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 15,
+  padded: {
+    padding: 15,
   },
 });
 

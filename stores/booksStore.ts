@@ -1,21 +1,19 @@
 import { create } from "zustand";
 import { QueryDocumentSnapshot, DocumentData } from "@firebase/firestore";
 import { booksApi } from "@/api/booksApi";
-import { ADMIN_BOOKS_PAGE_SIZE } from "@/constants/settings";
-import { BaseBook, BooksStatusType, BookSearchKey, ResponseType } from "@/types";
+import { DEFAULT_BOOKS_LIMIT } from "@/constants/settings";
+import { BaseBook, StatusType, ResponseType } from "@/types";
 
 interface BooksStore {
   books: BaseBook[];
   booksLastDoc: QueryDocumentSnapshot<DocumentData> | null;
-  booksStatus: BooksStatusType;
+  booksStatus: StatusType;
   booksResponse: ResponseType | null;
   booksHasMore: boolean;
-  booksSearchQuery: string;
-  booksSearchKeys: BookSearchKey[];
-  setBooksSearchQuery: (query: string, keys: BookSearchKey[]) => void;
   loadBooks: (reset?: boolean) => Promise<void>;
-  refreshBooks: () => void;
   loadMoreBooks: () => void;
+  refreshBooks: () => void;
+  resetAll: () => void;
 }
 
 export const useBooksStore = create<BooksStore>((set, get) => ({
@@ -23,61 +21,62 @@ export const useBooksStore = create<BooksStore>((set, get) => ({
   booksLastDoc: null,
   booksStatus: "idle",
   booksResponse: null,
-  booksHasMore: true,
-  booksSearchQuery: "",
-  booksSearchKeys: [],
-
-  setBooksSearchQuery: (query: string, keys: BookSearchKey[]) => {
-    set({ booksSearchQuery: query, booksSearchKeys: keys });
-    setTimeout(() => {
-      set({ booksLastDoc: null, booksHasMore: true });
-      get().loadBooks(true);
-    }, 500);
-  },
+  booksHasMore: false,
 
   loadBooks: async (reset = false) => {
-    const { booksLastDoc, booksSearchQuery, booksSearchKeys } = get();
+    if (get().booksStatus === "fetching" || get().booksStatus === "loading") return;
 
-    set({ booksStatus: reset ? "loading" : "fetching" });
+    set({
+      booksStatus: reset ? "loading" : "fetching",
+      booksResponse: null,
+      ...(reset && { 
+        books: [],
+        booksLastDoc: null, 
+        booksHasMore: false
+      }),
+    });
 
-    const fetchMethod = booksSearchQuery
-      ? booksApi.searchBooks(booksSearchQuery, booksSearchKeys, reset ? null : booksLastDoc)
-      : booksApi.fetchBooks(booksLastDoc, ADMIN_BOOKS_PAGE_SIZE);
-
-    fetchMethod
+    booksApi
+      .fetchBooks(
+        reset ? null : get().booksLastDoc, 
+        DEFAULT_BOOKS_LIMIT
+      )
       .then(({ books: newBooks, lastDoc: newLastDoc }) =>
         set((state) => ({
           books: reset ? newBooks : [...state.books, ...newBooks],
           booksLastDoc: newLastDoc,
-          booksHasMore: newBooks.length === ADMIN_BOOKS_PAGE_SIZE,
+          booksHasMore: newBooks.length === DEFAULT_BOOKS_LIMIT,
           booksResponse: { status: "success" },
           booksStatus: "idle",
         }))
       )
       .catch((error) =>
-        set((state) => ({
-          books: reset ? [] : state.books,
-          booksLastDoc: reset ? null : state.booksLastDoc,
+        set({
+          books: reset ? [] : get().books,
+          booksLastDoc: reset ? null : get().booksLastDoc,
+          booksHasMore: false,
           booksResponse: { status: "error", message: error.message },
-        }))
-      )
-      .finally(() => set({ booksStatus: "idle" }));
-  },
-
-  refreshBooks: () => {
-    const { booksStatus } = get();
-
-    if (booksStatus === "refreshing") return;
-    
-    set({ booksStatus: "refreshing", booksLastDoc: null });
-    get().loadBooks(true);
+          booksStatus: "idle",
+        })
+      );
   },
 
   loadMoreBooks: () => {
-    if (get().booksHasMore && get().booksStatus === "idle") {
-      set({ booksStatus: "fetching" });
+    if (get().booksHasMore && get().booksStatus !== "fetching") {
       get().loadBooks();
     }
   },
+
+  refreshBooks: () => {
+    get().loadBooks(true);
+  },
+
+  resetAll: () => set({
+    books: [],
+    booksLastDoc: null,
+    booksStatus: "idle",
+    booksResponse: null,
+    booksHasMore: false,
+  }),
 
 }));

@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from "react";
 import { format, differenceInCalendarDays } from "date-fns";
 import { enUS, uk } from "date-fns/locale";
-import { View, FlatList, StyleSheet, Platform } from "react-native";
+import { View, FlatList, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useLanguage, useTranslation } from "@/contexts/translateContext";
@@ -107,37 +107,34 @@ const OrderHistoryScreen = () => {
   }, []);
 
   return (
-    <ScreenWrapper statusBarStyle="dark" disableTopInset>
+    <ScreenWrapper hideStatusBarBorder>
       <Header
         title={t("screens.orderHistory.header.text")}
         titleSize={18}
         style={[
           styles.header,
           {
-            minHeight: Platform.OS === "ios" ? verticalScale(100) : verticalScale(85),
+            minHeight: verticalScale(40),
           },
         ]}
-        enableTopInset
       />
       
       {isError && !isLoading && (
-        <View style={styles.overlayContainer}>
-          <ErrorWithRetry 
-            message={t("screens.orderHistory.messages.error.text")}
-            subMessage={t("screens.orderHistory.messages.error.subText")}
-            buttonText={t("screens.orderHistory.buttons.error.text")}
-            onRetry={() => loadOrderHistory(true)} 
-          />
-        </View>
+        <ErrorWithRetry 
+          message={t("screens.orderHistory.messages.error.text")}
+          subMessage={t("screens.orderHistory.messages.error.subText")}
+          buttonText={t("screens.orderHistory.buttons.error.text")}
+          containerStyle={styles.padded}
+          onRetry={() => loadOrderHistory(true)} 
+        />
       )}
 
       {isEmpty && !isError && !isLoading && (
-        <View style={styles.overlayContainer}>
-          <Empty 
-            message={t("screens.orderHistory.messages.empty.text")}
-            subMessage={t("screens.orderHistory.messages.empty.subText")} 
-          />
-        </View>
+        <Empty 
+          message={t("screens.orderHistory.messages.empty.text")}
+          subMessage={t("screens.orderHistory.messages.empty.subText")} 
+          containerStyle={styles.padded}
+        />
       )}
 
       {!isEmpty && !isError && (
@@ -172,11 +169,8 @@ const styles = StyleSheet.create({
   historyList: {
     gap: 10,
   },
-  overlayContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 15,
+  padded: {
+    padding: 15,
   },
 });
 

@@ -34,6 +34,33 @@ const translations: Translations = {
       },
     },
 
+    searchedBooksItem: {
+      labels: {
+        available: {
+          en: "Quantity",
+          uk: "Кількість",
+        },
+        unavailable: {
+          en: "Not Available",
+          uk: "Відсутні",
+        },
+        article: {
+          en: "Article",
+          uk: "Артикул",
+        },
+      },
+      actions: {
+        edit: {
+          en: "Edit",
+          uk: "Змінити",
+        },
+        delete: {
+          en: "Delete",
+          uk: "Видалити",
+        },
+      }
+    },
+
     fields: {
       title: {
         label: {
@@ -645,16 +672,6 @@ const translations: Translations = {
           uk: "Версія додатку",
         },
       },
-      // balance: {
-        // bonuses: {
-        //   en: "bonuses",
-        //   uk: "бонуси",
-        // },
-        // offers: {
-        //   en: "offers",
-        //   uk: "пропозиції",
-        // },
-      // },
     },
 
     profile: {
@@ -683,24 +700,24 @@ const translations: Translations = {
     },
 
     books: {
-      header: {
-        text: {
+      headers: {
+        titleUser: {
           en: "Books",
           uk: "Книги",
         },
+        titleAdmin: {
+          en: "List of books",
+          uk: "Перелік книг",
+        },      
       },
-      search: {
-        placeholder: {
-          en: "Search by title or article...",
-          uk: "Пошук за назвою чи артикулом...",
+      placeholders: {
+        titleAndSku: {
+          text: {
+            en: "Search by title or article",
+            uk: "Пошук за назвою або артикулом",
+          },
         },
-      },
-      showAll: {
-        text: {
-          en: "Show all",
-          uk: "Показати всі",
-        },
-      },            
+      },          
       messages: {
         empty: {
           text: {
@@ -724,6 +741,90 @@ const translations: Translations = {
         },
       },
       buttons: {
+        showAll: {
+          text: {
+            en: "Show all",
+            uk: "Показати всі",
+          },
+        },   
+        error: {
+          text: {
+            en: "Retry",
+            uk: "Повторіть спробу",
+          },
+        },
+      },     
+    },
+
+    search: {            
+      header: {
+        text: {
+          en: "Search",
+          uk: "Пошук",
+        },
+      },
+      placeholders: {
+        title: {
+          text: {
+            en: "What to find?",
+            uk: "Що знайти?",
+          },
+        },
+      },
+      messages: {
+        startSearch: {
+          text: {
+            en: "Find your favorite book",
+            uk: "Ми шукаємо твою улюблену книгу",
+          },
+          subText: {
+            en: "Tap the search bar to find and buy",
+            uk: "Натисни панель пошуку, щоб знайти та купити книгу",
+          },
+        },
+      },
+    },
+
+    searchBooks: {            
+      header: {
+        text: {
+          en: "Search",
+          uk: "Пошук",
+        },
+      },
+      placeholders: {
+        title: {
+          text: {
+            en: "What to find?",
+            uk: "Що знайти?",
+          },
+        },
+        titleAndSku: {
+          text: {
+            en: "Search by title or article",
+            uk: "Пошук за назвою або артикулом",
+          },
+        },
+      },
+      messages: {
+        empty: {
+          text: {
+            en: "We looked everywhere but found nothing",
+            uk: "Шукали скрізь, але нічого не знайшли",
+          },
+        },
+        error: {
+          text: {
+            en: "An error occurred",
+            uk: "Виникла помилка",
+          },
+          subText: {
+            en: "Something went wrong",
+            uk: "Щось пішло не так",
+          },
+        },
+      },
+      buttons: {
         error: {
           text: {
             en: "Retry",
@@ -741,8 +842,8 @@ const translations: Translations = {
             uk: "Тут поки порожньо!",
           },
           subText: {
-            en: "This category is empty. Explore other categories for more books!",
-            uk: "Ця категорія порожня. Перегляньте інші категорії, щоб знайти книги!",
+            en: "Explore other categories for more books",
+            uk: "Перегляньте інші категорії, щоб знайти книги",
           },
         },
         error: {
@@ -751,19 +852,11 @@ const translations: Translations = {
             uk: "Виникла помилка",
           },
           subText: {
-            en: "Something went wrong. Please try again",
-            uk: "Щось пішло не так. Спробуйте ще раз",
+            en: "Something went wrong",
+            uk: "Щось пішло не так",
           },
         },
-      },
-      buttons: {
-        error: {
-          text: {
-            en: "Retry",
-            uk: "Повторіть спробу",
-          },
-        },
-      },     
+      },   
     },
 
     bookDetails: {

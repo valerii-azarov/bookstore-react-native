@@ -1,5 +1,5 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
+import React, { forwardRef } from "react";
+import { View, StyleSheet, TextInput } from "react-native";
 import { colors } from "@/constants/theme";
 import { verticalScale } from "@/helpers/common";
 
@@ -11,7 +11,7 @@ type FieldProps = React.ComponentProps<typeof Input> & {
   error?: string;
 };
 
-const Field = ({ label, error, inputRef, ...props }: FieldProps) => (
+const Field = forwardRef<TextInput, FieldProps>(({ label, error, ...props }, ref) => (
   <View style={{ minHeight: label ? verticalScale(100) : verticalScale(75) }}>
     {label && (
       <Typography fontSize={16} fontWeight="medium" color={colors.grayTint1} style={styles.label}>
@@ -19,21 +19,21 @@ const Field = ({ label, error, inputRef, ...props }: FieldProps) => (
       </Typography>
     )}
 
-    <Input 
-      containerStyle={{ 
-        borderColor: error ? colors.redTint3 : colors.grayTint3 
-      }} 
-      inputRef={inputRef}
-      {...props} 
+    <Input
+      ref={ref}
+      containerStyle={{
+        borderColor: error ? colors.redTint3 : colors.grayTint3,
+      }}
+      {...props}
     />
-    
+
     {error && (
       <Typography fontSize={12} fontWeight="medium" color={colors.redTint3} style={styles.error} numberOfLines={1}>
         {error}
       </Typography>
     )}
   </View>
-);
+));
 
 const styles = StyleSheet.create({
   label: {

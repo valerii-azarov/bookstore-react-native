@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { View, FlatList, StyleSheet } from "react-native";
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing, interpolateColor } from "react-native-reanimated";
+import { DEFAULT_CATEGORIES_LIMIT, DEFAULT_BOOKS_LIMIT } from "@/constants/settings";
 import { colors } from "@/constants/theme";
 
-import SkeletonBookItem from "./SkeletonBookItem";
+import SkeletonCategoryBookItem from "./SkeletonCategoryBookItem";
 
 const SkeletonCategories = () => {
   const animation = useSharedValue(0);
@@ -23,11 +24,9 @@ const SkeletonCategories = () => {
       [colors.grayTint6, colors.grayTint4]
     ),
   }));
-
-  const renderSkeletonBookItem = () => <SkeletonBookItem mode="horizontal" />;
-
-  const categories = Array.from({ length: 3 }, (_, index) => `category-${index}`);
-  const books = Array.from({ length: 5 }, (_, index) => `book-${index}`);
+  
+  const categories = Array.from({ length: DEFAULT_CATEGORIES_LIMIT }, (_, index) => `category-${index}`);
+  const books = Array.from({ length: DEFAULT_BOOKS_LIMIT }, (_, index) => `book-${index}`);
 
   return (
     <View style={styles.container}>
@@ -62,7 +61,11 @@ const SkeletonCategories = () => {
           
           <FlatList
             data={books}
-            renderItem={renderSkeletonBookItem}
+            renderItem={() => (
+              <SkeletonCategoryBookItem 
+                mode="horizontal" 
+              />
+            )}
             keyExtractor={(item) => item}
             horizontal
             showsHorizontalScrollIndicator={false}

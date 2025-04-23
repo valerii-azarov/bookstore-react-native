@@ -15,7 +15,7 @@ const UserTabsLayout = () => {
       icon: <Icon name="book-outline" />,
     },
     {
-      name: "search/[query]",
+      name: "search",
       label: t("tabs.search"),
       icon: <Icon name="search-outline" />,
     },

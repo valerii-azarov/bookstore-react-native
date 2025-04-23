@@ -1,15 +1,9 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing, interpolateColor } from "react-native-reanimated";
 import { colors } from "@/constants/theme";
-import { ModeType } from "@/types";
 
-interface SkeletonBookItemProps {
-  mode: ModeType;
-  isOwner?: boolean;
-}
-
-const SkeletonBookItem = ({ mode, isOwner = false }: SkeletonBookItemProps) => {
+const SkeletonBookItem = ({ isOwner = false }: { isOwner?: boolean }) => {
   const animation = useSharedValue(0);
 
   useEffect(() => {
@@ -29,156 +23,82 @@ const SkeletonBookItem = ({ mode, isOwner = false }: SkeletonBookItemProps) => {
   }));
 
   return (
-    <View
-      style={[
-        styles.container,
-        mode === "horizontal" && { flex: 1 },
-        {
-          width: mode === "horizontal" 
-            ? 200 
-            : mode === "list" 
-              ? "100%" 
-              : "48%",
-          height: mode === "list" ? 180 : 280,
-          flexDirection: mode === "list" ? "row" : "column",
-        },
-      ]}
-    >
-      <Animated.View
-        style={[
-          styles.imageWrapper,
-          animatedStyle,
-          { 
-            width: mode === "list" ? "44%" : "100%",
-          },
-        ]}
-      />
-
-      <View
-        style={[
-          styles.contentWrapper,
-          mode === "list" ? { paddingLeft: 15 } : { paddingTop: 10 },
-        ]}
-      >
-        <Animated.View
+    <View style={styles.container}>
+      <View style={styles.wrapper}>
+        <Animated.View 
           style={[
-            styles.textSkeleton,
-            { 
-              height: 10, 
-              width: "60%", 
-              marginBottom: 5,
-            },
-            animatedStyle,
-          ]}
-        />
-        <Animated.View
-          style={[
-            styles.textSkeleton,
-            { 
-              height: 14, 
-              width: "80%", 
-              marginBottom: 10,
-            },
-            animatedStyle,
-          ]}
-        />
-        <Animated.View
-          style={[
-            styles.textSkeleton,
-            { 
-              height: 16, 
-              width: 60,
-            },
-            animatedStyle,
-          ]}
+            styles.imageWrapper, 
+            animatedStyle
+          ]} 
         />
 
-        {mode === "list" && isOwner && (
-          <View 
+        <View style={styles.contentWrapper}>
+          <Animated.View 
             style={[
-              styles.infoContainer, 
+              styles.textSkeleton, 
               { 
-                marginTop: 5,
+                width: "60%",
+                height: 12, 
               },
-            ]}
-          >
-            <Animated.View 
-              style={[
-                styles.infoBadgeSkeleton, 
-                animatedStyle,
-              ]} 
-            />
-            <Animated.View 
-              style={[
-                styles.infoBadgeSkeleton, 
-                animatedStyle,
-              ]} 
-            />
-          </View>
-        )}
+              animatedStyle
+            ]} 
+          />
 
-        <View style={styles.actionsContainer}>
-          {mode === "list" ? (
-            <View style={styles.listActionsWrapper}>
-              <View
+          <Animated.View 
+            style={[
+              styles.textSkeleton, 
+              { 
+                width: "80%", 
+                height: 16,
+                marginTop: 5,
+              }, 
+              animatedStyle
+            ]} 
+          />
+
+          <View style={styles.space}/>
+
+          {isOwner && (
+            <View style={styles.detailsContainer}>
+              <Animated.View 
                 style={[
-                  styles.listButtons,
-                  isOwner && { justifyContent: "flex-end" },
-                ]}
-              >
-                {!isOwner && (
-                  <>
-                    <Animated.View
-                      style={[
-                        styles.buttonSkeleton, 
-                        animatedStyle,
-                      ]}
-                    />
-                    <Animated.View
-                      style={[
-                        styles.buttonSkeleton, 
-                        animatedStyle,
-                      ]}
-                    />
-                  </>
-                )}
-                <Animated.View
-                  style={[
-                    styles.detailsButtonSkeleton,
-                    { 
-                      width: 100,
-                    },
-                    animatedStyle,
-                  ]}
-                />
-              </View>
+                  styles.detailBadge,
+                  animatedStyle
+                ]} 
+              />
+
+              <Animated.View 
+                style={[
+                  styles.detailBadge,
+                  animatedStyle
+                ]} 
+              />
             </View>
-          ) : (
-            <View style={styles.nonListActions}>
-              {mode === "horizontal" && !isOwner && (
-                <>
-                  <Animated.View
-                    style={[
-                      styles.buttonSkeleton, 
-                      animatedStyle,
-                    ]}
-                  />
-                  <Animated.View
-                    style={[
-                      styles.buttonSkeleton, 
-                      animatedStyle,
-                    ]}
-                  />
-                </>
-              )}
-              <Animated.View
+          )}
+
+          {!isOwner && (
+            <View style={styles.priceContainer}>
+              <Animated.View 
                 style={[
-                  styles.detailsButtonSkeleton,
+                  styles.textSkeleton, 
                   { 
-                    flex: 1,
+                    width: 60, 
+                    height: 18, 
+                  }, 
+                  animatedStyle
+                ]} 
+              />
+
+              <Animated.View 
+                style={[
+                  styles.textSkeleton, 
+                  { 
+                    width: 40, 
+                    height: 12, 
+                    marginLeft: 5,
                   },
-                  animatedStyle,
-                ]}
+                  animatedStyle
+                ]} 
               />
             </View>
           )}
@@ -194,53 +114,40 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 15,
   },
+  wrapper: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 15,
+  },
   imageWrapper: {
-    height: 150,
+    width: 95,
+    height: 95,
     borderRadius: 12,
   },
   contentWrapper: {
     flex: 1,
   },
+  space: {
+    flex: 1,
+  },
   textSkeleton: {
     borderRadius: 4,
   },
-  infoContainer: {
+  detailsContainer: {
     flexDirection: "column",
+    alignItems: "flex-start",
     gap: 5,
   },
-  infoBadgeSkeleton: {
+  detailBadge: {
+    width: 120,
     height: 18,
-    width: 100,
-    borderRadius: 6,
-    alignSelf: "flex-start",
+    borderRadius: 4,
   },
-  actionsContainer: {
-    flex: 1,
+  priceContainer: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    gap: 5,
     marginTop: 5,
-  },
-  listActionsWrapper: {
-    flex: 1,
-    justifyContent: "flex-end",
-  },
-  listButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  buttonSkeleton: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-  },
-  detailsButtonSkeleton: {
-    height: 30,
-    borderRadius: 20,
-  },
-  nonListActions: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
   },
 });
 
