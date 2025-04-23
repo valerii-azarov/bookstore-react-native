@@ -860,27 +860,29 @@ const translations: Translations = {
     },
 
     bookDetails: {
+      header: {
+        text: {
+          en: "Book Details",
+          uk: "Деталі книги",
+        },
+      },
       titles: {
-        editing: {
-          en: "Editing",
-          uk: "Редагування",
+        details: {
+          en: "Details",
+          uk: "Деталі",
         },
-        genres: {
-          en: "Genres",
-          uk: "Жанри",
+        characteristics: {
+          en: "Characteristics",
+          uk: "Характеристики",
         },
-        parameters: {
-          en: "Parameters",
-          uk: "Параметри",
-        },
-        about: {
-          en: "About the Book",
-          uk: "Про книжку",
+        description: {
+          en: "Description",
+          uk: "Опис",
         },
       },
       labels: {
         pageCount: {
-          en: "Page Count",
+          en: "Page count",
           uk: "Кількість сторінок",
         },
         publisher: {
@@ -888,43 +890,19 @@ const translations: Translations = {
           uk: "Видавництво",
         },
         coverType: {
-          en: "Cover Type",
+          en: "Cover type",
           uk: "Обкладинка",
         },
         publicationYear: {
-          en: "Publication Year",
+          en: "Publication year",
           uk: "Рік видання",
         },
         language: {
           en: "Language",
           uk: "Мова",
         },
-        size: {
-          en: "Size",
-          uk: "Розмір",
-        },
-        weight: {
-          en: "Weight",
-          uk: "Вага",
-        },
-        illustrations: {
-          en: "Illustrations",
-          uk: "Ілюстрації",
-        },
-        bookType: {
-          en: "Book Type",
-          uk: "Тип книжки",
-        },
-        paperType: {
-          en: "Paper Type",
-          uk: "Тип паперу",
-        },
-        isbn: {
-          en: "ISBN",
-          uk: "ISBN",
-        },
         sku: {
-          en: "SKU",
+          en: "Article",
           uk: "Артикул",
         },
         quantity: {
@@ -932,61 +910,23 @@ const translations: Translations = {
           uk: "Кількість",
         },
         createdAt: {
-          en: "Created At",
+          en: "Creation date",
           uk: "Дата створення",
         },
         updatedAt: {
-          en: "Updated At",
+          en: "Update date",
           uk: "Дата оновлення",
-        },
-        images: {
-          en: "Images",
-          uk: "Зображення",
-        },
-        backgroundColor: {
-          en: "Background Color",
-          uk: "Колір фону",
-        },
-        title: {
-          en: "Title",
-          uk: "Назва",
-        },
-        authors: {
-          en: "Authors",
-          uk: "Автори",
-        },
-      },
-      values: {
-        illustrations: {
-          contains: {
-            en: "Contains illustrations",
-            uk: "Містить ілюстрації",
-          },
-          notContains: {
-            en: "No illustrations",
-            uk: "Без ілюстрацій",
-          },
-        },
+        },       
       },
       messages: {
-        empty: {
-          text: {
-            en: "Book not found",
-            uk: "Книгу не знайдено",
-          },
-          subText: {
-            en: "This book does not exist or has been removed.",
-            uk: "Ця книга не існує або була видалена.",
-          },
-        },
         error: {
           text: {
             en: "Failed to load book",
             uk: "Не вдалося завантажити дані про книгу",
           },
           subText: {
-            en: "Something went wrong. Please try again.",
-            uk: "Щось пішло не так. Спробуйте ще раз.",
+            en: "Something went wrong",
+            uk: "Щось пішло не так",
           },
         },
       },
@@ -997,46 +937,16 @@ const translations: Translations = {
             uk: "Купити",
           },
         },
-        expand: {
+        viewAllCharacteristics: {
           text: {
-            en: "Expand",
-            uk: "Розгорнути",
+            en: "View all characteristics",
+            uk: "Подивитись всі характеристики",
           },
         },
-        collapse: {
+        viewFullDescription: {
           text: {
-            en: "Collapse",
-            uk: "Згорнути",
-          },
-        },
-        edit: {
-          text: {
-            en: "Edit",
-            uk: "Змінити",
-          },
-        },
-        adminEdit: {
-          text: {
-            en: "Edit",
-            uk: "Редагувати",
-          },
-        },
-        delete: {
-          text: {
-            en: "Delete book",
-            uk: "Видалити книгу",
-          },
-        },
-        back: {
-          text: {
-            en: "Back",
-            uk: "Повернутись",
-          },
-        },        
-        error: {
-          text: {
-            en: "Retry",
-            uk: "Повторити",
+            en: "View full description",
+            uk: "Подивитись весь опис",
           },
         },
       },

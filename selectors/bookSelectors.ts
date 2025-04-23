@@ -12,3 +12,4 @@ export const selectCreateBook = (state: BookStoreType) => state.createBook;
 export const selectUpdateBook = (state: BookStoreType) => state.updateBook;
 export const selectDeleteBook = (state: BookStoreType) => state.deleteBook;
 export const selectRefreshBook = (state: BookStoreType) => state.refreshBook;
+export const selectResetBook = (state: BookStoreType) => state.resetBook;

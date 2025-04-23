@@ -19,6 +19,7 @@ interface BookStore {
   updateBook: (bookId: string, field: EditableBookField, value: EditableBookValueType) => Promise<void>;
   deleteBook: (bookId: string) => Promise<void>;
   refreshBook: () => Promise<void>;
+  resetBook: () => void;
 }
 
 export const useBookStore = create<BookStore>((set, get) => ({
@@ -161,6 +162,15 @@ export const useBookStore = create<BookStore>((set, get) => ({
     get().loadBookById(bookId);
   },
   
+  resetBook: () => {
+    set({ 
+      book: null, 
+      bookId: null, 
+      bookStatus: "idle", 
+      bookResponse: null
+    });
+  },
+
 }));
 
 useCartStore.subscribe((state) => {
