@@ -81,6 +81,30 @@ const InitialLayout = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
+        name="(admin)/(modals)/book-characteristics"
+        options={{
+          headerShown: false,
+          ...(Platform.OS === "ios"
+            ? { 
+                animation: "slide_from_bottom", 
+                animationDuration: 250,
+              }
+            : {}),
+        }}
+      />
+      <Stack.Screen
+        name="(admin)/(modals)/book-description"
+        options={{
+          headerShown: false,
+          ...(Platform.OS === "ios"
+            ? { 
+                animation: "slide_from_bottom", 
+                animationDuration: 250,
+              }
+            : {}),
+        }}
+      />
+      <Stack.Screen
         name="(admin)/books-search"
         options={{ headerShown: false }}
       />
@@ -125,6 +149,30 @@ const InitialLayout = () => {
       <Stack.Screen
         name="(user)/book/[bookId]"
         options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="(user)/(modals)/book-characteristics"
+        options={{
+          headerShown: false,
+          ...(Platform.OS === "ios"
+            ? { 
+                animation: "slide_from_bottom", 
+                animationDuration: 250,
+              }
+            : {}),
+        }}
+      />
+      <Stack.Screen
+        name="(user)/(modals)/book-description"
+        options={{
+          headerShown: false,
+          ...(Platform.OS === "ios"
+            ? { 
+                animation: "slide_from_bottom", 
+                animationDuration: 250,
+              }
+            : {}),
+        }}
       />
       <Stack.Screen
         name="(user)/books-search"

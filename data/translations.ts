@@ -1765,6 +1765,106 @@ const translations: Translations = {
       },
     },
 
+    bookCharacteristics: {
+      title: {
+        en: "Characteristics",
+        uk: "Характеристики",
+      },
+      labels: {
+        pageCount: {
+          en: "Page count",
+          uk: "Кількість сторінок",
+        },
+        publisher: {
+          en: "Publisher",
+          uk: "Видавництво",
+        },
+        coverType: {
+          en: "Cover type",
+          uk: "Обкладинка",
+        },
+        publicationYear: {
+          en: "Publication year",
+          uk: "Рік видання",
+        },
+        language: {
+          en: "Language",
+          uk: "Мова",
+        },
+        size: {
+          en: "Size",
+          uk: "Розмір",
+        },
+        weight: {
+          en: "Weight",
+          uk: "Вага",
+        },
+        illustrations: {
+          en: "Illustrations",
+          uk: "Ілюстрації",
+        },
+        bookType: {
+          en: "Book Type",
+          uk: "Тип книжки",
+        },
+        paperType: {
+          en: "Paper Type",
+          uk: "Тип паперу",
+        },
+        isbn: {
+          en: "ISBN",
+          uk: "ISBN",
+        },
+        sku: {
+          en: "Article",
+          uk: "Артикул",
+        },
+      },
+      values: {
+        illustrations: {
+          contains: {
+            en: "Contains illustrations",
+            uk: "Містить ілюстрації",
+          },
+          notContains: {
+            en: "No illustrations",
+            uk: "Без ілюстрацій",
+          },
+        },
+      },
+      messages: {
+        notice: {
+          title: {
+            en: "Found an error?",
+            uk: "Знайшли помилку?",
+          },
+          text: {
+            en: "If you found an error or inaccuracy in the characteristics, please let us know via email",
+            uk: "Якщо ви виявили помилку чи неточність у характеристиках, будь ласка, повідомте нас на емейл",
+          },
+        },
+      },
+    },
+
+    bookDescription: {
+      title: {
+        en: "Description",
+        uk: "Опис",
+      },
+      messages: {
+        notice: {
+          title: {
+            en: "Found an error?",
+            uk: "Знайшли помилку?",
+          },
+          text: {
+            en: "If you found an error or inaccuracy in the description, please let us know via email",
+            uk: "Якщо ви виявили помилку чи неточність в описі, будь ласка, повідомте нас на емейл",
+          },
+        },
+      },
+    },
+
     orderStatus: {
       header: {
         en: "Order status",

@@ -603,7 +603,9 @@ const BookDetailsScreen = () => {
                     borderRadius: 10,
                     padding: 10,
                   }}
-                  onPress={() => { }}
+                  onPress={() => { 
+                    router.push("/book-characteristics");
+                  }}
                   activeOpacity={0.7}
                 >
                   <Typography
@@ -648,7 +650,9 @@ const BookDetailsScreen = () => {
                     borderRadius: 10,
                     padding: 10,
                   }}
-                  onPress={() => { }}
+                  onPress={() => { 
+                    router.push("/book-description");
+                  }}
                   activeOpacity={0.7}
                 >
                   <Typography
@@ -741,7 +745,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
   parameterColumn: {
     flexDirection: "column",
     alignItems: "flex-start",
