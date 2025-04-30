@@ -11,6 +11,7 @@ import {
   selectCategoryStatus, 
   selectCategoryResponse, 
   selectLoadCategoryBooks, 
+  selectSetCategory,
   selectLoadMoreCategoryBooks,
   selectResetCategory,
 } from "@/selectors/categoryBooksSelectors";
@@ -38,6 +39,7 @@ const CategoryBooksScreen = () => {
   const categoryStatus = useCategoryBooksStore(selectCategoryStatus);
   const categoryResponse = useCategoryBooksStore(selectCategoryResponse);
   
+  const setCategory = useCategoryBooksStore(selectSetCategory);
   const loadCategoryBooks = useCategoryBooksStore(selectLoadCategoryBooks);
   const loadMoreCategoryBooks = useCategoryBooksStore(selectLoadMoreCategoryBooks);
   const resetCategory = useCategoryBooksStore(selectResetCategory);
@@ -72,7 +74,8 @@ const CategoryBooksScreen = () => {
 
   useEffect(() => {
     if (category && isConnected) {
-      loadCategoryBooks(category);
+      setCategory(category);
+      loadCategoryBooks(true);
     }
     return () => resetCategory();
   }, [category, isConnected]);

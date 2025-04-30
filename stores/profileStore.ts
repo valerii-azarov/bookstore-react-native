@@ -22,11 +22,12 @@ export const useProfileStore = create<ProfileState>((set) => ({
 
     set({ profileStatus: "updating", profileResponse: null });
 
-    profileApi.updateProfile(userId, field, value)
+    profileApi
+      .updateProfile(userId, field, value)
       .then((user) => {
         set({
-          profileStatus: "idle",
           profileResponse: { status: "success" },
+          profileStatus: "idle",
         });
         useAuthStore.getState().setUser({
           uid: user?.uid || "",
@@ -38,13 +39,13 @@ export const useProfileStore = create<ProfileState>((set) => ({
       })
       .catch((error) =>
         set({
-          profileStatus: "idle",
           profileResponse: {
             status: "error",
             message: messageHandler.getErrorMessage(error, {
               "users/user-not-found-after-update": "users.userNotFoundAfterUpdate",
             }),
           },
+          profileStatus: "idle",
         })
       );
   },

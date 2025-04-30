@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { bookApi } from "@/api/bookApi";
 import { bookHandler } from "@/helpers/bookHandler";
 import { messageHandler } from "@/helpers/messageHandler";
-import { Book, CreateBook, BookStatusType, EditableBookField, EditableBookValueType, ResponseType } from "@/types";
+import { Book, CreateBook, EditableBookField, EditableBookValueType, StatusType, ResponseType } from "@/types";
 
 import { useAuthStore } from "./authStore";
 import { useBooksStore } from "./booksStore";
@@ -11,10 +11,11 @@ import { useFavoritesStore } from "./favoritesStore";
 
 interface BookStore {
   book: Book | null;
-  bookId: string | null;
-  bookStatus: BookStatusType;
+  bookId: string;
+  bookStatus: StatusType;
   bookResponse: ResponseType | null;
-  loadBookById: (bookId: string) => Promise<void>;
+  setBookById: (id: string) => void;
+  loadBookById: () => Promise<void>;
   createBook: (bookData: CreateBook) => Promise<void>;
   updateBook: (bookId: string, field: EditableBookField, value: EditableBookValueType) => Promise<void>;
   deleteBook: (bookId: string) => Promise<void>;
@@ -24,44 +25,51 @@ interface BookStore {
 
 export const useBookStore = create<BookStore>((set, get) => ({
   book: null,
-  bookId: null,
+  bookId: "",
   bookStatus: "idle",
   bookResponse: null,
 
-  loadBookById: async (bookId: string) => {
-    const userId = useAuthStore.getState().user?.uid;
-    if (!userId) return;
+  setBookById: (id: string) => {
+    set({ bookId: id });
+  },
 
-    set({ bookStatus: "loading", bookResponse: null, bookId });
+  loadBookById: async () => {
+    const bookId = get().bookId;
+    const userId = useAuthStore.getState().user?.uid;
+    if (!bookId || !userId) return;
+    
+    set({ bookStatus: "loading", bookResponse: null });
 
     const { cartBooks } = useCartStore.getState();
     const { favoriteIds } = useFavoritesStore.getState();
 
-    bookApi.fetchBookById(bookId, userId)
+    bookApi
+      .fetchBookById(bookId, userId)
       .then((book) =>
         set({
           book: book ? bookHandler.addFavoriteAndCartFlags([book], cartBooks, favoriteIds)[0] : null,
-          bookStatus: "idle",
           bookResponse: { status: "success" },
+          bookStatus: "idle",
         })
       )
       .catch((error) => {
         set({
           book: null,
           bookResponse: { status: "error", message: error.message },
+          bookStatus: "idle",
         });
-      })
-      .finally(() => set({ bookStatus: "idle" }));
+      });
   },
 
   createBook: async (bookData: CreateBook) => {
     set({ bookStatus: "creating", bookResponse: null });
 
-    bookApi.createBook(bookData)
+    bookApi
+      .createBook(bookData)
       .then((book) => {
         set({
-          bookStatus: "idle",
           bookResponse: { status: "success" },
+          bookStatus: "idle",
         });
         useBooksStore.setState((state) => ({
           books: [book, ...state.books],
@@ -79,24 +87,25 @@ export const useBookStore = create<BookStore>((set, get) => ({
               "books/created-book-not-found": "books.createdBookNotFound",
             }),
           },
+          bookStatus: "idle",
         })
-      )
-      .finally(() => set({ bookStatus: "idle" }));
+      );
   },
 
   updateBook: async (bookId: string, field: EditableBookField, value: EditableBookValueType) => {
-    set({ bookStatus: "updating", bookResponse: null, bookId });
+    set({ bookStatus: "updating", bookResponse: null });
 
     const { favoriteIds } = useFavoritesStore.getState();
     const isFavorite = favoriteIds.includes(bookId);
 
-    bookApi.updateBook(bookId, field, value)
+    bookApi
+      .updateBook(bookId, field, value)
       .then((updatedBook) => {
         const updatedBookWithFavorite = { ...updatedBook, isFavorite };
         set({
           book: updatedBookWithFavorite,
-          bookStatus: "idle",
           bookResponse: { status: "success" },
+          bookStatus: "idle",
         });
         useBooksStore.setState((state) => ({
           books: state.books.map((book) =>
@@ -119,21 +128,22 @@ export const useBookStore = create<BookStore>((set, get) => ({
               "books/upload-additional-failed": "books.uploadAdditionalFailed",
             }),
           },
+          bookStatus: "idle",
         })
-      )
-      .finally(() => set({ bookStatus: "idle" }));
+      );
   },
 
   deleteBook: async (bookId: string) => {
-    set({ bookStatus: "deleting", bookResponse: null, bookId });
+    set({ bookStatus: "deleting", bookResponse: null });
 
-    bookApi.deleteBook(bookId)
+    bookApi
+      .deleteBook(bookId)
       .then(() => {
         set({
           book: null,
-          bookId: null,
-          bookStatus: "idle",
+          bookId: "",
           bookResponse: { status: "success" },
+          bookStatus: "idle",
         });
         useBooksStore.setState((state) => ({
           books: state.books.filter((book) => book.id !== bookId),
@@ -148,24 +158,19 @@ export const useBookStore = create<BookStore>((set, get) => ({
               "image/delete-failed": "image.deleteFailed",
             }),
           },
+          bookStatus: "idle",
         })
-      )
-      .finally(() => set({ bookStatus: "idle" }));
+      );
   },
 
   refreshBook: async () => {
-    const { bookId, bookStatus } = get();
-
-    if (bookStatus === "loading" || !bookId) return;
-
-    set({ bookStatus: "loading", bookResponse: null });
-    get().loadBookById(bookId);
+    get().loadBookById();
   },
   
   resetBook: () => {
     set({ 
       book: null, 
-      bookId: null, 
+      bookId: "", 
       bookStatus: "idle", 
       bookResponse: null
     });

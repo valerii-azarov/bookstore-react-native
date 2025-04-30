@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { categoriesApi } from "@/api/categoriesApi";
 import { genresKeys } from "@/constants/book";
 import { bookHandler } from "@/helpers/bookHandler";
-import { CategoriesType, CategoriesStatusType, ResponseType } from "@/types";
+import { CategoriesType, StatusType, ResponseType } from "@/types";
 
 import { useAuthStore } from "./authStore";
 import { useCartStore } from "./cartStore";
@@ -10,7 +10,7 @@ import { useFavoritesStore } from "./favoritesStore";
 
 interface CategoriesStore {
   categories: CategoriesType;
-  categoriesStatus: CategoriesStatusType;
+  categoriesStatus: StatusType;
   categoriesResponse: ResponseType | null;
   loadCategories: () => Promise<void>;
   refreshCategories: () => Promise<void>;
@@ -25,12 +25,13 @@ export const useCategoriesStore = create<CategoriesStore>((set, get) => ({
     const userId = useAuthStore.getState().user?.uid;
     if (!userId) return;
 
-    set({ categoriesStatus: "loading" });
+    set({ categoriesStatus: "loading", categoriesResponse: null });
 
     const { cartBooks } = useCartStore.getState();
     const { favoriteIds } = useFavoritesStore.getState();
 
-    categoriesApi.fetchAllCategories(genresKeys)
+    categoriesApi
+      .fetchAllCategories(genresKeys)
       .then((categories) => {
         const categoriesWithFlags = Object.fromEntries(
           Object.entries(categories).map(([key, books]) => [
@@ -54,11 +55,6 @@ export const useCategoriesStore = create<CategoriesStore>((set, get) => ({
   },
 
   refreshCategories: async () => {
-    const { categoriesStatus } = get();
-
-    if (categoriesStatus === "refreshing") return;
-
-    set({ categoriesStatus: "refreshing", categoriesResponse: null });
     get().loadCategories();
   },
 

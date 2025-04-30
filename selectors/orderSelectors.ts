@@ -6,6 +6,7 @@ export const selectOrder = (state: OrderStoreType) => state.order;
 export const selectOrderStatus = (state: OrderStoreType) => state.orderStatus;
 export const selectOrderResponse = (state: OrderStoreType) => state.orderResponse;
 
+export const selectSetOrderById = (state: OrderStoreType) => state.setOrderById;
 export const selectLoadOrderById = (state: OrderStoreType) => state.loadOrderById;
 export const selectCreateOrder = (state: OrderStoreType) => state.createOrder;
 export const selectResetOrder = (state: OrderStoreType) => state.resetOrder;

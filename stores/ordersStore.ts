@@ -6,7 +6,7 @@ interface OrdersStore {
   resetOrders: () => void;
 }
 
-export const useOrdersStore = create<OrdersStore>((set, get) => ({
+export const useOrdersStore = create<OrdersStore>((set) => ({
   orders: [],
   
   resetOrders: () => {

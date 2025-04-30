@@ -13,6 +13,7 @@ import {
   selectBook, 
   selectBookStatus, 
   selectBookResponse, 
+  selectSetBookById,
   selectLoadBookById,
   selectResetBook,
 } from "@/selectors/bookSelectors";
@@ -43,6 +44,7 @@ const BookDetailsScreen = () => {
   const bookStatus = useBookStore(selectBookStatus);
   const bookResponse = useBookStore(selectBookResponse);
   
+  const setBookById = useBookStore(selectSetBookById);
   const loadBookById = useBookStore(selectLoadBookById);
   const resetBook = useBookStore(selectResetBook); 
 
@@ -94,7 +96,8 @@ const BookDetailsScreen = () => {
 
   useEffect(() => {
     if (bookId && isConnected) {
-      loadBookById(bookId);
+      setBookById(bookId);
+      loadBookById();
     }
     return () => resetBook();
   }, [bookId, isConnected]);

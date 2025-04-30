@@ -110,7 +110,7 @@ const OrderHistoryScreen = () => {
 
   useEffect(() => {
     if (isConnected) {
-      loadOrderHistory();
+      loadOrderHistory(true);
     }
     return () => resetOrderHistory();
   }, [isConnected]);  

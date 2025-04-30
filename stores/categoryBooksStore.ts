@@ -3,54 +3,64 @@ import { QueryDocumentSnapshot, DocumentData } from "@firebase/firestore";
 import { categoryBooksApi } from "@/api/categoryBooksApi";
 import { DEFAULT_BOOKS_LIMIT } from "@/constants/settings";
 import { bookHandler } from "@/helpers/bookHandler";
-import { Book, CategoryStatusType, ResponseType } from "@/types";
+import { Book, StatusType, ResponseType } from "@/types";
 
 import { useCartStore } from "./cartStore";
 import { useFavoritesStore } from "./favoritesStore";
 
 interface CategoryBooksStore {
-  currentCategory: string | null;
+  currentCategory: string;
   categoryBooks: Book[];
   categoryLastDoc: QueryDocumentSnapshot<DocumentData> | null;
-  categoryStatus: CategoryStatusType;
+  categoryStatus: StatusType;
   categoryResponse: ResponseType | null;
   categoryHasMore: boolean;
-  loadCategoryBooks: (category: string) => Promise<void>;
+  setCategory: (title: string) => void;
+  loadCategoryBooks: (reset?: boolean) => Promise<void>;
   loadMoreCategoryBooks: () => void;
   refreshCategoryBooks: () => void;
   resetCategory: () => void;
 }
 
 export const useCategoryBooksStore = create<CategoryBooksStore>((set, get) => ({
-  currentCategory: null,
+  currentCategory: "",
   categoryBooks: [],
   categoryLastDoc: null,
   categoryStatus: "idle",
   categoryResponse: null,
-  categoryHasMore: true,
+  categoryHasMore: false,
 
-  loadCategoryBooks: async (category: string) => {
-    const { currentCategory, categoryLastDoc } = get();
-    
-    const isNewCategory = category !== currentCategory;
+  setCategory: (title: string) => {
+    set({ currentCategory: title });
+  },
+
+  loadCategoryBooks: async (reset = false) => {
+    if (get().categoryStatus === "fetching" || get().categoryStatus === "loading") return;
+
     set({
-      categoryStatus: isNewCategory ? "loading" : "fetching",
-      ...(isNewCategory && {
-        currentCategory: category,
+      categoryStatus: reset ? "loading" : "fetching",
+      categoryResponse: null,
+      ...(reset && { 
         categoryBooks: [],
-        categoryLastDoc: null,
-        categoryHasMore: true,
+        categoryLastDoc: null, 
+        categoryHasMore: false
       }),
     });
 
     const { cartBooks } = useCartStore.getState();
     const { favoriteIds } = useFavoritesStore.getState();
-
-    categoryBooksApi.fetchBooksByCategory(category, isNewCategory ? null : categoryLastDoc, DEFAULT_BOOKS_LIMIT)
+    
+    categoryBooksApi
+      .fetchBooksByCategory(
+        get().currentCategory,
+        reset ? null : get().categoryLastDoc,
+        DEFAULT_BOOKS_LIMIT
+      )
       .then(({ books: newCategoryBooks, lastDoc: newLastDoc }) => {
         const categoryBooksWithFlags = bookHandler.addFavoriteAndCartFlags(newCategoryBooks, cartBooks, favoriteIds);
+
         set((state) => ({
-          categoryBooks: isNewCategory ? categoryBooksWithFlags : [...state.categoryBooks, ...categoryBooksWithFlags],
+          categoryBooks: reset ? categoryBooksWithFlags : [...state.categoryBooks, ...categoryBooksWithFlags],
           categoryLastDoc: newLastDoc,
           categoryHasMore: newCategoryBooks.length === DEFAULT_BOOKS_LIMIT,
           categoryResponse: { status: "success" },
@@ -59,41 +69,34 @@ export const useCategoryBooksStore = create<CategoryBooksStore>((set, get) => ({
       })
       .catch((error) =>
         set((state) => ({
-          categoryBooks: isNewCategory ? [] : state.categoryBooks,
-          categoryLastDoc: isNewCategory ? null : state.categoryLastDoc,
+          categoryBooks: reset ? [] : state.categoryBooks,
+          categoryLastDoc: reset ? null : state.categoryLastDoc,
+          categoryHasMore: false,
           categoryResponse: { status: "error", message: error.message },
           categoryStatus: "idle",
         }))
-      )
-      .finally(() => set({ categoryStatus: "idle" }));
+      );
   },
 
   loadMoreCategoryBooks: () => {
-    const { currentCategory, categoryHasMore, categoryStatus } = get();
-
-    if (currentCategory && categoryHasMore && categoryStatus === "idle") {
-      set({ categoryStatus: "fetching" });
-      get().loadCategoryBooks(currentCategory);
+    if (get().categoryHasMore && get().categoryStatus !== "fetching") {
+      get().loadCategoryBooks();
     }
   },
 
   refreshCategoryBooks: () => {
-    const { currentCategory, categoryStatus } = get();
-
-    if (!currentCategory || categoryStatus === "refreshing") return;
-    
-    set({
-      categoryStatus: "refreshing",
-      categoryBooks: [],
-      categoryLastDoc: null,
-      categoryHasMore: true,
-      categoryResponse: null,
-    });
-    get().loadCategoryBooks(currentCategory);
+    get().loadCategoryBooks(true);
   },
 
   resetCategory: () => {
-    set({ categoryBooks: [], categoryLastDoc: null, categoryHasMore: true, currentCategory: null });
+    set({ 
+      currentCategory: "",
+      categoryBooks: [],
+      categoryLastDoc: null, 
+      categoryStatus: "idle",
+      categoryResponse: null,
+      categoryHasMore: false,
+    });
   },
 
 }));

@@ -359,33 +359,6 @@ export type OrdersResponse = {
 // categories
 export type CategoriesType = { [key: string]: Book[] };
 
-// statuses
-export type BooksStatusType = "idle" | "loading" | "fetching" | "refreshing";
-
-export type BookStatusType = "idle" | "loading" | "creating" | "updating" | "deleting";
-
-export type CategoriesStatusType = "idle" | "loading" | "refreshing";
-
-export type CategoryStatusType = "idle" | "loading" | "fetching" | "refreshing";
-
-export type FavoritesStatusType = "idle" | "loading";
-
-export type ToggleFavoriteStatusType = "idle" | "toggling";
-
-export type ViewingHistoryStatusType = "idle" | "loading";
-
-export type NovaPostCityStatusType = "idle" | "loading";
-
-export type NovaPostWarehouseStatusType = "idle" | "loading";
-
-export type OrderStatusType = "idle" | "loading" | "creating";
-
-export type OrdersStatusType = "idle" | "loading" | "fetching" | "refreshing";
-
-export type OrdersByUserIdStatusType = "idle" | "loading";
-
-export type OrderReceiptStatusType = "idle" | "loading";
-
 // auth status
 export type AuthStatusType = 
   | "idle"
@@ -404,6 +377,9 @@ export type StatusType =
   | "creating"
   | "updating"
   | "deleting";
+
+// favorite status
+export type FavoriteStatusType = "idle" | "toggling";
 
 // others
 export type BookSearchKey = keyof BaseBook;

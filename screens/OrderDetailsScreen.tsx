@@ -11,6 +11,7 @@ import {
   selectOrder,
   selectOrderStatus,
   selectOrderResponse,
+  selectSetOrderById,
   selectLoadOrderById,
   selectResetOrder,
 } from "@/selectors/orderSelectors";
@@ -36,6 +37,7 @@ const OrderDetailsScreen = () => {
   const orderStatus = useOrderStore(selectOrderStatus);
   const orderResponse = useOrderStore(selectOrderResponse);
 
+  const setOrderById = useOrderStore(selectSetOrderById);
   const loadOrderById = useOrderStore(selectLoadOrderById);
   const resetOrder = useOrderStore(selectResetOrder);
 
@@ -49,7 +51,8 @@ const OrderDetailsScreen = () => {
 
   useEffect(() => {
     if (orderId && isConnected) {
-      loadOrderById(orderId);
+      setOrderById(orderId);
+      loadOrderById();
     }
     return () => resetOrder();
   }, [orderId, isConnected]);  

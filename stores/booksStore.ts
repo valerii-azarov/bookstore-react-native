@@ -51,13 +51,13 @@ export const useBooksStore = create<BooksStore>((set, get) => ({
         }))
       )
       .catch((error) =>
-        set({
-          books: reset ? [] : get().books,
-          booksLastDoc: reset ? null : get().booksLastDoc,
+        set((state) => ({
+          books: reset ? [] : state.books,
+          booksLastDoc: reset ? null : state.booksLastDoc,
           booksHasMore: false,
           booksResponse: { status: "error", message: error.message },
           booksStatus: "idle",
-        })
+        }))
       );
   },
 

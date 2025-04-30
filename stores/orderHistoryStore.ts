@@ -3,14 +3,14 @@ import { QueryDocumentSnapshot, DocumentData } from "@firebase/firestore";
 import { orderHistoryApi } from "@/api/orderHistoryApi";
 import { orderHandler } from "@/helpers/orderHandler";
 import { USER_ORDER_HISTORY_PAGE_SIZE } from "@/constants/settings";
-import { OrderHistoryByDate, OrdersStatusType, ResponseType } from "@/types";
+import { OrderHistoryByDate, StatusType, ResponseType } from "@/types";
 
 import { useAuthStore } from "./authStore";
 
 interface OrderHistoryStore {
   orderHistory: OrderHistoryByDate[];
   orderHistoryLastDoc: QueryDocumentSnapshot<DocumentData> | null;
-  orderHistoryStatus: OrdersStatusType;
+  orderHistoryStatus: StatusType;
   orderHistoryResponse: ResponseType | null;
   orderHistoryHasMore: boolean;
   loadOrderHistory: (reset?: boolean) => Promise<void>;
@@ -30,17 +30,22 @@ export const useOrderHistoryStore = create<OrderHistoryStore>((set, get) => ({
     const userId = useAuthStore.getState().user?.uid;
     if (!userId) return;
 
-    const { orderHistory, orderHistoryLastDoc } = get();
+    if (get().orderHistoryStatus === "fetching" || get().orderHistoryStatus === "loading") return;
 
     set({
-      orderHistoryStatus: reset || orderHistory.length === 0 ? "loading" : "fetching",
+      orderHistoryStatus: reset ? "loading" : "fetching",
       orderHistoryResponse: null,
+      ...(reset && { 
+        orderHistory: [],
+        orderHistoryLastDoc: null, 
+        orderHistoryHasMore: false
+      }),
     });
 
     orderHistoryApi
       .fetchOrderHistory(
         userId,
-        reset ? null : orderHistoryLastDoc,
+        reset ? null : get().orderHistoryLastDoc,
         USER_ORDER_HISTORY_PAGE_SIZE
       )
       .then(({ orders: newOrders, lastDoc: newLastDoc }) => 
@@ -56,7 +61,7 @@ export const useOrderHistoryStore = create<OrderHistoryStore>((set, get) => ({
         set((state) => ({
           orderHistory: reset ? [] : state.orderHistory,
           orderHistoryLastDoc: reset ? null : state.orderHistoryLastDoc,
-          orderHistoryHasMore: reset ? true : state.orderHistoryHasMore,
+          orderHistoryHasMore: false,
           orderHistoryResponse: { status: "error", message: error.message },
           orderHistoryStatus: "idle",
         }))
@@ -64,15 +69,12 @@ export const useOrderHistoryStore = create<OrderHistoryStore>((set, get) => ({
   },
 
   loadMoreOrderHistory: () => {
-    if (get().orderHistoryHasMore && get().orderHistoryStatus === "idle") {
+    if (get().orderHistoryHasMore && get().orderHistoryStatus !== "fetching") {
       get().loadOrderHistory();
     }
   },
 
   refreshOrderHistory: () => {
-    if (get().orderHistoryStatus === "refreshing") return;
-
-    set({ orderHistoryStatus: "refreshing" });
     get().loadOrderHistory(true);
   },
 
@@ -82,7 +84,7 @@ export const useOrderHistoryStore = create<OrderHistoryStore>((set, get) => ({
       orderHistoryLastDoc: null,
       orderHistoryStatus: "idle",
       orderHistoryResponse: null,
-      orderHistoryHasMore: true,
+      orderHistoryHasMore: false,
     });
   },
   

@@ -7,6 +7,7 @@ export const selectBookId = (state: BookStoreType) => state.bookId;
 export const selectBookStatus = (state: BookStoreType) => state.bookStatus;
 export const selectBookResponse = (state: BookStoreType) => state.bookResponse;
 
+export const selectSetBookById = (state: BookStoreType) => state.setBookById;
 export const selectLoadBookById = (state: BookStoreType) => state.loadBookById;
 export const selectCreateBook = (state: BookStoreType) => state.createBook;
 export const selectUpdateBook = (state: BookStoreType) => state.updateBook;

@@ -9,6 +9,7 @@ export const selectCategoryStatus = (state: CategoryBooksStoreType) => state.cat
 export const selectCategoryResponse = (state: CategoryBooksStoreType) => state.categoryResponse;
 export const selectCategoryHasMore = (state: CategoryBooksStoreType) => state.categoryHasMore;
 
+export const selectSetCategory = (state: CategoryBooksStoreType) => state.setCategory;
 export const selectLoadCategoryBooks = (state: CategoryBooksStoreType) => state.loadCategoryBooks;
 export const selectLoadMoreCategoryBooks = (state: CategoryBooksStoreType) => state.loadMoreCategoryBooks;
 export const selectRefreshCategoryBooks = (state: CategoryBooksStoreType) => state.refreshCategoryBooks;

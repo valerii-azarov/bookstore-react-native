@@ -9,6 +9,7 @@ import {
   selectReceipt,
   selectReceiptStatus,
   selectReceiptResponse,
+  selectSetReceiptById,
   selectLoadReceiptById,
   selectResetReceipt,
 } from "@/selectors/orderReceiptSelectors";
@@ -34,6 +35,7 @@ const OrderReceiptModal = () => {
   const receiptStatus = useOrderReceiptStore(selectReceiptStatus);
   const receiptResponse = useOrderReceiptStore(selectReceiptResponse);
 
+  const setReceiptById = useOrderReceiptStore(selectSetReceiptById);
   const loadReceiptById = useOrderReceiptStore(selectLoadReceiptById);
   const resetReceipt = useOrderReceiptStore(selectResetReceipt);
 
@@ -42,7 +44,8 @@ const OrderReceiptModal = () => {
 
   useEffect(() => {
     if (receiptId && isConnected) {
-      loadReceiptById(receiptId);
+      setReceiptById(receiptId);
+      loadReceiptById();
     }
     return () => resetReceipt();
   }, [receiptId, isConnected]);
@@ -74,7 +77,7 @@ const OrderReceiptModal = () => {
               message={t("modals.orderReceipt.messages.error.text")}
               subMessage={t("modals.orderReceipt.messages.error.subText")}
               buttonText={t("modals.orderReceipt.buttons.error.text")}
-              onRetry={() => loadReceiptById(receiptId)}
+              onRetry={() => loadReceiptById()}
             />
           </View>
         )}

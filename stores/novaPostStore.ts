@@ -1,14 +1,14 @@
 import { create } from "zustand";
 import { novaPostApi } from "@/api/novaPostApi";
 import { messageHandler } from "@/helpers/messageHandler";
-import { NovaPostCity, NovaPostWarehouse, NovaPostCityStatusType, NovaPostWarehouseStatusType, ResponseType } from "@/types";
+import { NovaPostCity, NovaPostWarehouse, StatusType, ResponseType } from "@/types";
 
 interface NovaPostStore {
   cities: NovaPostCity[];
   warehouses: NovaPostWarehouse[];
-  citiesStatus: NovaPostCityStatusType;
+  citiesStatus: StatusType;
   citiesResponse: ResponseType | null;
-  warehousesStatus: NovaPostWarehouseStatusType;
+  warehousesStatus: StatusType;
   warehousesResponse: ResponseType | null;
   searchCities: (search: string) => Promise<void>;
   searchWarehouses: (cityRef: string, search?: string) => Promise<void>;
@@ -27,12 +27,13 @@ export const useNovaPostStore = create<NovaPostStore>((set) => ({
   searchCities: async (search: string) => {
     set({ citiesStatus: "loading", citiesResponse: null });
 
-    novaPostApi.getCities(search)
+    novaPostApi
+      .getCities(search)
       .then((cities) => {
         set({
           cities,
-          citiesStatus: "idle",
           citiesResponse: { status: "success" },
+          citiesStatus: "idle",
         });
       })
       .catch((error) =>
@@ -43,20 +44,21 @@ export const useNovaPostStore = create<NovaPostStore>((set) => ({
               "nova-post/cities-not-found": "novaPost.citiesNotFound",
             }),
           },
+          citiesStatus: "idle",
         })
-      )
-      .finally(() => set({ citiesStatus: "idle" }));
+      );
   },
 
   searchWarehouses: async (cityRef: string, search?: string) => {
     set({ warehousesStatus: "loading", warehousesResponse: null });
 
-    novaPostApi.getWarehouses(cityRef, search)
+    novaPostApi
+      .getWarehouses(cityRef, search)
       .then((warehouses) => {
         set({
           warehouses,
-          warehousesStatus: "idle",
           warehousesResponse: { status: "success" },
+          warehousesStatus: "idle",
         });
       })
       .catch((error) =>
@@ -67,9 +69,9 @@ export const useNovaPostStore = create<NovaPostStore>((set) => ({
               "nova-post/warehouses-not-found": "novaPost.warehousesNotFound",
             }),
           },
+          warehousesStatus: "idle",
         })
-      )
-      .finally(() => set({ warehousesStatus: "idle" }));
+      );
   },
 
   resetCities: () => {

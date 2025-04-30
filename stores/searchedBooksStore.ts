@@ -77,13 +77,13 @@ export const useSearchedBooksStore = create<SearchedBooksStore>((set, get) => ({
         }));
       })
       .catch((error) =>
-        set({
-          searchedBooks: reset ? [] : get().searchedBooks,
-          searchedBooksLastDoc: reset ? null : get().searchedBooksLastDoc,
+        set((state) => ({
+          searchedBooks: reset ? [] : state.searchedBooks,
+          searchedBooksLastDoc: reset ? null : state.searchedBooksLastDoc,
           searchedBooksHasMore: false,
           searchedBooksResponse: { status: "error", message: error.message },
           searchedBooksStatus: "idle",
-        })
+        }))
       );
   },
 
