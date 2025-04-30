@@ -4,6 +4,7 @@ import { enUS, uk } from "date-fns/locale";
 import { View, ScrollView, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useRouter } from "expo-router";
+import { useIsConnected } from "@/contexts/networkContext";
 import { useLanguage, useTranslation } from "@/contexts/translateContext";
 import { useViewingHistoryStore } from "@/stores/viewingHistoryStore";
 import {
@@ -19,14 +20,16 @@ import ViewWrapper from "@/components/ViewWrapper";
 import Loading from "@/components/Loading";
 import ViewingHistoryItem from "@/components/ViewingHistoryItem";
 import Empty from "@/components/Empty";
+import ErrorNetwork from "@/components/ErrorNetwork";
 import ErrorWithRetry from "@/components/ErrorWithRetry";
 import Typography from "@/components/Typography";
 
 const ViewingHistoryScreen = () => {
   const router = useRouter();
 
-  const language = useLanguage();
   const t = useTranslation();
+  const language = useLanguage();
+  const isConnected = useIsConnected();
 
   const viewingHistory = useViewingHistoryStore(selectViewingHistory);
   const viewingHistoryStatus = useViewingHistoryStore(selectViewingHistoryStatus);
@@ -49,35 +52,39 @@ const ViewingHistoryScreen = () => {
   };
 
   useEffect(() => {
-    loadViewingHistory();
+    if (isConnected) {
+      loadViewingHistory();
+    }
     return () => resetViewingHistory();
-  }, []);
+  }, [isConnected]);
 
   return (
     <ViewWrapper 
       title= {t("screens.viewingHistory.header.text")} 
       onBackPress={() => router.back()}
     >      
-      {isLoading && <Loading size="small" color={colors.orange} />}
+      {!isConnected && <ErrorNetwork />}
       
-      {isError && !isLoading && (
+      {isConnected && isLoading && (
+        <Loading size="small" color={colors.orange} />
+      )}
+      
+      {isConnected && isError && !isLoading && (
         <ErrorWithRetry 
           message={t("screens.viewingHistory.messages.error.text")}
           subMessage={t("screens.viewingHistory.messages.error.subText")}
-          containerStyle={styles.padded}
           hideButton
         />
       )}
 
-      {isEmpty && !isError && !isLoading && (
+      {isConnected && isEmpty && !isError && !isLoading && (
         <Empty 
           message={t("screens.viewingHistory.messages.empty.text")} 
-          containerStyle={styles.padded}
           hideSubMessage
         />
       )}
 
-      {!isLoading && !isEmpty && !isError && (
+      {isConnected && !isLoading && !isEmpty && !isError && (
         <ScrollView contentContainerStyle={styles.scrollViewContainer}>
           {viewingHistory.map((history, index) => (
             <Animated.View 
@@ -96,7 +103,9 @@ const ViewingHistoryScreen = () => {
                   <ViewingHistoryItem
                     key={index}
                     item={book}
-                    onViewDetails={() => router.push(`/(user)/book/${book.id}`)}
+                    onViewDetails={() => 
+                      router.push(`/book/${book.id}`)
+                    }
                   />
                 ))}
               </View>
@@ -115,9 +124,6 @@ const styles = StyleSheet.create({
   },
   historyList: {
     gap: 10,
-  },
-  padded: {
-    padding: 15,
   },
 });
 

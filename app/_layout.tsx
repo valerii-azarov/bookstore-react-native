@@ -8,6 +8,7 @@ import { StatusBar } from "expo-status-bar";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
 
+import { NetworkProvider } from "@/contexts/networkContext";
 import { TranslateProvider } from "@/contexts/translateContext";
 
 import { useAuthStore } from "@/stores/authStore";
@@ -275,10 +276,12 @@ const RootLayout = () => {
   return (
     <GestureHandlerRootView>
       <SafeAreaProvider>
-        <TranslateProvider>
-          <InitialLayout />
-          <StatusBar style={Platform.OS === "ios" ? "dark" : "light"} />
-        </TranslateProvider>
+        <NetworkProvider>
+          <TranslateProvider>
+            <InitialLayout />
+            <StatusBar style={Platform.OS === "ios" ? "dark" : "light"} />
+          </TranslateProvider>
+        </NetworkProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView> 
   );

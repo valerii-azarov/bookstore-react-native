@@ -1,6 +1,7 @@
 import { View, Alert, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
 import { Link } from "expo-router";
 import Constants from "expo-constants";
+import { useIsConnected } from "@/contexts/networkContext";
 import {
   useLanguage,
   useSetLanguage,
@@ -26,6 +27,7 @@ import Typography from "@/components/Typography";
 
 const MenuScreen = () => {
   const t = useTranslation();
+  const isConnected = useIsConnected();
 
   const language = useLanguage();
   const setLanguage = useSetLanguage();
@@ -146,6 +148,14 @@ const MenuScreen = () => {
           iconColor: colors.red,
           textColor: colors.red,
           onPress: () => {
+            if (!isConnected) {
+              Alert.alert(
+                t("alerts.static.error.title"),
+                t("alerts.noNetwork.message"),
+                [{ text: "OK" }]
+              );
+              return;
+            }
             Alert.alert(
               t("alerts.confirmLogout.title"),
               t("alerts.confirmLogout.message"),
@@ -158,20 +168,19 @@ const MenuScreen = () => {
                   text: t("alerts.static.confirm"),
                   style: "destructive",
                   onPress: async () => {
-                    await logout()
-                      .then(() => {
-                        Alert.alert(
-                          t("alerts.static.success.title"),
-                          t("alerts.confirmLogout.success.message"),
-                          [{ text: "OK", onPress: () => setTimeout(() => clearAuthResponse(), 500) }]
-                        );
-                      })
-                      .catch((error) => {
-                        Alert.alert(
-                          t("alerts.static.error.title"),
-                          error.message || t("alerts.confirmLogout.error.message")
-                        );
-                      });
+                    try {
+                      await logout();
+                      Alert.alert(
+                        t("alerts.static.success.title"),
+                        t("alerts.confirmLogout.success.message"),
+                        [{ text: "OK", onPress: () => setTimeout(() => clearAuthResponse(), 500) }]
+                      );
+                    } catch (error) {
+                      Alert.alert(
+                        t("alerts.static.error.title"),
+                        (error as Error).message || t("alerts.confirmLogout.error.message")
+                      );
+                    }
                   },
                 },
               ],
@@ -181,7 +190,7 @@ const MenuScreen = () => {
           hideChevron: true,
         },
       ],
-    },
+    }
   ];
 
   return (
@@ -222,7 +231,8 @@ const MenuScreen = () => {
                       fontSize={16}
                       fontWeight="medium"
                       color={colors.black}
-                      style={styles.sectionTitle}>
+                      style={styles.sectionTitle}
+                    >
                       {section.title}
                     </Typography>
                   )}

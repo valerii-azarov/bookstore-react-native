@@ -1,5 +1,6 @@
 import { View, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
+import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
 import { useAuthStore } from "@/stores/authStore";
 import { selectUser } from "@/selectors/authSelectors";
@@ -12,6 +13,8 @@ const ProfileScreen = () => {
   const router = useRouter();   
   
   const t = useTranslation();
+  const isConnected = useIsConnected();
+
   const user = useAuthStore(selectUser);
 
   const fields = [
@@ -74,17 +77,20 @@ const ProfileScreen = () => {
 
                 {field.isEditable && (
                   <TouchableOpacity
-                    onPress={() =>
-                      router.push({
-                        pathname: "/(user)/(modals)/edit-profile/[field]",
-                        params: { field: field.key },
-                      })
-                    }
+                    onPress={() => {
+                      if (isConnected) {
+                        router.push({
+                          pathname: "/edit-profile/[field]",
+                          params: { field: field.key },
+                        });
+                      }
+                    }}
+                    disabled={!isConnected}
                   >
                     <Typography 
                       fontSize={16}
                       fontWeight="bold"
-                      color={colors.black}
+                      color={isConnected ? colors.black : colors.grayTint5}
                       numberOfLines={1}
                       style={{ 
                         flexShrink: 1,

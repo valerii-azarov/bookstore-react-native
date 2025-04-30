@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { View, ScrollView, StyleSheet } from "react-native";
 import { format } from "date-fns";
 import { useLocalSearchParams } from "expo-router";
+import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
 import { useOrderReceiptStore } from "@/stores/orderReceiptStore";
 import {
@@ -19,12 +20,15 @@ import BackButton from "@/components/BackButton";
 import Header from "@/components/Header";
 import Loading from "@/components/Loading";
 import DottedLine from "@/components/DottedLine";
+import ErrorNetwork from "@/components/ErrorNetwork";
 import ErrorWithRetry from "@/components/ErrorWithRetry";
 import Typography from "@/components/Typography";
 
 const OrderReceiptModal = () => {
-  const t = useTranslation();
   const { receiptId } = useLocalSearchParams<{ receiptId: string }>();
+
+  const t = useTranslation();
+  const isConnected = useIsConnected();
 
   const receipt = useOrderReceiptStore(selectReceipt);
   const receiptStatus = useOrderReceiptStore(selectReceiptStatus);
@@ -37,11 +41,11 @@ const OrderReceiptModal = () => {
   const isError = !isLoading && receiptResponse?.status === "error";
 
   useEffect(() => {
-    if (receiptId) {
+    if (receiptId && isConnected) {
       loadReceiptById(receiptId);
     }
     return () => resetReceipt();
-  }, [receiptId]);
+  }, [receiptId, isConnected]);
 
   return (
     <ModalWrapper>
@@ -58,9 +62,13 @@ const OrderReceiptModal = () => {
       />
 
       <View style={[styles.content, styles.padded]}>
-        {isLoading && <Loading size="small" color={colors.orange} />}
+        {!isConnected && <ErrorNetwork />}
+        
+        {isConnected && isLoading && (
+          <Loading size="small" color={colors.orange} />
+        )}
 
-        {isError && !isLoading && (
+        {isConnected && isError && !isLoading && (
           <View style={[styles.overlayContainer, styles.padded]}>
             <ErrorWithRetry
               message={t("modals.orderReceipt.messages.error.text")}
@@ -71,7 +79,7 @@ const OrderReceiptModal = () => {
           </View>
         )}
 
-        {!isLoading && !isError && receipt && (
+        {isConnected && !isLoading && !isError && receipt && (
           <ScrollView
             contentContainerStyle={styles.scrollViewContainer}
             showsVerticalScrollIndicator={false}

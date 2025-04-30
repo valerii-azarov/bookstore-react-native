@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { View } from "react-native";
 import { useRouter } from "expo-router";
+import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
 import { useCartStore } from "@/stores/cartStore";
 import { useNovaPostStore } from "@/stores/novaPostStore";
@@ -51,6 +52,7 @@ const CheckoutModal = () => {
   const router = useRouter();
 
   const t = useTranslation();
+  const isConnected = useIsConnected();
 
   const total = useCartStore(selectGetTotal)();
 
@@ -113,11 +115,15 @@ const CheckoutModal = () => {
     setSelectedWarehouse(null);
     setFormValues((prev) => ({ ...prev, city: selectedOption?.label || "" }));
 
-    selectedOption ? searchWarehouses(selectedOption.value) : resetWarehouses();
+    if (selectedOption && isConnected) {
+      searchWarehouses(selectedOption.value);
+    } else {
+      resetWarehouses();
+    }
   };
 
   const handleWarehouseSearch = (text: string) => {
-    if (selectedCity) {
+    if (selectedCity && isConnected) {
       searchWarehouses(selectedCity.value, text.trim());
     }
   };
@@ -149,6 +155,7 @@ const CheckoutModal = () => {
               loadingMessage={t("modals.checkout.messages.loadingCities")}
               emptyMessage={t("modals.checkout.messages.emptyCities")}
               errorMessage={t("modals.checkout.messages.errorCities")}
+              disabled={!isConnected}
             />
           </View>
           
@@ -169,7 +176,7 @@ const CheckoutModal = () => {
               loadingMessage={t("modals.checkout.messages.loadingWarehouses")}
               emptyMessage={t("modals.checkout.messages.emptyWarehouses")}
               errorMessage={t("modals.checkout.messages.errorWarehouses")}
-              disabled={!selectedCity}
+              disabled={!selectedCity || !isConnected}
             />
           </View>
 
@@ -427,7 +434,7 @@ const CheckoutModal = () => {
     if (isLastStep) {
       return isOrderError ? router.back() : router.dismissAll();
     }
-    if (isSecondToLastStep && !isOrderCreating) {
+    if (isSecondToLastStep && !isOrderCreating && isConnected) {
       createOrder(formValues);
       return;
     }
@@ -482,7 +489,10 @@ const CheckoutModal = () => {
             previous: t("modals.checkout.buttons.back.text"),
           }}
           buttonProps={{ 
-            next: { disabled: isOrderCreating, loading: isOrderCreating },
+            next: { 
+              disabled: isOrderCreating || !isConnected, 
+              loading: isOrderCreating 
+            },
             previous: { disabled: isFirstStep },
           }}
         />

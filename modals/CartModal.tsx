@@ -1,6 +1,7 @@
 import { View, FlatList, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useRouter } from "expo-router";
+import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
 import { useCartStore } from "@/stores/cartStore";
 import { 
@@ -21,9 +22,10 @@ import CartItem from "@/components/CartItem";
 import Typography from "@/components/Typography";
 
 const CartModal = () => { 
-  const t = useTranslation();
-
   const router = useRouter();
+
+  const t = useTranslation();
+  const isConnected = useIsConnected();
   
   const cartBooks = useCartStore(selectCartBooks);
   
@@ -68,7 +70,7 @@ const CartModal = () => {
                 >  
                   <CartItem
                     item={item}
-                    onViewDetails={() => router.push(`/(user)/book/${item.id}`)}
+                    onViewDetails={() => router.push(`/book/${item.id}`)}
                     onRemoveFromCart={removeFromCart}
                     onUpdateQuantity={updateQuantity}
                   />
@@ -164,8 +166,9 @@ const CartModal = () => {
             <View style={styles.buttonContainer}>
               <Button
                 onPress={() => {
-                  router.push("/(user)/(modals)/checkout");
+                  router.push("/checkout");
                 }}
+                disabled={!isConnected || isEmpty}
               >
                 <Typography fontSize={16} fontWeight="bold" color={colors.white}>
                   {t("modals.cart.buttons.checkout.text")}

@@ -447,6 +447,17 @@ const translations: Translations = {
         },
       },
     },
+
+    errorNetwork: {
+      title: {
+        en: "No Internet Connection",
+        uk: "Відсутнє підключення до мережі",
+      },
+      subtitle: {
+        en: "Check your network settings and try again",
+        uk: "Перевірте налаштування мережі та спробуйте ще раз",
+      },
+    },
   },  
   
   tabs: {
@@ -2119,6 +2130,12 @@ const translations: Translations = {
       message: {
         en: "Order ID copied to clipboard.",
         uk: "ID замовлення скопійовано.",
+      },
+    },
+    noNetwork: {
+      message: {
+        en: "No internet connection. Please check your network and try again.",
+        uk: "Немає підключення до Інтернету. Будь ласка, перевірте мережу та спробуйте ще раз.",
       },
     },
     static: {

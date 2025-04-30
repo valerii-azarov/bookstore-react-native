@@ -2,6 +2,7 @@ import { useRef, useCallback, useEffect } from "react";
 import { View, FlatList, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard, StyleSheet } from "react-native";
 import { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
 import { useRouter } from "expo-router";
+import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
 import { useAuthStore } from "@/stores/authStore";
 import { useSearchedBooksStore } from "@/stores/searchedBooksStore";
@@ -33,6 +34,7 @@ const SearchBooksScreen = () => {
   const router = useRouter();
 
   const t = useTranslation();
+  const isConnected = useIsConnected();
 
   const isAdmin = useAuthStore(selectIsAdmin);
 
@@ -58,10 +60,16 @@ const SearchBooksScreen = () => {
 
   const animatedInputStyle = useAnimatedStyle(() => ({
     backgroundColor: withTiming(
-      isFocused.value ? colors.white : colors.grayTint9, { duration: 150 }
+      !isConnected
+        ? colors.grayTint7
+        : isFocused.value
+          ? colors.white
+          : colors.grayTint9,
+      { duration: 150 }
     ),
     borderColor: withTiming(
-      isFocused.value ? colors.gray : colors.grayTint6, { duration: 150 }
+      isFocused.value ? colors.gray : colors.grayTint6,
+      { duration: 150 }
     ),
   }));
 
@@ -83,11 +91,13 @@ const SearchBooksScreen = () => {
   
   useEffect(() => {
     const timer = setTimeout(() => {
-      inputRef.current?.focus();
-      isFocused.value = true;
+      if (isConnected) {
+        inputRef.current?.focus();
+        isFocused.value = true;
+      }
     }, 1000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [isConnected]);
 
   useEffect(() => {
     return () => resetAll();
@@ -114,9 +124,10 @@ const SearchBooksScreen = () => {
             }
           }}
           onChangeText={(text) => {
-            setSearchQuery(text, isAdmin ? ["title", "sku"] : ["title"]);
+            isConnected && setSearchQuery(text, isAdmin ? ["title", "sku"] : ["title"]);
           }}
           returnKeyType="done"
+          editable={isConnected}
           iconLeft={
             <Icon
               iconSet="Ionicons"
@@ -155,27 +166,27 @@ const SearchBooksScreen = () => {
 
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>    
         <View style={styles.content}>
-          {isLoading && <Loading size="small" color={colors.orange} />}
+          {isConnected && isLoading && (
+            <Loading size="small" color={colors.orange} />
+          )}
 
-          {isError && !isLoading && (
+          {isConnected && isError && !isLoading && (
             <ErrorWithRetry
               message={t("screens.searchBooks.messages.error.text")}
               subMessage={t("screens.searchBooks.messages.error.subText")}
               buttonText={t("screens.searchBooks.buttons.error.text")}
-              containerStyle={styles.padded}
               onRetry={() => loadSearchedBooks(true)}
             />
           )}
 
-          {isEmpty && !isError && !isLoading && (
-            <Empty 
+          {isConnected && isEmpty && !isError && !isLoading && (
+            <Empty
               message={t("screens.searchBooks.messages.empty.text")}
-              containerStyle={styles.padded}
               hideSubMessage
             />
           )}
 
-          {!isLoading && !isEmpty && !isError && (
+          {isConnected && !isLoading && !isEmpty && !isError && (
             <FlatList
               data={searchedBooks}
               renderItem={renderItem}
@@ -185,9 +196,12 @@ const SearchBooksScreen = () => {
                 padding: 15,
                 gap: 10,
               }}
-              onEndReached={searchedBooksHasMore ? loadMoreSearchedBooks : undefined}
+              onEndReached={
+                searchedBooksHasMore ? loadMoreSearchedBooks : undefined
+              }
               onEndReachedThreshold={0.1}
               ListFooterComponent={renderFooter}
+              scrollEnabled={isConnected}
             />
           )}
         </View>
@@ -211,9 +225,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-  },
-  padded: {
-    padding: 15,
   },
 });
 

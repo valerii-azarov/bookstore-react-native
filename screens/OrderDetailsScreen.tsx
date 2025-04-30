@@ -4,6 +4,7 @@ import * as Clipboard from "expo-clipboard";
 import { View, Alert, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
 import { format } from "date-fns";
 import { orderHandler } from "@/helpers/orderHandler";
+import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
 import { useOrderStore } from "@/stores/orderStore";
 import {
@@ -20,6 +21,7 @@ import Loading from "@/components/Loading";
 import Image from "@/components/Image";
 import IconButton from "@/components/IconButton";
 import RedirectButton from "@/components/RedirectButton";
+import ErrorNetwork from "@/components/ErrorNetwork";
 import ErrorWithRetry from "@/components/ErrorWithRetry";
 import Typography from "@/components/Typography";
 
@@ -28,6 +30,7 @@ const OrderDetailsScreen = () => {
   const { orderId } = useLocalSearchParams<{ orderId: string }>();
 
   const t = useTranslation();
+  const isConnected = useIsConnected();
 
   const order = useOrderStore(selectOrder);
   const orderStatus = useOrderStore(selectOrderStatus);
@@ -36,23 +39,20 @@ const OrderDetailsScreen = () => {
   const loadOrderById = useOrderStore(selectLoadOrderById);
   const resetOrder = useOrderStore(selectResetOrder);
 
-  const isOrderLoading = orderStatus === "loading";
-  const isOrderError = !isOrderLoading && orderResponse?.status === "error";
+  const isLoading = orderStatus === "loading";
+  const isError = !isLoading && orderResponse?.status === "error";
 
   const copyOrderId = async (value: string) => {
     await Clipboard.setStringAsync(value);
-    Alert.alert(
-      t("alerts.orderCopied.title"),
-      t("alerts.orderCopied.message"),
-    );
+    Alert.alert(t("alerts.orderCopied.title"), t("alerts.orderCopied.message"));
   };
 
   useEffect(() => {
-    if (orderId) {
+    if (orderId && isConnected) {
       loadOrderById(orderId);
     }
     return () => resetOrder();
-  }, [orderId]);
+  }, [orderId, isConnected]);  
 
   return (
     <ViewWrapper
@@ -60,19 +60,25 @@ const OrderDetailsScreen = () => {
       onBackPress={() => router.back()}
       hideFooter
     >
-      {isOrderLoading && <Loading size="small" color={colors.orange} />}
+      {!isConnected && <ErrorNetwork />}
 
-      {isOrderError && !isOrderLoading && (
+      {isConnected && isLoading && (
+        <Loading size="small" color={colors.orange} />
+      )}
+
+      {isConnected && isError && !isLoading && (
         <ErrorWithRetry 
           message={t("screens.orderDetails.messages.error.text")}
           subMessage={t("screens.orderDetails.messages.error.subText")}
-          containerStyle={styles.padded}
           hideButton 
         />
       )}
 
-      {!isOrderLoading && !isOrderError && order && (
-        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+      {isConnected && !isLoading && !isError && order && (
+        <ScrollView 
+          contentContainerStyle={styles.scrollViewContainer}
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.contentContainer}>
             <View style={styles.sectionContainer}>
               <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
@@ -130,12 +136,12 @@ const OrderDetailsScreen = () => {
 
                   <RedirectButton
                     title={t("screens.orderDetails.buttons.viewStatus.text")}
-                    onPress={() => {
+                    onPress={() => 
                       router.push({
-                        pathname: "/(user)/(modals)/order-status/[state]",
+                        pathname: "/order-status/[state]",
                         params: { state: order.status },
                       })
-                    }}
+                    }
                   />
                 </View>
               </View>
@@ -512,14 +518,14 @@ const OrderDetailsScreen = () => {
               <View style={styles.sectionWrapper}>
                 <View style={styles.receiptRow}>
                   <TouchableOpacity
-                    onPress={() => {
+                    onPress={() => 
                       router.push({
-                        pathname: "/(user)/(modals)/order-receipt/[receiptId]",
-                        params: { 
-                          receiptId: order.receiptId || "defaultReceiptId", 
+                        pathname: "/order-receipt/[receiptId]",
+                        params: {
+                          receiptId: order.receiptId || "defaultReceiptId",
                         },
                       })
-                    }}
+                    }
                     activeOpacity={0.7}
                   >
                     <Typography
@@ -619,9 +625,6 @@ const styles = StyleSheet.create({
     height: 1.5,
     backgroundColor: colors.grayTint5,
     opacity: 0.3,
-  },
-  padded: {
-    padding: 15,
   },
 });
 

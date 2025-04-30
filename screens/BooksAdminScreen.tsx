@@ -153,7 +153,6 @@ const BooksAdminScreen = () => {
             message={t("screens.books.messages.error.text")}
             subMessage={t("screens.books.messages.error.subText")}
             buttonText={t("screens.books.buttons.error.text")}
-            containerStyle={styles.padded}
             onRetry={() => loadBooks(true)}
           />
         )}
@@ -162,7 +161,6 @@ const BooksAdminScreen = () => {
           <Empty 
             message={t("screens.books.messages.empty.text")}
             subMessage={t("screens.books.messages.empty.subText")}
-            containerStyle={styles.padded}
           />
         )}
         
@@ -227,9 +225,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.grayTint8,
     borderRadius: 12,
     padding: 4,
-  },
-  padded: {
-    padding: 15,
   },
 });
 

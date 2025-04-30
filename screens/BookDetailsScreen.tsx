@@ -3,6 +3,7 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { View, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withRepeat, withSequence } from "react-native-reanimated";
 import { format } from "date-fns";
+import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
 import { useAuthStore } from "@/stores/authStore";
 import { useBookStore } from "@/stores/bookStore";
@@ -25,6 +26,7 @@ import ViewWrapper from "@/components/ViewWrapper";
 import Icon from "@/components/Icon";
 import Image from "@/components/Image";
 import Loading from "@/components/Loading";
+import ErrorNetwork from "@/components/ErrorNetwork";
 import ErrorWithRetry from "@/components/ErrorWithRetry";
 import Typography from "@/components/Typography";
 
@@ -33,6 +35,7 @@ const BookDetailsScreen = () => {
   const { bookId } = useLocalSearchParams<{ bookId: string }>();  
 
   const t = useTranslation();
+  const isConnected = useIsConnected();
   
   const isAdmin = useAuthStore(selectIsAdmin);
 
@@ -90,11 +93,11 @@ const BookDetailsScreen = () => {
   };
 
   useEffect(() => {
-    if (bookId) {
+    if (bookId && isConnected) {
       loadBookById(bookId);
     }
     return () => resetBook();
-  }, [bookId]);
+  }, [bookId, isConnected]);
 
   return (
     <ViewWrapper
@@ -102,18 +105,21 @@ const BookDetailsScreen = () => {
       onBackPress={() => router.back()}
       hideFooter
     >
-      {isLoading && <Loading size="small" color={colors.orange} />}
+      {!isConnected && <ErrorNetwork />}
 
-      {isError && !isLoading && (
+      {isConnected && isLoading && (
+        <Loading size="small" color={colors.orange} />
+      )}
+
+      {isConnected && isError && !isLoading && (
         <ErrorWithRetry 
           message={t("screens.bookDetails.messages.error.text")}
           subMessage={t("screens.bookDetails.messages.error.subText")}
-          containerStyle={styles.padded}
           hideButton 
         />
       )}
 
-      {!isLoading && !isError && book !== null && (
+      {isConnected && !isLoading && !isError && book !== null && (
         <ScrollView 
           contentContainerStyle={styles.scrollViewContainer}
           showsVerticalScrollIndicator={false}

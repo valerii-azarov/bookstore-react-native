@@ -1,5 +1,6 @@
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
+import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
 import { colors } from "@/constants/theme";
 
@@ -11,6 +12,7 @@ const SearchScreen = () => {
   const router = useRouter();
 
   const t = useTranslation();
+  const isConnected = useIsConnected();
 
   return (
     <ScreenWrapper hideStatusBarBorder>
@@ -25,9 +27,17 @@ const SearchScreen = () => {
         </Typography>
 
         <TouchableOpacity
-          style={styles.searchInput}
-          onPress={() => router.push("/(user)/books-search")}
+          style={[
+            styles.searchInput,
+            !isConnected && { backgroundColor: colors.grayTint7 },
+          ]}
+          onPress={() => {
+            if (isConnected) {
+              router.push("/books-search");
+            }
+          }}
           activeOpacity={0.7}
+          disabled={!isConnected}
         >
           <Icon
             iconSet="Ionicons"

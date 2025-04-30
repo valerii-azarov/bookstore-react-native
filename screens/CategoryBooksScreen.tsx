@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from "react";
-import { FlatList, StyleSheet } from "react-native";
+import { FlatList } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
+import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
 import { useCategoryBooksStore } from "@/stores/categoryBooksStore";
 import { useCartStore } from "@/stores/cartStore";
@@ -23,6 +24,7 @@ import CategoryBookItem from "@/components/CategoryBookItem";
 import Loading from "@/components/Loading";
 import ListLoader from "@/components/ListLoader";
 import Empty from "@/components/Empty";
+import ErrorNetwork from "@/components/ErrorNetwork";
 import ErrorWithRetry from "@/components/ErrorWithRetry";
 
 const CategoryBooksScreen = () => {  
@@ -30,6 +32,7 @@ const CategoryBooksScreen = () => {
   const { category } = useLocalSearchParams<{ category: string }>();
    
   const t = useTranslation();
+  const isConnected = useIsConnected();
   
   const categoryBooks = useCategoryBooksStore(selectCategoryBooks);
   const categoryStatus = useCategoryBooksStore(selectCategoryStatus);
@@ -53,7 +56,7 @@ const CategoryBooksScreen = () => {
       <CategoryBookItem
         item={item}
         mode="list"
-        onView={() => router.push(`/(user)/book/${item.id}`)}
+        onView={() => router.push(`/book/${item.id}`)}
         onAddToFavorites={(bookId) => toggleFavorite(bookId)}
         onAddToCart={(item) => toggleCart(item)}
       />
@@ -68,37 +71,39 @@ const CategoryBooksScreen = () => {
   }, [isFetching]);
 
   useEffect(() => {
-    if (category) {
+    if (category && isConnected) {
       loadCategoryBooks(category);
     }
     return () => resetCategory();
-  }, [category]);
+  }, [category, isConnected]);
 
   return (
     <ViewWrapper 
       title= {t(`genres.${category}`)} 
       onBackPress={() => router.back()}
     >
-      {isLoading && <Loading size="small" color={colors.orange} />}
+      {!isConnected && <ErrorNetwork />}
+      
+      {isConnected && isLoading && (
+        <Loading size="small" color={colors.orange} />
+      )}
 
-      {isError && !isLoading && (
+      {isConnected && isError && !isLoading && (
         <ErrorWithRetry 
           message={t("screens.categoryBooks.messages.error.text")}
           subMessage={t("screens.categoryBooks.messages.error.subText")}
-          containerStyle={styles.padded}
           hideButton
         />
       )}
 
-      {isEmpty && !isError && !isLoading && (
+      {isConnected && isEmpty && !isError && !isLoading && (
         <Empty 
           message={t("screens.categoryBooks.messages.empty.text")}
           subMessage={t("screens.categoryBooks.messages.empty.subText")} 
-          containerStyle={styles.padded}
         />
       )}
 
-      {!isLoading && !isEmpty && !isError && (
+      {isConnected && !isLoading && !isEmpty && !isError && (
         <FlatList
           data={categoryBooks}
           renderItem={renderItem}
@@ -116,11 +121,5 @@ const CategoryBooksScreen = () => {
     </ViewWrapper>
   );
 };
-
-const styles = StyleSheet.create({
-  padded: {
-    padding: 15,
-  },
-});
 
 export default CategoryBooksScreen;

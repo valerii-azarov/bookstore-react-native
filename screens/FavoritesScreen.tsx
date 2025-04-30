@@ -1,7 +1,8 @@
 import { useEffect } from "react";
-import { FlatList, StyleSheet } from "react-native";
+import { FlatList } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useRouter } from "expo-router";
+import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
 import { useFavoritesStore } from "@/stores/favoritesStore";
 import { 
@@ -18,12 +19,14 @@ import ViewWrapper from "@/components/ViewWrapper";
 import Loading from "@/components/Loading";
 import FavoriteItem from "@/components/FavoriteItem";
 import Empty from "@/components/Empty";
+import ErrorNetwork from "@/components/ErrorNetwork";
 import ErrorWithRetry from "@/components/ErrorWithRetry";
 
 const FavoritesScreen = () => {
   const router = useRouter();
 
   const t = useTranslation();
+  const isConnected = useIsConnected();
 
   const favoriteBooks = useFavoritesStore(selectFavoriteBooks);
   const favoriteStatus = useFavoritesStore(selectFavoriteStatus);
@@ -38,35 +41,39 @@ const FavoritesScreen = () => {
   const isError = !isLoading && favoriteResponse?.status === "error";
 
   useEffect(() => {
-    loadFavoriteBooks();
+    if (isConnected) {
+      loadFavoriteBooks();
+    }
     return () => resetFavorites();
-  }, []);
+  }, [isConnected]);
 
   return (
     <ViewWrapper 
       title= {t("screens.favorites.header.text")} 
       onBackPress={() => router.back()}
     >
-      {isLoading && <Loading size="small" color={colors.orange} />}
+      {!isConnected && <ErrorNetwork />}
 
-      {isError && !isLoading && (   
+      {isConnected && isLoading && (
+        <Loading size="small" color={colors.orange} />
+      )}
+
+      {isConnected && isError && !isLoading && (   
         <ErrorWithRetry 
           message={t("screens.favorites.messages.error.text")}
           subMessage={t("screens.favorites.messages.error.subText")}
-          containerStyle={styles.padded}
           hideButton
         />
       )}
 
-      {isEmpty && !isError && !isLoading && (
+      {isConnected && isEmpty && !isError && !isLoading && (
         <Empty 
           message={t("screens.favorites.messages.empty.text")} 
-          containerStyle={styles.padded}
           hideSubMessage
         />
       )}
 
-      {!isLoading && !isEmpty && !isError && (
+      {isConnected && !isLoading && !isEmpty && !isError && (
         <FlatList
           data={favoriteBooks}
           renderItem={({ item, index }) => (  
@@ -75,7 +82,11 @@ const FavoritesScreen = () => {
             >
               <FavoriteItem
                 item={item}
-                onViewDetails={() => router.push(`/(user)/book/${item.id}`)}
+                onViewDetails={() => {
+                  if (isConnected) {
+                    router.push(`/book/${item.id}`);
+                  }
+                }}
                 onToggleFavorite={() => toggleFavorite(item.id)}
               />
             </Animated.View>
@@ -91,11 +102,5 @@ const FavoritesScreen = () => {
     </ViewWrapper>
   );
 };
-
-const styles = StyleSheet.create({
-  padded: {
-    padding: 15,
-  },
-});
 
 export default FavoritesScreen;

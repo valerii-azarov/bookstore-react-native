@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { View, Alert, StyleSheet } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
+import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
 import { useAuthStore } from "@/stores/authStore";
 import { useProfileStore } from "@/stores/profileStore";
@@ -23,10 +24,11 @@ import Input from "@/components/Input";
 import Typography from "@/components/Typography";
 
 const EditProfileModal = () => {
-  const t = useTranslation();
+  const router = useRouter();
   const { field } = useLocalSearchParams<{ field: ProfileField }>();
 
-  const router = useRouter();
+  const t = useTranslation();
+  const isConnected = useIsConnected();
 
   const user = useAuthStore(selectUser);
   
@@ -45,7 +47,7 @@ const EditProfileModal = () => {
   const message = profileResponse?.message;
 
   const handleUpdate = () => {
-    if (field && newValue !== initialValue) {
+    if (field && newValue !== initialValue && isConnected) {
       updateProfile(field, newValue);
     }
   };
@@ -104,7 +106,7 @@ const EditProfileModal = () => {
           <Button 
             onPress={handleUpdate}
             loading={isUpdating} 
-            disabled={isUpdating || newValue === initialValue}
+            disabled={isUpdating || newValue === initialValue || !isConnected}
           >
             <Typography fontSize={16} fontWeight="bold" color={colors.white}>
               {t("modals.editProfile.buttons.save.text")}
