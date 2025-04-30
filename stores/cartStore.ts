@@ -113,7 +113,7 @@ export const useCartStore = create<CartStore>()(
 
         getDiscountAmount: () => {
           const discountAmount = get().cartBooks.reduce(
-            (total, book) => total + (book.originalPrice - cartHandler.getDiscountedPrice(book)) * book.cartQuantity, 0
+            (total, book) => total + (book.originalPrice - book.price) * book.cartQuantity, 0
           );
           return cartHandler.roundToTwo(discountAmount);
         },
