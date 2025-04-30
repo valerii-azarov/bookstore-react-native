@@ -2438,13 +2438,9 @@ const translations: Translations = {
 
   orderStatuses: {
     titles: {
-      pending: {
-        en: "Pending",
-        uk: "Очікується",
-      },
       processing: {
-        en: "In process",
-        uk: "Обробляється",
+        en: "Processing",
+        uk: "Обробка",
       },
       shipped: {
         en: "Shipped",
@@ -2460,13 +2456,9 @@ const translations: Translations = {
       },
     },
     subtitles: {
-      pending: {
-        en: "We’ve received your order",
-        uk: "Ми отримали ваше замовлення",
-      },
       processing: {
-        en: "Your order is being processed",
-        uk: "Ваше замовлення обробляється",
+        en: "Your order is being prepared for shipment",
+        uk: "Ваше замовлення готується до відправки",
       },
       shipped: {
         en: "Your order has been shipped",

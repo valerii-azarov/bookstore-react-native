@@ -239,7 +239,7 @@ export interface TimelineStep<T> extends TimelineType {
 }
 
 // order
-export type OrderStateType = "pending" | "processing" | "shipped" | "delivered" | "received";
+export type OrderStateType = "processing" | "shipped" | "delivered" | "received";
 
 export interface OrderStatusStyle {
   label: string;

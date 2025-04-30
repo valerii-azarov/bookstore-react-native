@@ -61,7 +61,7 @@ export const useOrderStore = create<OrderStore>((set) => ({
         originalPrice,
         coverImage,
       })),
-      status: "pending",
+      status: "processing",
       paymentMethod: formValues.paymentMethod,
       isPaid: formValues.paymentMethod === "card",
       customer: {

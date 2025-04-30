@@ -22,21 +22,17 @@ export const orderHandler = {
 
   getOrderStatusStyle: (status: OrderStateType, t: (key: string) => string): OrderStatusStyle => {
     const statusMap: Record<OrderStateType, OrderStatusStyle> = {
-      pending: {
-        label: t("orderStatuses.titles.pending"),
-        backgroundColor: "#FFB300",
-      },
       processing: {
         label: t("orderStatuses.titles.processing"),
-        backgroundColor: "#FF5722",
+        backgroundColor: "#FFB300",
       },
       shipped: {
         label: t("orderStatuses.titles.shipped"),
-        backgroundColor: "#0288D1",
+        backgroundColor: "#FF5722",
       },
       delivered: {
         label: t("orderStatuses.titles.delivered"),
-        backgroundColor: "#81C784",
+        backgroundColor: "#0288D1",
       },
       received: {
         label: t("orderStatuses.titles.received"),
@@ -49,12 +45,6 @@ export const orderHandler = {
 
   getOrderTimelineSteps: <T extends OrderStateType>(currentState: T, t: (key: string) => string): TimelineStep<T>[] => {
     const statusMap: Record<OrderStateType, TimelineType> = {
-      pending: {
-        title: t("orderStatuses.titles.pending"),
-        subtitle: t("orderStatuses.subtitles.pending"),
-        iconSet: "Ionicons",
-        iconName: "time-outline",
-      },
       processing: {
         title: t("orderStatuses.titles.processing"),
         subtitle: t("orderStatuses.subtitles.processing"),

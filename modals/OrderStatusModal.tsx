@@ -13,7 +13,7 @@ const OrderStatusModal = () => {
   const t = useTranslation();
   const { state } = useLocalSearchParams<{ state: OrderStateType }>();
 
-  const orderSteps = orderHandler.getOrderTimelineSteps(state || "pending", t);
+  const orderSteps = orderHandler.getOrderTimelineSteps(state || "processing", t);
 
   return (
     <ModalWrapper>
