@@ -1,191 +1,211 @@
-import { useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { View, FlatList, TouchableOpacity, StyleSheet, Platform } from "react-native";
 import { Link } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { View, FlatList, Image, TouchableOpacity, StyleSheet, Platform } from "react-native";
-import Animated, { FadeInDown } from "react-native-reanimated";
-import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons as Icon } from "@expo/vector-icons";
+import { useIsConnected } from "@/contexts/networkContext";
+import {
+  useLanguage,
+  useSetLanguage,
+  useTranslation,
+} from "@/contexts/translateContext";
+import { useImagesStore } from "@/stores/imagesStore";
+import { 
+  selectCoverImages,
+  selectCoverImagesStatus,
+  selectCoverImagesResponse,
+  selectLoadCoverImages, 
+} from "@/selectors/imagesSelectors";
+import { verticalScale } from "@/helpers/common";
 import { colors } from "@/constants/theme";
-import { useLanguage, useTranslation } from "@/contexts/translateContext";
-import { horizontalScale, verticalScale, widthPercentage, heightPercentage } from "@/helpers/common";
-import { ImageBook } from "@/types";
 
 import ScreenWrapper from "@/components/ScreenWrapper";
+import Icon from "@/components/Icon";
+import Image from "@/components/Image";
 import Typography from "@/components/Typography";
 
-const images: ImageBook[] = [
-  { id: "1", source: require("@/assets/images/books/book-001.jpeg") },
-  { id: "2", source: require("@/assets/images/books/book-002.jpeg") },
-  { id: "3", source: require("@/assets/images/books/book-003.jpeg") },
-  { id: "4", source: require("@/assets/images/books/book-004.jpeg") },
-  { id: "5", source: require("@/assets/images/books/book-005.jpeg") },
-  { id: "6", source: require("@/assets/images/books/book-006.jpeg") },
-  { id: "7", source: require("@/assets/images/books/book-007.jpeg") },
-  { id: "8", source: require("@/assets/images/books/book-008.jpeg") },
-  { id: "9", source: require("@/assets/images/books/book-009.jpeg") },
-  { id: "10", source: require("@/assets/images/books/book-010.jpeg") },
-  { id: "11", source: require("@/assets/images/books/book-011.jpeg") },
-  { id: "12", source: require("@/assets/images/books/book-012.jpeg") },
-];
-
 const WelcomeScreen = () => {
-  const insets = useSafeAreaInsets();
+  const t = useTranslation();
+  const isConnected = useIsConnected();
 
   const language = useLanguage();
-  const t = useTranslation();
+  const setLanguage = useSetLanguage();
+
+  const coverImages = useImagesStore(selectCoverImages);
+  const coverImagesStatus = useImagesStore(selectCoverImagesStatus);
+  const coverImagesResponse = useImagesStore(selectCoverImagesResponse);
+
+  const loadCoverImages = useImagesStore(selectLoadCoverImages);
+
+  const isLoading = coverImagesStatus === "loading";
+  const isError = !isLoading && coverImagesResponse?.status === "error";
+
+  const [contentSize, setContentSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+
+  const maxImages = Math.min(coverImages.length, 9);
+
+  const numColumns = maxImages > 0 ? Math.ceil(Math.sqrt(maxImages)) : 1;
+  const numRows = maxImages > 0 ? Math.ceil(maxImages / numColumns) : 1;
+
+  const margin = 5;
+  
+  const adjustedWidth = contentSize.width - 2 * margin * (numColumns + 1);
+  const adjustedHeight = contentSize.height - 2 * margin * (numRows + 1);
+  
+  const imageWidth = numColumns > 0 ? adjustedWidth / numColumns : adjustedWidth;
+  const imageHeight = numRows > 0 ? adjustedHeight / numRows : adjustedHeight;
 
   const shuffledImages = useMemo(() => {
-    return [...images].sort(() => Math.random() - 0.5);
-  }, [images]);
-
+    return [...coverImages].sort(() => Math.random() - 0.5).slice(0, maxImages);
+  }, [coverImages]);
+  
+  useEffect(() => {
+    if (isConnected) {
+      loadCoverImages();
+    }
+  }, [isConnected]);
+  
   return (
-    <ScreenWrapper statusBarStyle="light" disableTopInset>
-      <FlatList
-        data={shuffledImages}
-        keyExtractor={(item) => item.id}
-        numColumns={3}
-        renderItem={({ item }) => (
-          <Image 
-            style={styles.image} 
-            source={item.source} 
-            resizeMode="cover" 
+    <ScreenWrapper 
+      containerStyle={{ backgroundColor: colors.white }}
+      hideStatusBarBorder
+    >
+      <View style={styles.langContainer}>
+        <TouchableOpacity 
+          onPress={() => {
+            setLanguage(language === "uk" ? "en" : "uk");
+          }}
+          style={styles.langButton}
+          activeOpacity={0.7}
+        >
+          <Typography fontSize={14} fontWeight="bold" color={colors.black} style={{ marginRight: 5 }}>
+            {language === "uk" ? "UA" : "ENG"}
+          </Typography>
+
+          <Icon 
+            iconSet="MaterialIcons"
+            iconName="language"
+            iconSize={18} 
+            iconColor={colors.black} 
+          />
+        </TouchableOpacity>
+      </View>
+      
+      <View 
+        style={styles.content} 
+        onLayout={(event) => {
+          const { width, height } = event.nativeEvent.layout;
+          setContentSize({ width, height });
+        }}
+      >
+        {coverImages.length > 0 && !isError && (
+          <FlatList
+            data={shuffledImages}
+            keyExtractor={(item, index) => `${item}-${index}`}
+            numColumns={numColumns}
+            renderItem={({ item }) => (
+              <Image 
+                style={{
+                  width: imageWidth,
+                  height: imageHeight,
+                  margin: 5,
+                }} 
+                source={{ uri: item }}
+                resizeMode="cover" 
+              />
+            )}
+            contentContainerStyle={styles.imageContainer}
+            scrollEnabled={false}
+            initialNumToRender={maxImages}
+            windowSize={5}
           />
         )}
-        contentContainerStyle={styles.imageContainer}
-        scrollEnabled={false}
-      />
+      </View>
 
-      {insets.top > 0 && (
-        <LinearGradient
-          colors={[
-            "rgba(0, 0, 0, 0)",
-            "rgba(0, 0, 0, 0.8)",
-            "black",
-          ]}
-          start={{ x: 0, y: 1 }}
-          end={{ x: 0, y: 0 }}
-          style={[styles.topGradient, { height: insets.top }]}
-        />
-      )}
+      <View style={styles.footer}>
+        <View style={{ flexDirection: "row" }}>
+          <Typography fontSize={32} fontWeight="bold" color={colors.orange}>
+            {t("screens.welcome.titleFirst")}
+          </Typography>
 
-      <View
-        style={[
-          styles.languageContainer,
-          { 
-            top: insets.top, 
-            right: 15,
-          },
-        ]}
-      >
-        <Link href="/languages" asChild>
-          <TouchableOpacity activeOpacity={0.8} style={styles.languageButton}>
-            <Typography fontSize={14} fontWeight="bold">
-              {language === "uk" ? "UA" : "ENG"}
+          <Typography fontSize={32} fontWeight="bold" color={colors.black}>
+            {t("screens.welcome.titleRemaining")}
+          </Typography>
+        </View>
+
+        <Typography fontSize={14} fontWeight="regular" color={colors.gray} style={styles.subtitle}>
+          {t("screens.welcome.subtitle")}
+        </Typography>
+        
+        <Link href="/sign-in" asChild>
+          <TouchableOpacity 
+            style={{
+              ...styles.startButton,
+              ...(isConnected ? styles.startButtonEnabled : styles.startButtonDisabled),
+            }}
+            activeOpacity={0.7}
+            disabled={!isConnected}
+          >
+            <Typography fontSize={16} fontWeight="bold" color={colors.white}>
+              {t("screens.welcome.button")}
             </Typography>
-            <Icon name="chevron-down-outline" size={14} color={colors.black} marginLeft={5} />
           </TouchableOpacity>
         </Link>
       </View>
-
-      <Animated.View entering={FadeInDown.duration(800)}>
-        <LinearGradient
-          colors={[
-            "rgba(255, 255, 255, 0)",
-            "rgba(255, 255, 255, 0.5)",
-            "white",
-            "white",
-          ]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 0.8 }}
-          style={styles.bottomGradient}
-        />
-
-        <View style={styles.footerContainer}>
-          <Animated.View entering={FadeInDown.delay(400).springify()} style={styles.title}>
-            <Typography fontSize={32} fontWeight="bold" color={colors.orange}>
-              {t("screens.welcome.titleFirst")}
-            </Typography>
-
-            <Typography fontSize={32} fontWeight="bold">
-              {t("screens.welcome.titleRemaining")}
-            </Typography>
-          </Animated.View>
-
-          <Animated.View entering={FadeInDown.delay(600).springify()}>
-            <Typography fontSize={14} fontWeight="regular" color={colors.gray} style={styles.subtitle}>
-              {t("screens.welcome.subtitle")}
-            </Typography>
-          </Animated.View>  
-
-          <Animated.View entering={FadeInDown.delay(800).springify()}>
-            <Link href="/sign-in" asChild>
-              <TouchableOpacity activeOpacity={0.8} style={styles.button}>
-                <Typography fontSize={16} fontWeight="bold" color={colors.white}>
-                  {t("screens.welcome.button")}
-                </Typography>
-              </TouchableOpacity>
-            </Link>
-          </Animated.View>
-        </View>
-      </Animated.View>
     </ScreenWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  imageContainer: {
-    width: widthPercentage(100),
-    height: heightPercentage(100),
-    alignItems: "center",
-  },
-  image: {
-    width: widthPercentage(30),
-    height: widthPercentage(45),
-    margin: 5,
-  },
-  topGradient: {
-    top: 0,
-    width: "100%",
+  langContainer: {
     position: "absolute",
+    top: 5,
+    right: 10,
   },
-  bottomGradient: {
-    bottom: 0,
-    width: "100%",
-    height: heightPercentage(60),
-    position: "absolute",
-  },
-  languageContainer: {
-    position: "absolute",
-  },
-  languageButton: {
+  langButton: {
     backgroundColor: colors.grayTint7,
     borderRadius: 15,
     borderCurve: "continuous",
     padding: 10,
     flexDirection: "row",
     alignItems: "center",
+    zIndex: 1,
   },
-  footerContainer: {
+  content: {
+    flex: 1,
+  },
+  imageContainer: {
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+  },
+  footer: {
+    paddingBottom: Platform.OS === "ios" ? verticalScale(45) : verticalScale(25),
     flexDirection: "column",
     alignItems: "center",
-    paddingBottom: Platform.OS === "ios" ? verticalScale(65) : verticalScale(45),
   },
   title: {
     flexDirection: "row",
     alignItems: "center",
   },
   subtitle: {
-    marginBottom: verticalScale(15),
+    marginBottom: 15,
     textAlign: "center",
   },
-  button: {
-    backgroundColor: colors.orange,
+  startButton: {
     height: verticalScale(50),
-    paddingHorizontal: horizontalScale(30),
+    paddingHorizontal: 30,
     borderRadius: 30,
+    borderCurve: "continuous",
     alignItems: "center",
     justifyContent: "center",
   },
+  startButtonEnabled: {
+    backgroundColor: colors.orange,
+    opacity: 1,
+  },
+  startButtonDisabled: {
+    backgroundColor: colors.grayTint5,
+    opacity: 0.6,
+  },  
 });
 
 export default WelcomeScreen;

@@ -1,4 +1,6 @@
 import axios from "axios";
+import { getDocs, collection } from "@firebase/firestore";
+import { db } from "./firebase";
 import { crypto } from "@/helpers/crypto";
 import { cloudinaryConfig } from "@/config/cloudinary";
 
@@ -6,6 +8,11 @@ const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${cloudinaryConfi
 const CLOUDINARY_DESTROY_URL = `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/destroy`;
 
 export const imagesApi = {
+  getCoverImages: async (): Promise<string[]> => {
+    const snapshot = await getDocs(collection(db, "books"));
+    return snapshot.docs.map(doc => doc.data().coverImage).filter((url): url is string => typeof url === "string");
+  },  
+  
   uploadFileToCloudinary: async (file: { uri?: string }, folderName: string): Promise<string> => {
     if (!file?.uri) {
       throw new Error("ImageError: Invalid image object (image/invalid-image-object).");
