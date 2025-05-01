@@ -10,6 +10,7 @@ interface CartStore {
   removeFromCart: (bookId: string) => void;
   updateQuantity: (bookId: string, quantity: number) => void;
   toggleCart: (book: Book, quantity?: number) => void;
+  buyNow: (book: Book, quantity?: number) => void;
   clearCart: () => void;
   getCartCount: () => number;
   getSubtotal: () => number;
@@ -92,6 +93,19 @@ export const useCartStore = create<CartStore>()(
 
             return {
               cartBooks: [...state.cartBooks, { ...book, inCart: true, cartQuantity: newQuantity }],
+            };
+          });
+        },
+
+        buyNow: (book: Book, quantity = 1) => {
+          set(() => {
+            const newQuantity = Math.min(quantity, book.availableQuantity);
+            if (newQuantity <= 0) {
+              return { cartBooks: [] };
+            }
+            
+            return {
+              cartBooks: [{ ...book, inCart: true, cartQuantity: newQuantity }],
             };
           });
         },

@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { View, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, withRepeat, withSequence } from "react-native-reanimated";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  withSequence,
+} from "react-native-reanimated";
 import { format } from "date-fns";
 import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
@@ -9,16 +15,16 @@ import { useAuthStore } from "@/stores/authStore";
 import { useBookStore } from "@/stores/bookStore";
 import { useCartStore } from "@/stores/cartStore";
 import { useFavoritesStore } from "@/stores/favoritesStore";
-import { 
-  selectBook, 
-  selectBookStatus, 
-  selectBookResponse, 
+import {
+  selectBook,
+  selectBookStatus,
+  selectBookResponse,
   selectSetBookById,
   selectLoadBookById,
   selectResetBook,
 } from "@/selectors/bookSelectors";
 import { selectIsAdmin } from "@/selectors/authSelectors";
-import { selectToggleCart } from "@/selectors/cartSelectors";
+import { selectToggleCart, selectBuyNow } from "@/selectors/cartSelectors";
 import { selectToggleFavorite } from "@/selectors/favoritesSelectors";
 import { colors } from "@/constants/theme";
 import { colorConverter } from "@/helpers/colorConverter";
@@ -49,6 +55,7 @@ const BookDetailsScreen = () => {
   const resetBook = useBookStore(selectResetBook); 
 
   const toggleCart = useCartStore(selectToggleCart);
+  const buyNow = useCartStore(selectBuyNow);
 
   const toggleFavorite = useFavoritesStore(selectToggleFavorite);
 
@@ -57,8 +64,13 @@ const BookDetailsScreen = () => {
   const isLoading = bookStatus === "loading";
   const isError = !isLoading && bookResponse?.status === "error";
 
+  const buyScale = useSharedValue(1);
   const cartScale = useSharedValue(1);
   const favoriteScale = useSharedValue(1);
+
+  const buyAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: buyScale.value }],
+  }));
   
   const cartAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: cartScale.value }],
@@ -67,6 +79,14 @@ const BookDetailsScreen = () => {
   const favoriteAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: favoriteScale.value }],
   }));
+
+  const startBuyAnimation = () => {
+    buyScale.value = withSequence(
+      withTiming(1.08, { duration: 150 }),
+      withTiming(0.95, { duration: 150 }),
+      withTiming(1, { duration: 200 })
+    );
+  };  
 
   const startCartAnimation = (inCart: boolean) => {
     cartScale.value = inCart
@@ -254,7 +274,13 @@ const BookDetailsScreen = () => {
                     <View style={styles.actionsRow}>
                       {book.availableQuantity > 0 && (
                         <TouchableOpacity
-                          onPress={() => {}}
+                          onPress={() => {
+                            startBuyAnimation();
+                            setTimeout(() => {
+                              buyNow(book, 1);
+                              router.push("/cart");
+                            }, 500);
+                          }}                     
                           style={[
                             styles.actionButton, 
                             {
@@ -263,9 +289,11 @@ const BookDetailsScreen = () => {
                             }
                           ]}
                         >
-                          <Typography fontSize={16} fontWeight="bold" color={colors.black}>
-                            {t("screens.bookDetails.buttons.buy.text")}
-                          </Typography>
+                          <Animated.View style={buyAnimatedStyle}>
+                            <Typography fontSize={16} fontWeight="bold" color={colors.black}>
+                              {t("screens.bookDetails.buttons.buy.text")}
+                            </Typography>
+                          </Animated.View>
                         </TouchableOpacity>
                       )}
 

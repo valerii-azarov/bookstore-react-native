@@ -8,6 +8,7 @@ export const selectAddToCart = (state: CartStoreType) => state.addToCart;
 export const selectRemoveFromCart = (state: CartStoreType) => state.removeFromCart;
 export const selectUpdateQuantity = (state: CartStoreType) => state.updateQuantity;
 export const selectToggleCart = (state: CartStoreType) => state.toggleCart;
+export const selectBuyNow = (state: CartStoreType) => state.buyNow;
 export const selectClearCart = (state: CartStoreType) => state.clearCart;
 
 export const selectGetCartCount = (state: CartStoreType) => state.getCartCount;
