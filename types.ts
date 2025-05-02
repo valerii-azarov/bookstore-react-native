@@ -69,7 +69,7 @@ export interface User extends BaseUser {
 };
 
 // auth fields
-export interface SignUpFields {
+export interface AuthFields {
   firstName: string;
   lastName: string;
   email: string;
@@ -77,20 +77,29 @@ export interface SignUpFields {
   confirmPassword: string;
 }
 
-export interface SignUpVisibility {
+// sign up
+export type SignUpField = keyof AuthFields;
+
+export type SignUpFormValues = AuthFields;
+
+export type SignUpCreation = Omit<AuthFields, "confirmPassword">;
+
+// sign in
+export type SignInField = keyof Omit<AuthFields, "firstName" | "lastName" | "confirmPassword">;
+
+export type SignInFormValues = Pick<AuthFields, "email" | "password">;
+
+// password visibility and validation
+export interface PasswordVisibility {
   password: boolean;
   confirmPassword: boolean;
 }
 
-export interface SignUpValidations {
+export interface PasswordValidations {
   length: boolean;
   uppercase: boolean;
   confirmMatch: boolean;
 }
-
-export type SignInField = keyof Omit<SignUpFields, "firstName" | "lastName" | "confirmPassword">;
-
-export type SignInFields = Pick<SignUpFields, "email" | "password">;
 
 // profile fields
 export type ProfileField = keyof Omit<BaseUser, "uid" | "email" | "role">;

@@ -574,67 +574,6 @@ const translations: Translations = {
       },
     },
 
-    signUp: {
-      header: {
-        en: "Sign Up",
-        uk: "Реєстрація",
-      },
-      buttonContinue: {
-        en: "Continue",
-        uk: "Продовжити",
-      },
-      buttonFinish: {
-        en: "Finish",
-        uk: "Перейти",
-      },
-      buttonBack: {
-        en: "Go back",
-        uk: "Вийти",
-      },
-      step1: {
-        title: {
-          en: "Please fill in all required fields",
-          uk: "Будь ласка, заповніть всі обов'язкові поля",
-        },
-      },
-      step2: {
-        title: {
-          en: "Auto filling",
-          uk: "Автоматичне заповнення",
-        },
-        notificationTitle: {
-          en: "This feature is still under development",
-          uk: "Ця функція знаходиться в розробці",
-        },
-        notificationSubtitle: {
-          en: "Auto filling of data for receiving a package Nova Post",
-          uk: "Автоматичне заповнення даних для отримання посилки Нова Пошта",
-        },
-      },
-      step3: {
-        successTitle: {
-          en: "Welcome!",
-          uk: "Вітаємо!",
-        },
-        successSubtitle: {
-          en: "Your account has been created! Proceed to the main page below.",
-          uk: "Ваш обліковий запис створений! Перейдіть на головну сторінку нижче.",
-        },
-        errorTitle: {
-          en: "Error",
-          uk: "Помилка",
-        },
-        errorSubtitle: {
-          en: "Please try again later",
-          uk: "Будь ласка, спробуйте ще раз пізніше",
-        },
-        errorReason: {
-          en: "Reason",
-          uk: "Причина",
-        },
-      },
-    },
-
     menu: {
       header: {
         welcome: {
@@ -1230,6 +1169,129 @@ const translations: Translations = {
   },
 
   modals: {
+    signUp: {
+      header: {
+        text: {
+          en: "Sign Up",
+          uk: "Реєстрація",
+        },
+      },
+      titles: {
+        step1: {
+          en: "Personal Details",
+          uk: "Особисті дані"
+        },
+        step2: {
+          en: "Account Credentials",
+          uk: "Облікові дані"
+        }
+      },
+      labels: {
+        lastName: {
+          en: "Last Name",
+          uk: "Прізвище",
+        },
+        firstName: {
+          en: "First Name",
+          uk: "Ім'я",
+        },
+        email: {
+          en: "Email",
+          uk: "Електронна пошта",
+        },
+        password: {
+          en: "Password",
+          uk: "Пароль",
+        },
+        confirmPassword: {
+          en: "Confirm Password",
+          uk: "Підтвердіть пароль",
+        },
+      },
+      placeholders: {
+        lastName: {
+          en: "Enter last name",
+          uk: "Введіть прізвище",
+        },
+        firstName: {
+          en: "Enter first name",
+          uk: "Введіть ім'я",
+        },
+        email: {
+          en: "Enter your email",
+          uk: "Введіть електронну пошту",
+        },
+        password: {
+          en: "Enter your password",
+          uk: "Введіть пароль",
+        },
+        confirmPassword: {
+          en: "Confirm password",
+          uk: "Підтвердіть пароль",
+        },
+      },
+      checkmarks: {
+        atLeastCharacters: {
+          en: "At least 6 characters",
+          uk: "Принаймні 6 символів",
+        },
+        atLeastOneUppercase: {
+          en: "At least one uppercase, number, or special char",
+          uk: "Принаймні одна велика буква, цифра або спеціальний символ",
+        },
+        passwordMatch: {
+          en: "Passwords match",
+          uk: "Паролі співпадають",
+        },
+      },
+      messages: {
+        success: {
+          title: {
+            en: "Welcome!",
+            uk: "Вітаємо!",
+          },
+          text: {
+            en: "Your account has been created! Proceed to the main page below.",
+            uk: "Ваш обліковий запис створений! Перейдіть на головну сторінку нижче.",
+          },
+        },
+        error: {
+          title: {
+            en: "Error ❌",
+            uk: "Помилка ❌",
+          },
+          text: {
+            en: "Please try again later",
+            uk: "Будь ласка, спробуйте ще раз пізніше",
+          },
+        },
+      },
+      buttons: {        
+        back: {
+          text: {
+            en: "Back",
+            uk: "Назад",
+          },
+        },
+        continue: {
+          text: {
+            en: "Continue",
+            uk: "Продовжити",
+          },
+        },
+        register: {
+          text: {
+            en: "Register",
+            uk: "Зареєструватися",
+          },
+        },
+        finish: {
+          en: "Finish",
+          uk: "Перейти",
+        },
+      },
+    },
+
     createBook: {
       header: {
         en: "Create Book",

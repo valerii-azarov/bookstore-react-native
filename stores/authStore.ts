@@ -5,7 +5,7 @@ import { auth } from "@/api/firebase";
 import { authApi } from "@/api/authApi";
 import { messageHandler } from "@/helpers/messageHandler";
 import { asyncStorage } from "@/storages/asyncStorage"; // import { mmkvStorage } from "@/storages/mmkvStorage";
-import { BaseUser, Role, AuthStatusType, ResponseType } from "@/types";
+import { BaseUser, Role, SignUpCreation, SignUpFormValues, AuthStatusType, ResponseType } from "@/types";
 
 interface AuthStore {
   user: BaseUser | null;
@@ -19,7 +19,7 @@ interface AuthStore {
   initializeAuth: () => void;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  register: (firstName: string, lastName: string, email: string, password: string) => Promise<void>;
+  register: (formValues: SignUpFormValues) => Promise<void>;
   setUser: (user: BaseUser | null) => void;
   cleanupAuth: () => void;
   clearAuthResponse: () => void;
@@ -142,10 +142,17 @@ export const useAuthStore = create<AuthStore>()(
             });
         },
 
-        register: async (firstName: string, lastName: string, email: string, password: string) => {
+        register: async (formValues: SignUpFormValues) => {
           set({ authStatus: "registering" });
 
-          await authApi.signUp(firstName, lastName, email, password)
+          const formData: SignUpCreation = {
+            firstName: formValues.firstName,
+            lastName: formValues.lastName,
+            email: formValues.email,
+            password: formValues.password,
+          };
+
+          await authApi.signUp(formData)
             .then((userData) =>
               set({
                 user: userData,

@@ -1,1 +1,1 @@
-export { default } from "@/modals/sign-up/SignUpModal";
+export { default } from "@/modals/SignUpModal";

@@ -12,7 +12,7 @@ import {
 } from "@/selectors/authSelectors";
 import { colors } from "@/constants/theme";
 import { emailRegex } from "@/constants/regex";
-import { SignInField, SignInFields } from "@/types";
+import { SignInField, SignInFormValues } from "@/types";
 
 import ScreenWrapper from "@/components/ScreenWrapper";
 import KeyboardWrapper from "@/components/KeyboardWrapper";
@@ -20,6 +20,11 @@ import Button from "@/components/Button";
 import Icon from "@/components/Icon";
 import Input from "@/components/Input";
 import Typography from "@/components/Typography";
+
+const initialValues: SignInFormValues = {
+  email: "",
+  password: "",
+};
 
 const SignInScreen = () => {
   const t = useTranslation();
@@ -33,7 +38,7 @@ const SignInScreen = () => {
 
   const passwordInputRef = useRef<TextInput>(null);
 
-  const [form, setForm] = useState<SignInFields>({ email: "", password: "" });
+  const [form, setForm] = useState<SignInFormValues>(initialValues);
   const [errors, setErrors] = useState<{
     [K in SignInField]: string | null;
   }>({

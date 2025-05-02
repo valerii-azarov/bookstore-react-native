@@ -1,7 +1,7 @@
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { doc, setDoc, getDoc } from "@firebase/firestore";
 import { db, auth } from "./firebase";
-import { BaseUser } from "@/types";
+import { BaseUser, SignUpCreation } from "@/types";
 
 export const authApi = {
   signIn: async (email: string, password: string): Promise<BaseUser> => {
@@ -15,13 +15,13 @@ export const authApi = {
     return userDoc.data() as BaseUser;
   },
 
-  signUp: async (firstName: string, lastName: string, email: string, password: string) => {
-    const response = await createUserWithEmailAndPassword(auth, email, password);
+  signUp: async (formData: SignUpCreation): Promise<BaseUser> => {
+    const response = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
     
     const userData: BaseUser = { 
-      firstName, 
-      lastName, 
-      email, 
+      firstName: formData.firstName, 
+      lastName: formData.lastName, 
+      email: formData.email, 
       role: 1,
       uid: response.user.uid,
     };
