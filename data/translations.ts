@@ -485,87 +485,92 @@ const translations: Translations = {
 
   screens: {
     welcome: {
-      titleFirst: {
-        en: "B",
-        uk: "K",
-      },
-      titleRemaining: {
-        en: "ookstore",
-        uk: "нигарня",
+      title: {
+        first: {
+          en: "B",
+          uk: "K",
+        },
+        remaining: {
+          en: "ookstore",
+          uk: "нигарня",
+        },
       },
       subtitle: {
         en: "Books are available for order here",
         uk: "Тут книги доступні для замовлення",
       },
-      button: {
-        en: "Get started",
-        uk: "Почати",
-      },
-    },
-
-    languages: {
-      header: {
-        en: "Change language",
-        uk: "Зміна мови",
-      },
-      title: {
-        en: "Please select language",
-        uk: "Будь ласка, виберіть мову",
-      },
-      languageEn: {
-        en: "English",
-        uk: "Англійська",
-      },
-      languageUk: {
-        en: "Ukrainian",
-        uk: "Українська",
+      buttons: {
+        start: {
+          en: "Get started",
+          uk: "Почати",
+        },
       },
     },
 
     signIn: {
-      titleFirst: {
-        en: "B",
-        uk: "K",
-      },
-      titleRemaining: {
-        en: "ookstore",
-        uk: "нигарня",
-      },
       title: {
+        first: {
+          en: "B",
+          uk: "K",
+        },
+        remaining: {
+          en: "ookstore",
+          uk: "нигарня",
+        },
+      },
+      subtitle: {
         en: "Please sign in to your account",
         uk: "Будь ласка, увійдіть у ваш обліковий запис",
       },
-      signIn: {
-        en: "Sign In",
-        uk: "Увійти",
+      labels: {
+        email: {
+          en: "Email",
+          uk: "Електронна пошта",
+        },
+        password: {
+          en: "Password",
+          uk: "Пароль",
+        },
+        register: {
+          en: "Don't have an account?",
+          uk: "Немає облікового запису?",
+        },
+        trouble: {
+          en: "Having trouble signing in?",
+          uk: "У вас виникли проблеми з входом?",
+        },
       },
-      register: {
-        en: "Don't have an account?",
-        uk: "Немає облікового запису?",
+      links: {
+        registerLink: {
+          en: "Sign Up",
+          uk: "Зареєструватися",
+        },
+        troubleLink: {
+          en: "Contact us",
+          uk: "Зв'яжіться з нами",
+        },
       },
-      registerLink: {
-        en: "Sign Up",
-        uk: "Зареєструватися",
+      placeholders: {
+        email: {
+          en: "Enter your email",
+          uk: "Введіть електронну пошту",
+        },
+        password: {
+          en: "Enter your password",
+          uk: "Введіть пароль",
+        },
       },
-      or: {
-        en: "or",
-        uk: "або",
+      buttons: {
+        signIn: {
+          en: "Sign In",
+          uk: "Увійти",
+        },
       },
-      signInWithGoogle: {
-        en: "Sign in with Google",
-        uk: "Увійти з Google",
-      },
-      trouble: {
-        en: "Having trouble signing in?",
-        uk: "У вас виникли проблеми з входом?",
-      },
-      troubleLink: {
-        en: "Contact us",
-        uk: "Зв'яжіться з нами",
-      },
-      troubleAlert: {
-        en: "This feature is still under development",
-        uk: "Функція знаходиться в розробці",
+      alerts: {
+        trouble: {
+          en: "This feature is still under development",
+          uk: "Функція знаходиться в розробці",
+        },
       },
     },
 
@@ -2010,6 +2015,10 @@ const translations: Translations = {
     passwordRequired: {
       en: "Password is required",
       uk: "Пароль обов'язковий",
+    },
+    passwordTooShort: {
+      en: "Password must be at least 6 characters",
+      uk: "Пароль має бути не менше 6 символів",
     },
     passwordInvalid: {
       en: "Password must be at least 6 characters and contain an uppercase letter, number, or special character",

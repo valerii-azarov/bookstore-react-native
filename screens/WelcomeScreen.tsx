@@ -66,6 +66,7 @@ const WelcomeScreen = () => {
   return (
     <ScreenWrapper 
       containerStyle={{ backgroundColor: colors.white }}
+      hideStatusBarBackground
       hideStatusBarBorder
     >
       <View style={styles.langContainer}>
@@ -123,11 +124,11 @@ const WelcomeScreen = () => {
       <View style={styles.footer}>
         <View style={{ flexDirection: "row" }}>
           <Typography fontSize={32} fontWeight="bold" color={colors.orange}>
-            {t("screens.welcome.titleFirst")}
+            {t("screens.welcome.title.first")}
           </Typography>
 
           <Typography fontSize={32} fontWeight="bold" color={colors.black}>
-            {t("screens.welcome.titleRemaining")}
+            {t("screens.welcome.title.remaining")}
           </Typography>
         </View>
 
@@ -145,7 +146,7 @@ const WelcomeScreen = () => {
             disabled={!isConnected}
           >
             <Typography fontSize={16} fontWeight="bold" color={colors.white}>
-              {t("screens.welcome.button")}
+              {t("screens.welcome.buttons.start")}
             </Typography>
           </TouchableOpacity>
         </Link>

@@ -68,40 +68,13 @@ export interface User extends BaseUser {
   orders: string[];
 };
 
-// profile fields
-export type ProfileField = keyof Omit<BaseUser, "uid" | "email" | "role">;
-
-// login fields
-export interface LoginField {
-  email: string;
-  password: string;
-}
-
-// sign in / up
-export interface SignInForm {
-  email: string;
-  password: string;
-}
-
-export interface SignInErrors {
-  email: string | null;
-  password: string | null;
-}
-
-export interface SignUpForm {
+// auth fields
+export interface SignUpFields {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
   confirmPassword: string;
-}
-
-export interface SignUpErrors {
-  firstName: string | null;
-  lastName: string | null;
-  email: string | null;
-  password: string | null;
-  confirmPassword: string | null;
 }
 
 export interface SignUpVisibility {
@@ -114,6 +87,13 @@ export interface SignUpValidations {
   uppercase: boolean;
   confirmMatch: boolean;
 }
+
+export type SignInField = keyof Omit<SignUpFields, "firstName" | "lastName" | "confirmPassword">;
+
+export type SignInFields = Pick<SignUpFields, "email" | "password">;
+
+// profile fields
+export type ProfileField = keyof Omit<BaseUser, "uid" | "email" | "role">;
 
 // menu
 export interface MenuItem {

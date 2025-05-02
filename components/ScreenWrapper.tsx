@@ -7,6 +7,7 @@ type ScreenWrapperProps = {
   children: React.ReactNode;
   containerStyle?: StyleProp<ViewStyle>;
   statusBarBackgroundColor?: string;
+  hideStatusBarBackground?: boolean;
   hideStatusBarBorder?: boolean;
 };
 
@@ -14,6 +15,7 @@ const ScreenWrapper = ({
   children,
   containerStyle,
   statusBarBackgroundColor = colors.white,
+  hideStatusBarBackground = false,
   hideStatusBarBorder = false,
 }: ScreenWrapperProps) => {
   const insets = useSafeAreaInsets();
@@ -27,7 +29,9 @@ const ScreenWrapper = ({
           styles.statusBar,
           {
             paddingTop: Platform.OS === "ios" ? insets.top : 15 + insets.top,
-            backgroundColor: statusBarBackgroundColor,
+            backgroundColor: hideStatusBarBackground
+              ? "transparent"
+              : statusBarBackgroundColor,
             borderBottomWidth: hideStatusBarBorder ? 0 : 1,
           },
         ]}
