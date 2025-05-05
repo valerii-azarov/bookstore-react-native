@@ -40,9 +40,12 @@ export const useNovaPostStore = create<NovaPostStore>((set) => ({
         set({
           citiesResponse: {
             status: "error",
-            message: messageHandler.getErrorMessage(error, {
-              "nova-post/cities-not-found": "novaPost.citiesNotFound",
-            }),
+            message: messageHandler.getErrorMessage(
+              error.message, 
+              {
+                "nova-post/cities-not-found": "novaPost.citiesNotFound",
+              }
+            ),
           },
           citiesStatus: "idle",
         })
@@ -65,9 +68,12 @@ export const useNovaPostStore = create<NovaPostStore>((set) => ({
         set({
           warehousesResponse: {
             status: "error",
-            message: messageHandler.getErrorMessage(error, {
-              "nova-post/warehouses-not-found": "novaPost.warehousesNotFound",
-            }),
+            message: messageHandler.getErrorMessage(
+              error.message, 
+              {
+                "nova-post/warehouses-not-found": "novaPost.warehousesNotFound",
+              }
+            ),
           },
           warehousesStatus: "idle",
         })

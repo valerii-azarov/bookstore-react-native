@@ -107,16 +107,18 @@ export const useAuthStore = create<AuthStore>()(
               get().initializeAuth();
             })
             .catch((error) => {
-              console.error("Error during login:", error);
               set({
                 authStatus: "idle",
                 authResponse: {
                   status: "error",
-                  message: messageHandler.getErrorMessage(error, {
-                    "auth/invalid-credential": "auth.invalidCredentials",
-                    "auth/user-disabled": "auth.userDisabled",
-                    "auth/network-request-failed": "auth.networkRequestFailed",
-                  }),
+                  message: messageHandler.getErrorMessage(
+                    error.message, 
+                    {
+                      "auth/invalid-credential": "auth.invalidCredentials",
+                      "auth/user-disabled": "auth.userDisabled",
+                      "auth/network-request-failed": "auth.networkRequestFailed",
+                    }
+                  ),
                 },
               });
             });
@@ -166,14 +168,16 @@ export const useAuthStore = create<AuthStore>()(
               })
             )
             .catch((error) => {
-              console.error("Error during register:", error);
               set({
                 authStatus: "idle",
                 authResponse: {
                   status: "error",
-                  message: messageHandler.getErrorMessage(error, {
-                    "auth/email-already-in-use": "auth.emailAlreadyInUse",
-                  }),
+                  message: messageHandler.getErrorMessage(
+                    error.message, 
+                    {
+                      "auth/email-already-in-use": "auth.emailAlreadyInUse",
+                    }
+                  ),
                 },
               });
             });

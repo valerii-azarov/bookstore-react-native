@@ -119,10 +119,13 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
         set({
           orderResponse: {
             status: "error",
-            message: messageHandler.getErrorMessage(error, {
-              "users/user-not-found": "users.userNotFound",
-              "orders/created-order-not-found": "orders.createdOrderNotFound",
-            }),
+            message: messageHandler.getErrorMessage(
+              error.message, 
+              {
+                "users/user-not-found": "users.userNotFound",
+                "orders/created-order-not-found": "orders.createdOrderNotFound",
+              }
+            ),
           },
           orderStatus: "idle",
         })

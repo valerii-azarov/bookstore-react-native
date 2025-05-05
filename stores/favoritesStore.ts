@@ -99,10 +99,13 @@ export const useFavoritesStore = create<FavoritesStore>((set, get) => ({
         set({
           toggleFavoriteResponse: {
             status: "success",
-            message: messageHandler.getSuccessMessage(isFavorite ? "removed" : "added", {
-              "added": "favorites.bookAddedToFavorites",
-              "removed": "favorites.bookRemovedFromFavorites",
-            }),
+            message: messageHandler.getSuccessMessage(
+              isFavorite ? "removed" : "added", 
+              {
+                "added": "favorites.bookAddedToFavorites",
+                "removed": "favorites.bookRemovedFromFavorites",
+              }
+            ),
           },
           toggleFavoriteStatus: "idle",
         });

@@ -79,13 +79,16 @@ export const useBookStore = create<BookStore>((set, get) => ({
         set({
           bookResponse: {
             status: "error",
-            message: messageHandler.getErrorMessage(error, {
-              "image/invalid-image-object": "image.invalidImageObject",
-              "image/no-secure-url": "image.noSecureUrl",
-              "books/upload-failed": "books.uploadFailed",
-              "books/upload-additional-failed": "books.uploadAdditionalFailed",
-              "books/created-book-not-found": "books.createdBookNotFound",
-            }),
+            message: messageHandler.getErrorMessage(
+              error.message, 
+              {
+                "image/invalid-image-object": "image.invalidImageObject",
+                "image/no-secure-url": "image.noSecureUrl",
+                "books/upload-failed": "books.uploadFailed",
+                "books/upload-additional-failed": "books.uploadAdditionalFailed",
+                "books/created-book-not-found": "books.createdBookNotFound",
+              }
+            ),
           },
           bookStatus: "idle",
         })
@@ -117,16 +120,19 @@ export const useBookStore = create<BookStore>((set, get) => ({
         set({
           bookResponse: {
             status: "error",
-            message: messageHandler.getErrorMessage(error, {
-              "image/invalid-image-object": "image.invalidImageObject",
-              "image/no-secure-url": "image.noSecureUrl",
-              "image/invalid-url": "image.invalidUrl",
-              "image/delete-failed": "image.deleteFailed",
-              "books/book-not-found": "books.bookNotFound",
-              "books/book-not-found-after-update": "books.bookNotFoundAfterUpdate",
-              "books/upload-failed": "books.uploadFailed",
-              "books/upload-additional-failed": "books.uploadAdditionalFailed",
-            }),
+            message: messageHandler.getErrorMessage(
+              error.message, 
+              {
+                "image/invalid-image-object": "image.invalidImageObject",
+                "image/no-secure-url": "image.noSecureUrl",
+                "image/invalid-url": "image.invalidUrl",
+                "image/delete-failed": "image.deleteFailed",
+                "books/book-not-found": "books.bookNotFound",
+                "books/book-not-found-after-update": "books.bookNotFoundAfterUpdate",
+                "books/upload-failed": "books.uploadFailed",
+                "books/upload-additional-failed": "books.uploadAdditionalFailed",
+              }
+            ),
           },
           bookStatus: "idle",
         })
@@ -153,10 +159,13 @@ export const useBookStore = create<BookStore>((set, get) => ({
         set({
           bookResponse: {
             status: "error",
-            message: messageHandler.getErrorMessage(error, {
-              "books/book-not-found": "books.bookNotFound",
-              "image/delete-failed": "image.deleteFailed",
-            }),
+            message: messageHandler.getErrorMessage(
+              error.message, 
+              {
+                "books/book-not-found": "books.bookNotFound",
+                "image/delete-failed": "image.deleteFailed",
+              }
+            ),
           },
           bookStatus: "idle",
         })

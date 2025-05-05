@@ -41,9 +41,12 @@ export const useProfileStore = create<ProfileState>((set) => ({
         set({
           profileResponse: {
             status: "error",
-            message: messageHandler.getErrorMessage(error, {
-              "users/user-not-found-after-update": "users.userNotFoundAfterUpdate",
-            }),
+            message: messageHandler.getErrorMessage(
+              error.message, 
+              {
+                "users/user-not-found-after-update": "users.userNotFoundAfterUpdate",
+              }
+            ),
           },
           profileStatus: "idle",
         })

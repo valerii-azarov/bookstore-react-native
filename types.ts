@@ -19,6 +19,9 @@ export type TabType = {
   icon: React.ReactElement;
 };
 
+// message type
+export type MessageType = "success" | "error";
+
 // this needs to be removed
 export type OptionType = {
   label: string;
