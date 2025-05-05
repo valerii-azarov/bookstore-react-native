@@ -11,6 +11,7 @@ interface AuthStore {
   user: BaseUser | null;
   isLoggedIn: boolean;
   isAdmin: boolean;
+  isRegisteringProgress: boolean;
   authDataLoaded: boolean;
   authListenerActive: boolean;
   authStatus: AuthStatusType;
@@ -21,6 +22,7 @@ interface AuthStore {
   logout: () => Promise<void>;
   register: (formValues: SignUpFormValues) => Promise<void>;
   setUser: (user: BaseUser | null) => void;
+  setIsRegisteringProgress: (value: boolean) => void;
   cleanupAuth: () => void;
   clearAuthResponse: () => void;
 }
@@ -32,6 +34,7 @@ export const useAuthStore = create<AuthStore>()(
         user: null,
         isLoggedIn: false,
         isAdmin: false,
+        isRegisteringProgress: false,
         authDataLoaded: false,
         authListenerActive: false,
         authStatus: "idle",
@@ -186,6 +189,10 @@ export const useAuthStore = create<AuthStore>()(
           });
         },
 
+        setIsRegisteringProgress: (value: boolean) => {
+          set({ isRegisteringProgress: value });
+        },
+
         cleanupAuth: () => {
           const { unsubscribeAuth } = get();
           if (unsubscribeAuth) {
@@ -197,6 +204,7 @@ export const useAuthStore = create<AuthStore>()(
               user: null,
               isLoggedIn: false,
               isAdmin: false,
+              isRegisteringProgress: false,
               authStatus: "idle",
               authResponse: null,
             });

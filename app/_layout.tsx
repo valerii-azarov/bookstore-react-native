@@ -13,7 +13,13 @@ import { TranslateProvider } from "@/contexts/translateContext";
 
 import { useAuthStore } from "@/stores/authStore";
 import { useFavoritesStore } from "@/stores/favoritesStore";
-import { selectIsLoggedIn, selectIsAdmin, selectAuthDataLoaded, selectInitializeAuth } from "@/selectors/authSelectors";
+import { 
+  selectIsLoggedIn, 
+  selectIsAdmin,
+  selectIsRegisteringProgress,
+  selectAuthDataLoaded, 
+  selectInitializeAuth 
+} from "@/selectors/authSelectors";
 import { selectFavoritesDataLoaded, selectInitializeFavorites } from "@/selectors/favoritesSelectors";
 
 SplashScreen.preventAutoHideAsync();
@@ -24,6 +30,7 @@ const InitialLayout = () => {
   
   const isLoggedIn = useAuthStore(selectIsLoggedIn);
   const isAdmin = useAuthStore(selectIsAdmin);
+  const isRegisteringProgress = useAuthStore(selectIsRegisteringProgress);
   const authDataLoaded = useAuthStore(selectAuthDataLoaded);
   const initializeAuth = useAuthStore(selectInitializeAuth);
 
@@ -43,7 +50,7 @@ const InitialLayout = () => {
   }, []);
   
   useEffect(() => {
-    if (fontsError || !fontsLoaded || !authDataLoaded || !favoritesDataLoaded) return;
+    if (fontsError || !fontsLoaded || !authDataLoaded || !favoritesDataLoaded || isRegisteringProgress) return;
   
     SplashScreen.hideAsync();
   
@@ -58,7 +65,7 @@ const InitialLayout = () => {
     } else {
       router.replace("/welcome");
     }
-  }, [fontsLoaded, fontsError, isLoggedIn, isAdmin, authDataLoaded, favoritesDataLoaded]);
+  }, [fontsLoaded, fontsError, isLoggedIn, isAdmin, isRegisteringProgress, authDataLoaded, favoritesDataLoaded]);
   
   if (fontsError) return null;
 

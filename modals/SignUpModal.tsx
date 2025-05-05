@@ -8,7 +8,8 @@ import {
   selectAuthStatus,
   selectAuthResponse,
   selectRegister,
-  // selectClearAuthResponse,
+  selectSetIsRegisteringProgress,
+  selectClearAuthResponse,
 } from "@/selectors/authSelectors";
 import { 
   emailRegex, 
@@ -50,11 +51,9 @@ const SignUpModal = () => {
   const authStatus = useAuthStore(selectAuthStatus);
   const authResponse = useAuthStore(selectAuthResponse);
 
-  console.log(authStatus);
-  console.log(authResponse);
-  
   const register = useAuthStore(selectRegister);
-  // const clearAuthResponse = useAuthStore(selectClearAuthResponse);
+  const setIsRegisteringProgress = useAuthStore(selectSetIsRegisteringProgress);
+  const clearAuthResponse = useAuthStore(selectClearAuthResponse);
 
   const isRegistering = authStatus === "registering";
   const isSuccess = authResponse?.status === "success";
@@ -414,9 +413,11 @@ const SignUpModal = () => {
   const handleNext = () => {
     setDirection("forward");
     if (isLastStep) {
-      return isError ? router.back() : router.replace("/books");
+      setIsRegisteringProgress(false);
+      return isError ? router.back() : router.replace("/(user)/(tabs)/books");
     }
     if (isSecondToLastStep && !isRegistering && isConnected) {
+      setIsRegisteringProgress(true);
       register(formValues);
       return;
     }
@@ -444,9 +445,12 @@ const SignUpModal = () => {
     }
   }, [isRegistering, isSecondToLastStep, authResponse]);
 
-  // useEffect(() => {
-  //   return () => clearAuthResponse();
-  // }, []);
+  useEffect(() => {
+    return () => {
+      setIsRegisteringProgress(false);
+      clearAuthResponse();
+    }
+  }, []);
 
   return (
     <ModalWrapper>

@@ -1286,8 +1286,10 @@ const translations: Translations = {
           },
         },
         finish: {
-          en: "Finish",
-          uk: "Перейти",
+          text: {
+            en: "Finish",
+            uk: "Перейти",
+          },
         },
       },
     },
