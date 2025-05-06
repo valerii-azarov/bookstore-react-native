@@ -272,8 +272,13 @@ const InitialLayout = () => {
         name="sign-up" 
         options={{
           headerShown: false,
-          presentation: "transparentModal",
-        }} 
+          ...(Platform.OS === "ios"
+            ? { 
+                animation: "slide_from_bottom", 
+                animationDuration: 250,
+              }
+            : {}),
+        }}
       />
     </Stack>
   );

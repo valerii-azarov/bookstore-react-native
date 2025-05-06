@@ -5,11 +5,11 @@ import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
 import { useAuthStore } from "@/stores/authStore";
 import {
-  selectAuthStatus,
-  selectAuthResponse,
+  selectRegisterStatus,
+  selectRegisterResponse,
   selectRegister,
   selectSetIsRegisteringProgress,
-  selectClearAuthResponse,
+  selectResetAuthOperationState,
 } from "@/selectors/authSelectors";
 import { 
   emailRegex, 
@@ -48,18 +48,18 @@ const SignUpModal = () => {
   const t = useTranslation();
   const isConnected = useIsConnected();
 
-  const authStatus = useAuthStore(selectAuthStatus);
-  const authResponse = useAuthStore(selectAuthResponse);
+  const registerStatus = useAuthStore(selectRegisterStatus);
+  const registerResponse = useAuthStore(selectRegisterResponse);
 
   const register = useAuthStore(selectRegister);
   const setIsRegisteringProgress = useAuthStore(selectSetIsRegisteringProgress);
-  const clearAuthResponse = useAuthStore(selectClearAuthResponse);
+  const resetAuthOperationState = useAuthStore(selectResetAuthOperationState);
 
-  const isRegistering = authStatus === "registering";
-  const isSuccess = authResponse?.status === "success";
-  const isError = authResponse?.status === "error";
+  const isRegistering = registerStatus === "registering";
+  const isSuccess = registerResponse?.status === "success";
+  const isError = registerResponse?.status === "error";
 
-  const message = authResponse?.message;  
+  const message = registerResponse?.message;  
 
   const lastNameInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
@@ -440,15 +440,15 @@ const SignUpModal = () => {
   }, [formValues.password, formValues.confirmPassword]);
 
   useEffect(() => {
-    if (isSecondToLastStep && !isRegistering && authResponse) {
+    if (isSecondToLastStep && !isRegistering && registerResponse) {
       setCurrentStep((prev) => prev + 1);
     }
-  }, [isRegistering, isSecondToLastStep, authResponse]);
+  }, [isRegistering, isSecondToLastStep, registerResponse]);
 
   useEffect(() => {
     return () => {
       setIsRegisteringProgress(false);
-      clearAuthResponse();
+      resetAuthOperationState("register");
     }
   }, []);
 

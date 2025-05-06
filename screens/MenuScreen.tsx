@@ -12,7 +12,7 @@ import {
   selectUser, 
   selectIsAdmin,
   selectLogout,
-  selectClearAuthResponse, 
+  selectResetAuthOperationState, 
 } from "@/selectors/authSelectors";
 import { colors } from "@/constants/theme";
 import { verticalScale } from "@/helpers/common";
@@ -21,7 +21,7 @@ import { Option, Language, MenuSection } from "@/types";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import Header from "@/components/Header";
 import Icon from "@/components/Icon";
-import IconBadge from "@/components/IconBadge";
+// import IconBadge from "@/components/IconBadge";
 import Switcher from "@/components/Switcher";
 import Typography from "@/components/Typography";
 
@@ -36,7 +36,7 @@ const MenuScreen = () => {
   const isAdmin = useAuthStore(selectIsAdmin);
 
   const logout = useAuthStore(selectLogout);
-  const clearAuthResponse = useAuthStore(selectClearAuthResponse);
+  const resetAuthOperationState = useAuthStore(selectResetAuthOperationState);
 
   const languageOptions: Option<Language>[] = [
     { label: "Укр", value: "uk" },
@@ -168,19 +168,25 @@ const MenuScreen = () => {
                   text: t("alerts.static.confirm"),
                   style: "destructive",
                   onPress: async () => {
-                    try {
-                      await logout();
-                      Alert.alert(
-                        t("alerts.static.success.title"),
-                        t("alerts.confirmLogout.success.message"),
-                        [{ text: "OK", onPress: () => setTimeout(() => clearAuthResponse(), 500) }]
+                    logout()
+                      .then(() =>
+                        Alert.alert(
+                          t("alerts.static.success.title"),
+                          t("alerts.confirmLogout.success.message"),
+                          [
+                            { 
+                              text: "OK", 
+                              onPress: () => setTimeout(() => resetAuthOperationState("logout"), 500), 
+                            },
+                          ]
+                        )
+                      )
+                      .catch((error) => 
+                        Alert.alert(
+                          t("alerts.static.error.title"),
+                          error.message || t("alerts.confirmLogout.error.message"),
+                        )
                       );
-                    } catch (error) {
-                      Alert.alert(
-                        t("alerts.static.error.title"),
-                        (error as Error).message || t("alerts.confirmLogout.error.message")
-                      );
-                    }
                   },
                 },
               ],
@@ -198,13 +204,16 @@ const MenuScreen = () => {
       <Header
         title={`${t("screens.menu.header.welcome")}, ${user?.firstName}`}
         titleSize={18}
-        iconRight={
-          <IconBadge 
-            badgeCount={5} 
-            badgeIconSet="MaterialIcons"
-            badgeIconName="notifications" 
-          />
-        }
+        // uncomment this in the future
+
+        // iconRight={
+        //   <IconBadge 
+        //     badgeCount={5} 
+        //     badgeIconSet="MaterialIcons"
+        //     badgeIconName="notifications" 
+        //   />
+        // }
+
         style={[
           styles.header,
           {

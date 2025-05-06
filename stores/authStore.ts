@@ -5,7 +5,21 @@ import { auth } from "@/api/firebase";
 import { authApi } from "@/api/authApi";
 import { messageHandler } from "@/helpers/messageHandler";
 import { asyncStorage } from "@/storages/asyncStorage"; // import { mmkvStorage } from "@/storages/mmkvStorage";
-import { BaseUser, Role, SignUpCreation, SignUpFormValues, AuthStatusType, ResponseType } from "@/types";
+import {
+  BaseUser,
+  Role,
+  SignUpCreation,
+  SignUpFormValues,
+  AuthStatusType,
+  ResponseType,
+} from "@/types";
+
+type AuthOperation = "login" | "register" | "logout" | "init";
+
+type OperationState = {
+  status: AuthStatusType;
+  response: ResponseType | null;
+};
 
 interface AuthStore {
   user: BaseUser | null;
@@ -14,17 +28,17 @@ interface AuthStore {
   isRegisteringProgress: boolean;
   authDataLoaded: boolean;
   authListenerActive: boolean;
-  authStatus: AuthStatusType;
-  authResponse: ResponseType | null;
+  authOperations: Record<AuthOperation, OperationState>;
   unsubscribeAuth?: Unsubscribe;
   initializeAuth: () => void;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   register: (formValues: SignUpFormValues) => Promise<void>;
   setUser: (user: BaseUser | null) => void;
+  setAuthOperationState: (op: AuthOperation, state: Partial<OperationState>) => void;
   setIsRegisteringProgress: (value: boolean) => void;
   cleanupAuth: () => void;
-  clearAuthResponse: () => void;
+  resetAuthOperationState: (op: AuthOperation) => void;
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -37,8 +51,24 @@ export const useAuthStore = create<AuthStore>()(
         isRegisteringProgress: false,
         authDataLoaded: false,
         authListenerActive: false,
-        authStatus: "idle",
-        authResponse: null,
+        authOperations: {
+          login: {
+            status: "idle",
+            response: null,
+          },
+          register: {
+            status: "idle",
+            response: null,
+          },
+          logout: {
+            status: "idle",
+            response: null,
+          },
+          init: {
+            status: "idle",
+            response: null,
+          },
+        },
         unsubscribeAuth: undefined,
 
         initializeAuth: () => {
@@ -46,45 +76,71 @@ export const useAuthStore = create<AuthStore>()(
             return;
           }
 
-          set({ authStatus: "initializing" });
+          get().unsubscribeAuth?.();
+
+          set((state) => ({
+            authOperations: {
+              ...state.authOperations,
+              init: { status: "initializing", response: null },
+            },
+          }));
 
           const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
             try {
               if (firebaseUser) {
-                set({ authStatus: "fetching" });
+                set((state) => ({
+                  authOperations: {
+                    ...state.authOperations,
+                    init: { status: "fetching", response: null },
+                  },
+                }));
 
                 const userData = await authApi.getUser(firebaseUser.uid);
-                set({
+                set((state) => ({
                   user: userData,
                   isLoggedIn: true,
                   isAdmin: userData?.role === Role.Admin,
                   authDataLoaded: true,
-                  authStatus: "idle",
-                  authResponse: { status: "success" },
-                });
+                  authOperations: {
+                    ...state.authOperations,
+                    init: {
+                      status: "idle",
+                      response: { status: "success" },
+                    },
+                  },
+                }));
               } else {
-                set({
+                set((state) => ({
                   user: null,
                   isLoggedIn: false,
                   isAdmin: false,
                   authDataLoaded: true,
-                  authStatus: "idle",
-                  authResponse: null,
-                });
+                  authOperations: {
+                    ...state.authOperations,
+                    init: { status: "idle", response: null },
+                  },
+                }));
               }
             } catch (error) {
               console.error("Error initializing auth:", error);
-              set({
+              set((state) => ({
                 user: null,
                 isLoggedIn: false,
                 isAdmin: false,
                 authDataLoaded: true,
-                authStatus: "idle",
-                authResponse: {
-                  status: "error",
-                  message: "Failed to initialize authentication",
+                authListenerActive: false,
+                unsubscribeAuth: undefined,
+                authOperations: {
+                  ...state.authOperations,
+                  init: {
+                    status: "idle",
+                    response: {
+                      status: "error",
+                      message: "Failed to initialize authentication",
+                    },
+                  },
                 },
-              });
+              }));
             }
           });
 
@@ -92,63 +148,97 @@ export const useAuthStore = create<AuthStore>()(
         },
 
         login: async (email: string, password: string) => {
-          set({ authStatus: "authenticating" });
-          
-          await authApi.signIn(email, password)
+          set((state) => ({
+            authOperations: {
+              ...state.authOperations,
+              login: { status: "authenticating", response: null },
+            },
+          }));
+
+          await authApi
+            .signIn(email, password)
             .then((userData) => {
-              set({
+              set((state) => ({
                 user: userData,
                 isLoggedIn: true,
                 isAdmin: userData.role === Role.Admin,
                 authDataLoaded: true,
-                authStatus: "idle",
-                authResponse: { status: "success" },
-              });
+                authOperations: {
+                  ...state.authOperations,
+                  login: {
+                    status: "idle",
+                    response: { status: "success" },
+                  },
+                },
+              }));
               get().initializeAuth();
             })
             .catch((error) => {
-              set({
-                authStatus: "idle",
-                authResponse: {
-                  status: "error",
-                  message: messageHandler.getErrorMessage(
-                    error.message, 
-                    {
-                      "auth/invalid-credential": "auth.invalidCredentials",
-                      "auth/user-disabled": "auth.userDisabled",
-                      "auth/network-request-failed": "auth.networkRequestFailed",
-                    }
-                  ),
+              set((state) => ({
+                authOperations: {
+                  ...state.authOperations,
+                  login: {
+                    status: "idle",
+                    response: {
+                      status: "error",
+                      message: messageHandler.getErrorMessage(
+                        error.message, 
+                        {
+                          "auth/invalid-credential": "auth.invalidCredentials",
+                          "auth/user-disabled": "auth.userDisabled",
+                          "auth/network-request-failed": "auth.networkRequestFailed",
+                        }
+                      ),
+                    },
+                  },
                 },
-              });
+              }));
             });
         },
 
         logout: async () => {
-          set({ authStatus: "loggingOut" });
-          
-          await authApi.logout()
+          set((state) => ({
+            authOperations: {
+              ...state.authOperations,
+              logout: { status: "loggingOut", response: null },
+            },
+          }));
+
+          await authApi
+            .logout()
             .then(() => {
-              set({
-                authStatus: "idle",
-                authResponse: { status: "success" },
-              });
+              set((state) => ({
+                authOperations: {
+                  ...state.authOperations,
+                  logout: { status: "idle", response: { status: "success" } },
+                },
+              }));
               get().cleanupAuth();
             })
             .catch((error) => {
               console.error("Error during logout:", error);
-              set({
-                authStatus: "idle",
-                authResponse: {
-                  status: "error",
-                  message: "Failed to log out",
+              set((state) => ({
+                authOperations: {
+                  ...state.authOperations,
+                  logout: {
+                    status: "idle",
+                    response: {
+                      status: "error",
+                      message: "Failed to log out",
+                    },
+                  },
                 },
-              });
+              }));
             });
         },
 
         register: async (formValues: SignUpFormValues) => {
-          set({ authStatus: "registering" });
+          set((state) => ({
+            authOperations: {
+              ...state.authOperations,
+              register: { status: "registering", response: null },
+            },
+          }));
 
           const formData: SignUpCreation = {
             firstName: formValues.firstName,
@@ -157,29 +247,40 @@ export const useAuthStore = create<AuthStore>()(
             password: formValues.password,
           };
 
-          await authApi.signUp(formData)
+          await authApi
+            .signUp(formData)
             .then((userData) =>
-              set({
+              set((state) => ({
                 user: userData,
                 isLoggedIn: true,
                 isAdmin: userData.role === Role.Admin,
-                authStatus: "idle",
-                authResponse: { status: "success" },
-              })
+                authOperations: {
+                  ...state.authOperations,
+                  register: {
+                    status: "idle",
+                    response: { status: "success" },
+                  },
+                },
+              }))
             )
             .catch((error) => {
-              set({
-                authStatus: "idle",
-                authResponse: {
-                  status: "error",
-                  message: messageHandler.getErrorMessage(
-                    error.message, 
-                    {
-                      "auth/email-already-in-use": "auth.emailAlreadyInUse",
-                    }
-                  ),
+              set((state) => ({
+                authOperations: {
+                  ...state.authOperations,
+                  register: {
+                    status: "idle",
+                    response: {
+                      status: "error",
+                      message: messageHandler.getErrorMessage(
+                        error.message, 
+                        {
+                          "auth/email-already-in-use": "auth.emailAlreadyInUse",
+                        }
+                      ),
+                    },
+                  },
                 },
-              });
+              }));
             });
         },
 
@@ -188,9 +289,16 @@ export const useAuthStore = create<AuthStore>()(
             user,
             isLoggedIn: !!user,
             isAdmin: user?.role === Role.Admin,
-            authStatus: "idle",
-            authResponse: null,
           });
+        },
+
+        setAuthOperationState: (op, stateUpdate) => {
+          set((state) => ({
+            authOperations: {
+              ...state.authOperations,
+              [op]: { ...state.authOperations[op], ...stateUpdate },
+            },
+          }));
         },
 
         setIsRegisteringProgress: (value: boolean) => {
@@ -198,25 +306,43 @@ export const useAuthStore = create<AuthStore>()(
         },
 
         cleanupAuth: () => {
-          const { unsubscribeAuth } = get();
-          if (unsubscribeAuth) {
-            unsubscribeAuth();
-            set({
-              unsubscribeAuth: undefined,
-              authDataLoaded: false,
-              authListenerActive: false,
-              user: null,
-              isLoggedIn: false,
-              isAdmin: false,
-              isRegisteringProgress: false,
-              authStatus: "idle",
-              authResponse: null,
-            });
-          }
+          get().unsubscribeAuth?.();
+          set({
+            unsubscribeAuth: undefined,
+            authDataLoaded: false,
+            authListenerActive: false,
+            user: null,
+            isLoggedIn: false,
+            isAdmin: false,
+            isRegisteringProgress: false,
+            authOperations: {
+              login: {
+                status: "idle",
+                response: null,
+              },
+              register: {
+                status: "idle",
+                response: null,
+              },
+              logout: {
+                status: "idle",
+                response: null,
+              },
+              init: {
+                status: "idle",
+                response: null,
+              },
+            },
+          });
         },
 
-        clearAuthResponse: () => {
-          set({ authStatus: "idle", authResponse: null });
+        resetAuthOperationState: (op) => {
+          set((state) => ({
+            authOperations: {
+              ...state.authOperations,
+              [op]: { status: "idle", response: null },
+            },
+          }));
         },
       }),
       {

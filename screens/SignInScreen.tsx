@@ -5,10 +5,10 @@ import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
 import { useAuthStore } from "@/stores/authStore";
 import {
-  selectAuthStatus,
-  selectAuthResponse,
+  selectLoginStatus,
+  selectLoginResponse,
   selectLogin,
-  selectClearAuthResponse,
+  selectResetAuthOperationState,
 } from "@/selectors/authSelectors";
 import { colors } from "@/constants/theme";
 import { emailRegex } from "@/constants/regex";
@@ -30,11 +30,11 @@ const SignInScreen = () => {
   const t = useTranslation();
   const isConnected = useIsConnected();
 
-  const authStatus = useAuthStore(selectAuthStatus);
-  const authResponse = useAuthStore(selectAuthResponse);
+  const loginStatus = useAuthStore(selectLoginStatus);
+  const loginResponse = useAuthStore(selectLoginResponse);
 
   const login = useAuthStore(selectLogin);
-  const clearAuthResponse = useAuthStore(selectClearAuthResponse);
+  const resetAuthOperationState = useAuthStore(selectResetAuthOperationState);
 
   const passwordInputRef = useRef<TextInput>(null);
 
@@ -47,9 +47,9 @@ const SignInScreen = () => {
   });
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
-  const isAuthenticating = authStatus === "authenticating";
-  const isError = authResponse?.status === "error";
-  const message = authResponse?.message;
+  const isAuthenticating = loginStatus === "authenticating";
+  const isError = loginResponse?.status === "error";
+  const message = loginResponse?.message;
 
   const validateField = (field: SignInField, value: string): string | null => {
     if (!value) return t(`validators.${field}Required`);
@@ -87,14 +87,19 @@ const SignInScreen = () => {
   };
 
   useEffect(() => {
-    if (isError) {
+    if (isError && message) {
       Alert.alert(
         t("alerts.static.error.title"),
-        message || t("alerts.login.error.message")
+        message || t("alerts.login.error.message"),
+        [
+          {
+            text: "OK",
+            onPress: () => resetAuthOperationState("login"),
+          },
+        ]
       );
     }
-    return () => clearAuthResponse();
-  }, [isError]);
+  }, [isError, message]);
 
   return (
     <ScreenWrapper 
