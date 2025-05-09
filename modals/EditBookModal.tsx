@@ -12,7 +12,7 @@ import ModalWrapper from "@/components/ModalWrapper";
 import Header from "@/components/Header";
 import BackButton from "@/components/BackButton";
 import Button from "@/components/Button";
-import ColorChanger from "@/components/ColorChanger";
+import ColorChanger from "@/components/ColorPicker";
 import Typography from "@/components/Typography";
 
 import BookField from "@/components/BookField";

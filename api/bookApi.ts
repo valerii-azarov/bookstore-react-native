@@ -2,7 +2,7 @@ import { doc, getDoc, setDoc, updateDoc, deleteDoc, collection } from "@firebase
 import { db } from "./firebase";
 import { imagesApi } from "./imagesApi";
 import { viewingHistoryApi } from "./viewingHistoryApi";
-import { BaseBook, CreateBook, BookPricing, BoookImages, EditableBookField, EditableBookValueType } from "@/types";
+import { BaseBook, BookCreation, BookPricing, BoookImages, EditableBookField, EditableBookValueType } from "@/types";
 
 export const bookApi = {
   fetchBookById: async (bookId: string, userId?: string): Promise<BaseBook | null> => {
@@ -15,7 +15,7 @@ export const bookApi = {
     return bookDoc.exists() ? ({ id: bookDoc.id, ...bookDoc.data() } as BaseBook) : null;
   },
 
-  createBook: async (bookData: CreateBook): Promise<BaseBook> => {
+  createBook: async (bookData: BookCreation): Promise<BaseBook> => {
     const bookRef = doc(collection(db, "books"));
     const createdAt = new Date().toISOString();
     

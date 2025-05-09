@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { bookApi } from "@/api/bookApi";
 import { bookHandler } from "@/helpers/bookHandler";
 import { messageHandler } from "@/helpers/messageHandler";
-import { Book, CreateBook, EditableBookField, EditableBookValueType, StatusType, ResponseType } from "@/types";
+import { Book, BookCreation, EditableBookField, EditableBookValueType, StatusType, ResponseType } from "@/types";
 
 import { useAuthStore } from "./authStore";
 import { useBooksStore } from "./booksStore";
@@ -16,7 +16,7 @@ interface BookStore {
   bookResponse: ResponseType | null;
   setBookById: (id: string) => void;
   loadBookById: () => Promise<void>;
-  createBook: (bookData: CreateBook) => Promise<void>;
+  createBook: (bookData: BookCreation) => Promise<void>;
   updateBook: (bookId: string, field: EditableBookField, value: EditableBookValueType) => Promise<void>;
   deleteBook: (bookId: string) => Promise<void>;
   refreshBook: () => Promise<void>;
@@ -61,7 +61,7 @@ export const useBookStore = create<BookStore>((set, get) => ({
       });
   },
 
-  createBook: async (bookData: CreateBook) => {
+  createBook: async (bookData: BookCreation) => {
     set({ bookStatus: "creating", bookResponse: null });
 
     bookApi

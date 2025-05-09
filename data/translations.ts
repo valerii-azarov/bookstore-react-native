@@ -1296,8 +1296,10 @@ const translations: Translations = {
 
     createBook: {
       header: {
-        en: "Create Book",
-        uk: "Створення книги",
+        text: {
+          en: "Create Book",
+          uk: "Створення книги",
+        },
       },
       titles: {
         step1: {
@@ -1361,25 +1363,229 @@ const translations: Translations = {
           uk: "Артикул",
         },
       },
+      labels: {
+        title: {
+          en: "Enter the title of the book",
+          uk: "Введіть назву книги",
+        },
+        authors: {
+          en: "Enter authors separated by commas",
+          uk: "Введіть авторів, розділяючи комами",
+        },
+        genres: {
+          en: "Select the genres that best describe the book",
+          uk: "Виберіть жанри, які найкраще описують книгу",
+        },
+        description: {
+          en: "Provide a brief description of the book",
+          uk: "Напишіть короткий опис книги",
+        },
+        pageCount: {
+          en: "Enter the number of pages in the book",
+          uk: "Введіть кількість сторінок",
+        },
+        illustrations: {
+          en: "Does the book contain illustrations?",
+          uk: "Чи містить книга ілюстрації?",
+        },
+        language: {
+          en: "Select the language of the book",
+          uk: "Виберіть мову книги",
+        },
+        coverImage: {
+          en: "Cover Image",
+          uk: "Обкладинка",
+        },
+        additionalImages: {
+          en: "Additional Images",
+          uk: "Додаткові зображення",
+        },
+        backgroundColor: {
+          en: "Select background color",
+          uk: "Виберіть колір фону",
+        },
+        publisher: {
+          en: "Enter the publisher of the book",
+          uk: "Введіть видавництво книги",
+        },
+        publicationYear: {
+          en: "Enter the year the book was published",
+          uk: "Введіть рік публікації книги",
+        },
+        isbn: {
+          en: "Enter the book's ISBN number",
+          uk: "Введіть ISBN книги",
+        },
+        coverType: {
+          en: "Select the type of cover",
+          uk: "Виберіть тип обкладинки",
+        },
+        bookType: {
+          en: "Select the book type",
+          uk: "Виберіть тип книги",
+        },
+        paperType: {
+          en: "Select the paper type",
+          uk: "Виберіть тип паперу",
+        },
+        size: {
+          en: "Enter the dimensions of the book",
+          uk: "Введіть розміри книги",
+        },
+        weight: {
+          en: "Enter the weight of the book",
+          uk: "Введіть вагу книги",
+        },
+        originalPrice: {
+          en: "Enter original price",
+          uk: "Введіть початкову ціну",
+        },
+        discount: {
+          en: "Enter percents",
+          uk: "Введіть відсотки",
+        },
+        price: {
+          en: "Enter price",
+          uk: "Введіть ціну",
+        },
+        availableQuantity: {
+          en: "Enter quantity of books",
+          uk: "Введіть кількість книг",
+        },
+        sku: {
+          en: "Enter the article of the book",
+          uk: "Введіть артикул книги",
+        },
+      },
+      placeholders: {
+        title: {
+          en: "e.g. Murder on the Orient Express",
+          uk: "Наприклад, Вбивство в «Східному експресі»",
+        },
+        authors: {
+          en: "e.g. Agatha Christie",
+          uk: "Наприклад, Агата Крісті",
+        },
+        description: {
+          en: "e.g. A detective novel involving the famous detective Hercule Poirot...",
+          uk: "Наприклад, Детективний роман про знаменитого детектива Еркюля Пуаро...",
+        },
+        pageCount: {
+          en: "e.g. 288",
+          uk: "Наприклад, 288",
+        },
+        publisher: {
+          en: "e.g. Canon of Hercule Poirot",
+          uk: "Наприклад, Канон Еркюля Пуаро",
+        },
+        publicationYear: {
+          en: "e.g. 1938",
+          uk: "Наприклад, 1938",
+        },
+        isbn: {
+          en: "e.g. 978-617-12-9854-5",
+          uk: "Наприклад, 978-617-12-9854-5",
+        },
+        size: {
+          en: "e.g. 170 x 123 x 25 mm",
+          uk: "Наприклад, 170 x 123 x 25 мм",
+        },
+        weight: {
+          en: "e.g. 210 grams",
+          uk: "Наприклад, 210 грам",
+        },
+        originalPrice: {
+          en: "e.g. 500.00",
+          uk: "Наприклад, 500.00",
+        },
+        discount: {
+          en: "e.g. 15",
+          uk: "Наприклад, 15",
+        },
+        price: {
+          en: "e.g. 425.00",
+          uk: "Наприклад, 425.00",
+        },
+        availableQuantity: {
+          en: "e.g. 25",
+          uk: "Наприклад, 25",
+        },
+        sku: {
+          en: "e.g. 825751754618",
+          uk: "Наприклад, 825751754618",
+        },
+      },
+      options: {
+        genres: {
+          en: "Select genres",
+          uk: "Виберіть жанри",
+        },
+        language: {
+          en: "Select language",
+          uk: "Виберіть мову",
+        },
+        coverType: {
+          en: "Select the type of cover",
+          uk: "Виберіть тип обкладинки",
+        },
+        bookType: {
+          en: "Select book type",
+          uk: "Виберіть тип книги",
+        },
+        paperType: {
+          en: "Select paper type",
+          uk: "Виберіть тип паперу",
+        },
+      },
+      checkboxes: {
+        illustrations: {
+          en: "Contains Illustrations",
+          uk: "Містить ілюстрації", 
+        },
+        manual: {
+          en: "Manual price entry",
+          uk: "Ручне введення",
+        },
+      },
+      prompts: {
+        coverImage: {
+          en: "Tap to select cover image",
+          uk: "Натисніть, щоб вибрати обкладинку",
+        },
+        additionalImages: {
+          en: "Tap to add image",
+          uk: "Натисніть, щоб додати зображення",
+        },
+      },
       messages: {
         success: {
-          text: {
+          title: {
             en: "Book has been added",
             uk: "Книгу додано",
           },
-          subText: {
+          text: {
             en: "Successfully added to the book list",
             uk: "Успішно додано до списку книг",
           },
         },
         error: {
-          text: {
-            en: "Error",
-            uk: "Помилка",
+          title: {
+            en: "Error ❌",
+            uk: "Помилка ❌",
           },
-          subText: {
+          text: {
             en: "Please try again later",
             uk: "Будь ласка, спробуйте ще раз пізніше",
+          },
+        },
+        denied: {
+          text: {
+            en: "Permission Denied",
+            uk: "Дозвіл відхилено",
+          },
+          subText: {
+            en: "We need camera roll permissions to select images",
+            uk: "Нам потрібні дозволи на доступ до галереї для вибору зображень",
           },
         },
       },
@@ -2095,6 +2301,174 @@ const translations: Translations = {
     confirmPasswordMatch: {
       en: "Passwords do not match",
       uk: "Паролі не співпадають",
+    },
+    titleRequired: {
+      en: "Title is required",
+      uk: "Назва обов'язкова",
+    },
+    titleMinLength: {
+      en: "Title must be at least 2 characters",
+      uk: "Назва має бути не менше 2 символів",
+    },
+    authorsRequired: {
+      en: "At least one author is required",
+      uk: "Потрібен хоча б один автор",
+    },
+    authorsInvalid: {
+      en: "Each author name must be at least 2 characters",
+      uk: "Кожне ім'я автора має бути не менше 2 символів",
+    },
+    authorsMaxCount: {
+      en: "Maximum 5 authors allowed",
+      uk: "Дозволено максимум 5 авторів",
+    },
+    originalPriceRequired: {
+      en: "Original price must be greater than 0",
+      uk: "Початкова ціна має бути більшою за 0",
+    },
+    originalPriceInvalid: {
+      en: "Original price must be a non-negative number",
+      uk: "Початкова ціна має бути невід'ємним числом",
+    },
+    originalPriceMax: {
+      en: "Original price cannot exceed 10.000",
+      uk: "Початкова ціна не може перевищувати 10.000",
+    },
+    discountRequired: {
+      en: "Discount is required",
+      uk: "Знижка обов'язкова",
+    },
+    discountInvalid: {
+      en: "Discount must be between 0 and 100",
+      uk: "Знижка має бути від 0 до 100",
+    },
+    priceRequired: {
+      en: "Price is required",
+      uk: "Ціна обов'язкова",
+    },
+    priceInvalid: {
+      en: "Price must be a non-negative number",
+      uk: "Ціна має бути невід'ємним числом",
+    },
+    priceMax: {
+      en: "Price cannot exceed 10.000",
+      uk: "Ціна не може перевищувати 10.000",
+    },
+    coverImageRequired: {
+      en: "Cover image is required",
+      uk: "Обкладинка обов'язкова",
+    },
+    additionalImagesMaxCount: {
+      en: "Maximum 5 additional images allowed",
+      uk: "Дозволено максимум 5 додаткових зображень",
+    },
+    backgroundColorRequired: {
+      en: "Background color is required",
+      uk: "Колір фону обов'язковий",
+    },
+    descriptionRequired: {
+      en: "Description is required",
+      uk: "Опис обов'язковий",
+    },
+    descriptionMinLength: {
+      en: "Description must be at least 500 characters",
+      uk: "Опис має бути не менше 500 символів",
+    },
+    genresRequired: {
+      en: "At least one genre is required",
+      uk: "Потрібен хоча б один жанр",
+    },
+    genresMaxCount: {
+      en: "Maximum 5 genres allowed",
+      uk: "Дозволено максимум 5 жанрів",
+    },
+    languageRequired: {
+      en: "Language is required",
+      uk: "Мова обов'язкова",
+    },
+    publisherRequired: {
+      en: "Publisher is required",
+      uk: "Видавець обов'язковий",
+    },
+    publisherMinLength: {
+      en: "Publisher must be at least 2 characters",
+      uk: "Видавець має бути не менше 2 символів",
+    },
+    publicationYearRequired: {
+      en: "Publication year is required",
+      uk: "Рік видання обов'язковий",
+    },
+    publicationYearInvalid: {
+      en: "Publication year must be between 1800 and the current year",
+      uk: "Рік видання має бути між 1800 і поточним роком",
+    },
+    isbnRequired: {
+      en: "ISBN is required",
+      uk: "ISBN обов'язковий",
+    },
+    isbnInvalid: {
+      en: "ISBN must be 10 or 13 digits",
+      uk: "ISBN має містити 10 або 13 цифр",
+    },
+    pageCountRequired: {
+      en: "Page count is required",
+      uk: "Кількість сторінок обов'язкова",
+    },
+    pageCountMax: {
+      en: "Page count cannot exceed 10.000",
+      uk: "Кількість сторінок не може перевищувати 10.000",
+    },
+    coverTypeRequired: {
+      en: "Cover type is required",
+      uk: "Тип обкладинки обов'язковий",
+    },
+    bookTypeRequired: {
+      en: "Book type is required",
+      uk: "Тип книги обов'язковий",
+    },
+    paperTypeRequired: {
+      en: "Paper type is required",
+      uk: "Тип паперу обов'язковий",
+    },
+    sizeRequired: {
+      en: "Size is required",
+      uk: "Розмір обов'язковий",
+    },
+    sizeMinLength: {
+      en: "Size must be at least 2 characters",
+      uk: "Розмір має бути не менше 2 символів",
+    },
+    weightRequired: {
+      en: "Weight must be greater than 0",
+      uk: "Вага має бути більшою за 0",
+    },
+    weightMax: {
+      en: "Weight cannot exceed 10.000 grams",
+      uk: "Вага не може перевищувати 10.000 грамів",
+    },
+    illustrationsRequired: {
+      en: "Illustrations status is required",
+      uk: "Статус ілюстрацій обов'язковий",
+    },
+    availableQuantityRequired: {
+      en: "Available quantity is required",
+      uk: "Доступна кількість обов'язкова",
+    },
+    availableQuantityInvalid: {
+      en: "Available quantity must be a non-negative number",
+      uk: "Доступна кількість має бути невід'ємним числом",
+    },
+    availableQuantityMax: {
+      en: "Available quantity cannot exceed 100",
+      uk: "Кількість не може перевищувати 100",
+    },
+    skuRequired: {
+      en: "Article is required",
+      uk: "Артикул обов'язковий",
+    },
+    skuMinLength: {
+      en: "Article must be at least 2 characters",
+      uk: "Артикул має бути не менше 2 символів",
     },
   },
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Dropdown as DropdownComponent } from "react-native-element-dropdown";
+import { MultiSelect } from "react-native-element-dropdown";
 import { View, ViewStyle, StyleSheet, StyleProp } from "react-native";
 import { colors } from "@/constants/theme";
 import { Option, ShapeType } from "@/types";
@@ -7,28 +7,43 @@ import { Option, ShapeType } from "@/types";
 import Icon from "./Icon";
 import Typography from "./Typography";
 
-type DropdownProps<T extends string> = {
+const colorOptions = [
+  colors.amberTint5,
+  colors.creamTint3,
+  colors.creamTint5,
+  colors.orangeTint8,
+];
+
+type MultiDropdownProps<T extends string> = {
   options: Option<T>[];
-  initialValue: T;
-  onChange: (value: T) => void;
+  initialValues: T[];
+  onChange: (value: T[]) => void;
   placeholder?: string;
   error?: string | null;
+  showTags?: boolean;
   inputStyle?: StyleProp<ViewStyle>;
   containerStyle?: StyleProp<ViewStyle>;
   shape?: ShapeType;
 };
 
-const Dropdown = <T extends string>({
+const MultiDropdown = <T extends string>({
   options,
-  initialValue,
+  initialValues,
   onChange,
   placeholder = "Select item",
   error,
+  showTags = false,
   inputStyle,
   containerStyle,
   shape = "square",
-}: DropdownProps<T>) => {
+}: MultiDropdownProps<T>) => {
+  const [tags, setTags] = useState<string[]>(initialValues);
   const [isFocused, setIsFocused] = useState<boolean>(false);
+
+  const handleChange = (values: string[]) => {
+    setTags(values.flatMap((value) => options.find((option) => option.value === value)?.label ?? []));
+    onChange(values as T[]);
+  };
 
   const itemHeight = 55;
   const maxItemsLimited = 5;
@@ -38,7 +53,7 @@ const Dropdown = <T extends string>({
   return (
     <View style={styles.container}>
       <View>
-        <DropdownComponent
+        <MultiSelect
           style={[
             styles.inputContainer, 
             {
@@ -63,8 +78,8 @@ const Dropdown = <T extends string>({
           labelField="label"
           valueField="value"
           placeholder={placeholder}
-          value={initialValue}
-          onChange={(item) => onChange(item.value)}
+          value={initialValues as string[]}
+          onChange={handleChange}
           onFocus={() => {
             setIsFocused(true);
           }}
@@ -75,14 +90,14 @@ const Dropdown = <T extends string>({
             <View
               style={[
                 styles.dropdownItem,
-                item.value === initialValue && styles.selectedDropdownItem,
+                initialValues.includes(item.value) && styles.selectedDropdownItem,
               ]}
             >
               <Typography fontSize={14} fontWeight="medium">
                 {item.label}
               </Typography>
 
-              {item.value === initialValue && (
+              {initialValues.includes(item.value) && (
                 <Icon
                   iconSet="MaterialIcons"
                   iconName="check"
@@ -91,9 +106,10 @@ const Dropdown = <T extends string>({
                 />
               )}
             </View>
-          )}         
+          )}
+          visibleSelectedItem={false}
         />
-        
+
         {error && !isFocused && (
           <Typography
             fontSize={12}
@@ -106,6 +122,26 @@ const Dropdown = <T extends string>({
           </Typography>
         )}
       </View>
+
+      {showTags && (  
+        <View style={styles.tagContainer}>
+          {tags.map((item, index) => (
+            <Typography
+              key={index}
+              fontSize={16}
+              fontWeight="medium"
+              style={[
+                styles.tag,
+                { 
+                  backgroundColor: colorOptions[index % colorOptions.length],
+                },
+              ]}
+            >
+              {item}
+            </Typography>
+          ))}
+        </View>
+      )}
     </View>
   );
 };
@@ -150,6 +186,20 @@ const styles = StyleSheet.create({
   errorText: {
     marginLeft: 10,
   },
+  tagContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  tag: {
+    borderRadius: 16,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    marginRight: 8,
+    marginBottom: 8,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
 
-export default Dropdown;
+export default MultiDropdown;

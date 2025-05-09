@@ -1,47 +1,57 @@
-import React from "react";
-import { View, TextInput, TextInputProps, StyleSheet, ViewStyle, TextStyle } from "react-native";
+import React, { forwardRef } from "react";
+import { View, TextInput, TextInputProps, StyleSheet, ViewStyle, StyleProp, TextStyle } from "react-native";
 import { colors } from "@/constants/theme";
-import { verticalScale } from "@/helpers/common";
+import { ShapeType } from "@/types";
 
-type TextareaProps = TextInputProps & {
-  containerStyle?: ViewStyle;
-  inputStyle?: TextStyle;
-  inputRef?: React.Ref<TextInput>;
+export type TextareaProps = TextInputProps & {
+  containerStyle?: StyleProp<ViewStyle>;
+  inputStyle?: StyleProp<TextStyle>;
   minHeight?: number;
   maxHeight?: number;
-  isSquared?: boolean;
+  shape?: ShapeType;
 };
 
-const Textarea = ({
-  containerStyle,
-  inputStyle,
-  inputRef,
-  minHeight = 100,
-  maxHeight = 200,
-  isSquared = false,
-  ...props
-}: TextareaProps) => {
-  return (
-    <View style={[styles.container, containerStyle]}>
-      <TextInput
+const Textarea = forwardRef<TextInput, TextareaProps>(
+  (
+    {
+      containerStyle,
+      inputStyle,
+      minHeight = 100,
+      maxHeight = 200,
+      shape = "square",
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <View
         style={[
-          styles.input,
+          styles.container,
           {
-            minHeight,
-            maxHeight,
-            borderRadius: isSquared ? 0 : 16,
+            borderRadius: shape === "square" ? 0 : 12,
           },
-          inputStyle,
+          containerStyle,
         ]}
-        placeholderTextColor={colors.grayTint2}
-        ref={inputRef}
-        multiline
-        textAlignVertical="top"
-        {...props}
-      />
-    </View>
-  );
-};
+      >
+        <TextInput
+          style={[
+            styles.input,
+            {
+              minHeight,
+              maxHeight,
+            },
+            inputStyle,
+          ]}
+          placeholderTextColor={colors.grayTint3}
+          ref={ref}
+          multiline
+          textAlignVertical="top"
+          {...props}
+        />
+      </View>
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -52,8 +62,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   input: {
-    fontSize: verticalScale(14),
-    lineHeight: verticalScale(20),
+    fontSize: 14,
+    lineHeight: 20,
     color: colors.black,
   },
 });

@@ -2,8 +2,7 @@ import { useState, useCallback } from "react";
 import { View, FlatList, TouchableOpacity, StyleSheet, StyleProp, ViewStyle } from "react-native";
 import { Ionicons as Icon } from "@expo/vector-icons";
 import { colors } from "@/constants/theme";
-import { verticalScale } from "@/helpers/common";
-import { OptionType } from "@/types";
+import { OptionType, ShapeType } from "@/types";
 
 import Input from "./Input";
 import Typography from "./Typography";
@@ -14,7 +13,7 @@ type SearchDropdownProps = {
   onSearch: (text: string) => void;
   searchPlaceholder?: string;
   style?: StyleProp<ViewStyle>;
-  shape?: "square" | "rounded";
+  shape?: ShapeType;
   isLoading?: boolean;
   isEmpty?: boolean;
   isError?: boolean;
@@ -96,7 +95,7 @@ const SearchDropdown = ({
               }
             : undefined
         }
-        isSquared={shape === "square"}
+        shape={shape}
       />
 
       {isFocused && searchText.length > 0 && (
@@ -158,18 +157,18 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   dropdownList: {
-    maxHeight: verticalScale(275),
+    maxHeight: 275,
     backgroundColor: colors.white,
     borderColor: colors.grayTint3,
     borderWidth: 1,
     position: "absolute",
-    top: verticalScale(55),
+    top: 55,
     left: 0,
     right: 0,
     zIndex: 10,
   },
   dropdownItem: {
-    height: verticalScale(55),
+    height: 55,
     paddingHorizontal: 15,
     flexDirection: "row",
     justifyContent: "space-between",

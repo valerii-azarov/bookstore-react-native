@@ -1,47 +1,59 @@
 import React, { forwardRef } from "react";
 import { View, StyleSheet, TextInput } from "react-native";
 import { colors } from "@/constants/theme";
-import { verticalScale } from "@/helpers/common";
+import { FieldType } from "@/types";
 
-import Input from "./Input";
+import Input, { InputProps } from "./Input";
+import Textarea, { TextareaProps } from "./Textarea";
 import Typography from "./Typography";
 
-type FieldProps = React.ComponentProps<typeof Input> & {
-  label?: string;
-  error?: string;
+type ComponentProps = InputProps | TextareaProps;
+
+type FieldProps = ComponentProps & {
+  type: FieldType;
+  error?: string | null;
 };
 
-const Field = forwardRef<TextInput, FieldProps>(({ label, error, ...props }, ref) => (
-  <View style={{ minHeight: label ? verticalScale(100) : verticalScale(75) }}>
-    {label && (
-      <Typography fontSize={16} fontWeight="medium" color={colors.grayTint1} style={styles.label}>
-        {label}
-      </Typography>
-    )}
+const Field = forwardRef<TextInput, FieldProps>(
+  (
+    { 
+      type = "input", 
+      error, 
+      ...props 
+    }, 
+    ref
+  ) => {
+    const Component = type === "input" ? Input : Textarea;
 
-    <Input
-      ref={ref}
-      containerStyle={{
-        borderColor: error ? colors.redTint3 : colors.grayTint3,
-      }}
-      {...props}
-    />
+    return (
+      <View>
+        <Component
+          ref={ref}
+          containerStyle={{
+            borderColor: error ? colors.redTint1 : colors.gray,
+          }}
+          {...props}
+        />
 
-    {error && (
-      <Typography fontSize={12} fontWeight="medium" color={colors.redTint3} style={styles.error} numberOfLines={1}>
-        {error}
-      </Typography>
-    )}
-  </View>
-));
+        {error && (
+          <Typography
+            fontSize={12}
+            fontWeight="medium"
+            color={colors.redTint1}
+            numberOfLines={1}
+            style={styles.errorText}
+          >
+            {error}
+          </Typography>
+        )}
+      </View>
+    );
+  }
+);
 
 const styles = StyleSheet.create({
-  label: {
-    marginBottom: 5,
-    marginLeft: 15,
-  },
-  error: {
-    marginLeft: 15,
+  errorText: {
+    marginLeft: 10,
   },
 });
 

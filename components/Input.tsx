@@ -1,63 +1,105 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useState, useEffect } from "react";
 import Animated from "react-native-reanimated";
 import { View, ViewStyle, TextStyle, TextInput, TextInputProps, StyleSheet, StyleProp, Platform } from "react-native";
 import { colors } from "@/constants/theme";
 import { HeightEnum } from "@/constants/common";
-import { verticalScale } from "@/helpers/common";
-import { HeightType } from "@/types";
+import { converter } from "@/helpers/converter";
+import { HeightType, ShapeType } from "@/types";
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
-type InputProps = TextInputProps & {
+export type InputProps = TextInputProps & {
   iconLeft?: React.ReactElement;
   iconRight?: React.ReactElement;
   containerStyle?: StyleProp<ViewStyle>;
   inputStyle?: StyleProp<TextStyle>;
   inputHeight?: HeightType;
-  isSquared?: boolean;
+  isNumeric?: boolean;
+  isInteger?: boolean;
+  shape?: ShapeType;
 };
 
 const Input = forwardRef<TextInput, InputProps>(
   (
     {
+      value,
+      onChangeText,
       iconLeft,
       iconRight,
       containerStyle,
       inputStyle,
       inputHeight = "large",
-      isSquared = false,
+      isNumeric = false,
+      isInteger = false,
+      shape = "rounded",
       ...props
     },
     ref
   ) => {
+    const [inputValue, setInputValue] = useState<string>(value?.toString() || "");
+           
+    const handleChangeText = (text: string) => {
+      const formattedValue  = isNumeric ? converter.formatNumericValue(text, !!isInteger) : text;
+      if (formattedValue !== undefined) {
+        setInputValue(formattedValue);
+        onChangeText?.(formattedValue);
+      }   
+    }; 
+
+    useEffect(() => {
+      if (value) {
+        setInputValue(value);
+      }
+    }, [value]);
+    
     return (
       <AnimatedView
         style={[
           styles.container,
           {
-            borderRadius: isSquared ? 0 : 16,
-            height: verticalScale(HeightEnum[inputHeight]),
+            borderRadius: shape === "square" ? 0 : 12,
+            height: HeightEnum[inputHeight],
           },
           containerStyle,
         ]}
       >
-        {iconLeft && <View style={styles.iconLeft}>{iconLeft}</View>}
+        {iconLeft && (
+          <View style={styles.iconLeft}>
+            {iconLeft}
+          </View>
+        )}
 
         <TextInput
+          value={inputValue}
+          onChangeText={handleChangeText}
           style={[
             styles.input,
+            {
+              flex: 1,
+            },
             Platform.OS === "android" && {
               includeFontPadding: false,
               paddingVertical: 0,
             },
             inputStyle,
           ]}
-          placeholderTextColor={colors.grayTint2}
+          placeholderTextColor={colors.grayTint3}
+          keyboardType={
+            isNumeric
+              ? Platform.OS === "ios"
+                ? isInteger ? "number-pad" : "decimal-pad"
+                : "numeric"
+              : "default"
+          }
           ref={ref}
           {...props}
         />
 
-        {iconRight && <View style={styles.iconRight}>{iconRight}</View>}
+        {iconRight && (
+          <View style={styles.iconRight}>
+            {iconRight}
+          </View>
+        )}
       </AnimatedView>
     );
   }
@@ -73,8 +115,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   input: {
-    flex: 1,
-    fontSize: verticalScale(14),
+    fontSize: 14,
     color: colors.black,
   },
   iconLeft: {

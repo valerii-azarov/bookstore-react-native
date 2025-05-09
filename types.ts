@@ -1,4 +1,3 @@
-import { ImageSourcePropType } from "react-native";
 import * as IconSets from "@expo/vector-icons";
 import { QueryDocumentSnapshot, DocumentData } from "@firebase/firestore";
 
@@ -22,6 +21,24 @@ export type TabType = {
 // message type
 export type MessageType = "success" | "error";
 
+// new types
+export type FieldType = "input" | "textarea";
+
+export type ShapeType = "square" | "rounded";
+
+// images
+export type Images = {
+  coverImage: string;
+  additionalImages: string[];
+};
+
+// rates
+export type Rates = {
+  originalPrice: number;
+  discount: number;
+  price: number;
+};
+
 // this needs to be removed
 export type OptionType = {
   label: string;
@@ -34,17 +51,7 @@ export interface Option<T extends string> {
   value: T;
 }
 
-export interface ImageBook {
-  id: string;
-  source: ImageSourcePropType;
-}
-
-export interface ImageFlag {
-  id: string;
-  lang: Language;
-  source: ImageSourcePropType;
-}
-
+// response
 export type ResponseType = {
   status: "success" | "error";
   message?: string;
@@ -129,7 +136,7 @@ export interface MenuSection {
 }
 
 // book fields
-export type BaseBook = {
+export interface BaseBook {
   id: string;
   title: string;
   authors: string[];
@@ -156,7 +163,7 @@ export type BaseBook = {
   sku: string;
   createdAt: Date;
   updatedAt: Date;
-};
+}
 
 export interface CartEntry {
   inCart: boolean;
@@ -173,13 +180,16 @@ export interface ViewingHistoryEntry {
 }
 
 export type Cart = BaseBook & CartEntry;
-
 export type Favorite = BaseBook & FavoriteEntry;
-
 export type ViewingHistory = BaseBook & ViewingHistoryEntry;
 
 export type Book = BaseBook & Partial<Cart & Favorite>;
+export type BookField = keyof BaseBook;
 
+export type BookFormValues = Omit<BaseBook, "id" | "createdAt" | "updatedAt">;
+export type BookCreation = BookFormValues;
+
+// old fields
 export type BookPricing = {
   price: number;
   originalPrice?: number;
