@@ -1,7 +1,7 @@
 import { View, Linking, StyleSheet } from "react-native";
 import { useTranslation } from "@/contexts/translateContext";
 import { useBookStore } from "@/stores/bookStore";
-import { selectBook } from "@/selectors/bookSelectors";
+import { selectCurrentBook } from "@/selectors/bookSelectors";
 import { colors } from "@/constants/theme";
 
 import ModalTitleWrapper from "@/components/ModalTitleWrapper";
@@ -9,363 +9,111 @@ import Typography from "@/components/Typography";
 
 const BookCharacteristicsModal = () => {
   const t = useTranslation();
-  const book = useBookStore(selectBook);
+  const currentBook = useBookStore(selectCurrentBook);
+
+  const fields = [
+    {
+      key: "pageCount",
+      label: t("modals.bookCharacteristics.labels.pageCount"),
+      value: currentBook?.pageCount?.toString() || "-",
+    },
+    {
+      key: "publisher",
+      label: t("modals.bookCharacteristics.labels.publisher"),
+      value: currentBook?.publisher || "-",
+    },
+    {
+      key: "coverType",
+      label: t("modals.bookCharacteristics.labels.coverType"),
+      value: currentBook?.coverType ? t(`coverTypes.${currentBook.coverType}`) : "-",
+    },
+    {
+      key: "publicationYear",
+      label: t("modals.bookCharacteristics.labels.publicationYear"),
+      value: currentBook?.publicationYear?.toString() || "-",
+    },
+    {
+      key: "language",
+      label: t("modals.bookCharacteristics.labels.language"),
+      value: currentBook?.language ? t(`languages.${currentBook.language}`) : "-",
+    },
+    {
+      key: "size",
+      label: t("modals.bookCharacteristics.labels.size"),
+      value: currentBook?.size || "-",
+    },
+    {
+      key: "weight",
+      label: t("modals.bookCharacteristics.labels.weight"),
+      value: currentBook?.weight?.toString() || "-",
+    },
+    {
+      key: "illustrations",
+      label: t("modals.bookCharacteristics.labels.illustrations"),
+      value: t(`modals.bookCharacteristics.values.illustrations.${currentBook?.illustrations ? "contains" : "notContains"}`),
+    },
+    {
+      key: "bookType",
+      label: t("modals.bookCharacteristics.labels.bookType"),
+      value: currentBook?.bookType ? t(`bookTypes.${currentBook.bookType}`) : "-",
+    },
+    {
+      key: "paperType",
+      label: t("modals.bookCharacteristics.labels.paperType"),
+      value: currentBook?.paperType ? t(`paperTypes.${currentBook.paperType}`) : "-",
+    },
+    {
+      key: "isbn",
+      label: t("modals.bookCharacteristics.labels.isbn"),
+      value: currentBook?.isbn || "-",
+    },
+    {
+      key: "sku",
+      label: t("modals.bookCharacteristics.labels.sku"),
+      value: currentBook?.sku || "-",
+    },     
+  ];
   
   return (
     <ModalTitleWrapper
       title={t("modals.bookCharacteristics.title")}
     >
       <View style={styles.section}>
-        <View style={styles.parameterColumn}>
-          <Typography
-            fontSize={14}
-            fontWeight="medium"
-            color={colors.gray}
-            numberOfLines={1}
-            style={{ marginBottom: 2.5 }}
-          >
-            {t("modals.bookCharacteristics.labels.pageCount")}
-          </Typography>
+        {fields.map((field, index) => (
+          <View key={index}>
+            <View style={styles.parameterColumn}>
+              <Typography
+                fontSize={14}
+                fontWeight="medium"
+                color={colors.gray}
+                numberOfLines={1}
+                style={{ marginBottom: 2.5 }}
+              >
+                {field.label}
+              </Typography>
 
-          <Typography
-            fontSize={16}
-            fontWeight="bold"
-            color={colors.black}
-            numberOfLines={2}
-          >
-            {book?.pageCount || "-"}
-          </Typography>
-        </View>
+              <Typography
+                fontSize={16}
+                fontWeight="bold"
+                color={colors.black}
+                numberOfLines={1}
+              >
+                {field.value}
+              </Typography>
+            </View>
 
-        <View
-          style={[
-            styles.divider,
-            {
-              marginVertical: 15,
-            },
-          ]}
-        />
-
-        <View style={styles.parameterColumn}>
-          <Typography
-            fontSize={14}
-            fontWeight="medium"
-            color={colors.gray}
-            numberOfLines={1}
-            style={{ marginBottom: 2.5 }}
-          >
-            {t("modals.bookCharacteristics.labels.publisher")}
-          </Typography>
-
-          <Typography
-            fontSize={16}
-            fontWeight="bold"
-            color={colors.black}
-            numberOfLines={1}
-          >
-            {book?.publisher || "-"}
-          </Typography>
-        </View>
-
-        <View
-          style={[
-            styles.divider,
-            {
-              marginVertical: 15,
-            },
-          ]}
-        />
-
-        <View style={styles.parameterColumn}>
-          <Typography
-            fontSize={14}
-            fontWeight="medium"
-            color={colors.gray}
-            numberOfLines={1}
-            style={{ marginBottom: 2.5 }}
-          >
-            {t("modals.bookCharacteristics.labels.coverType")}
-          </Typography>
-
-          <Typography
-            fontSize={16}
-            fontWeight="bold"
-            color={colors.black}
-            numberOfLines={1}
-          >
-            {book?.coverType ? t(`coverTypes.${book.coverType}`) : "-"}
-          </Typography>
-        </View>
-
-        <View
-          style={[
-            styles.divider,
-            {
-              marginVertical: 15,
-            },
-          ]}
-        />
-        
-        <View style={styles.parameterColumn}>
-          <Typography
-            fontSize={14}
-            fontWeight="medium"
-            color={colors.gray}
-            numberOfLines={1}
-            style={{ marginBottom: 2.5 }}
-          >
-            {t("modals.bookCharacteristics.labels.publicationYear")}
-          </Typography>
-
-          <Typography
-            fontSize={16}
-            fontWeight="bold"
-            color={colors.black}
-            numberOfLines={1}
-          >
-            {book?.publicationYear || "-"}
-          </Typography>
-        </View>
-
-        <View
-          style={[
-            styles.divider,
-            {
-              marginVertical: 15,
-            },
-          ]}
-        />
-        
-        <View style={styles.parameterColumn}>
-          <Typography
-            fontSize={14}
-            fontWeight="medium"
-            color={colors.gray}
-            numberOfLines={1}
-            style={{ marginBottom: 2.5 }}
-          >
-            {t("modals.bookCharacteristics.labels.language")}
-          </Typography>
-
-          <Typography
-            fontSize={16}
-            fontWeight="bold"
-            color={colors.black}
-            numberOfLines={1}
-          >
-            {book?.language ? t(`languages.${book.language}`) : "-"}
-          </Typography>
-        </View>
-
-        <View
-          style={[
-            styles.divider,
-            {
-              marginVertical: 15,
-            },
-          ]}
-        />
-        
-        <View style={styles.parameterColumn}>
-          <Typography
-            fontSize={14}
-            fontWeight="medium"
-            color={colors.gray}
-            numberOfLines={1}
-            style={{ marginBottom: 2.5 }}
-          >
-            {t("modals.bookCharacteristics.labels.size")}
-          </Typography>
-
-          <Typography
-            fontSize={16}
-            fontWeight="bold"
-            color={colors.black}
-            numberOfLines={1}
-          >
-            {book?.size || "-"}
-          </Typography>
-        </View>
-
-        <View
-          style={[
-            styles.divider,
-            {
-              marginVertical: 15,
-            },
-          ]}
-        />
-        
-        <View style={styles.parameterColumn}>
-          <Typography
-            fontSize={14}
-            fontWeight="medium"
-            color={colors.gray}
-            numberOfLines={1}
-            style={{ marginBottom: 2.5 }}
-          >
-            {t("modals.bookCharacteristics.labels.weight")}
-          </Typography>
-
-          <Typography
-            fontSize={16}
-            fontWeight="bold"
-            color={colors.black}
-            numberOfLines={1}
-          >
-            {book?.weight || "-"}
-          </Typography>
-        </View>
-
-        <View
-          style={[
-            styles.divider,
-            {
-              marginVertical: 15,
-            },
-          ]}
-        />
-        
-        <View style={styles.parameterColumn}>
-          <Typography
-            fontSize={14}
-            fontWeight="medium"
-            color={colors.gray}
-            numberOfLines={1}
-            style={{ marginBottom: 2.5 }}
-          >
-            {t("modals.bookCharacteristics.labels.illustrations")}
-          </Typography>
-
-          <Typography
-            fontSize={16}
-            fontWeight="bold"
-            color={colors.black}
-            numberOfLines={1}
-          >
-            {book?.illustrations ? t(`modals.bookCharacteristics.values.illustrations.${book.illustrations ? "contains" : "notContains"}`) : "-"}
-          </Typography>
-        </View>
-
-        <View
-          style={[
-            styles.divider,
-            {
-              marginVertical: 15,
-            },
-          ]}
-        />
-        
-        <View style={styles.parameterColumn}>
-          <Typography
-            fontSize={14}
-            fontWeight="medium"
-            color={colors.gray}
-            numberOfLines={1}
-            style={{ marginBottom: 2.5 }}
-          >
-            {t("modals.bookCharacteristics.labels.bookType")}
-          </Typography>
-
-          <Typography
-            fontSize={16}
-            fontWeight="bold"
-            color={colors.black}
-            numberOfLines={1}
-          >
-            {book?.bookType ? t(`bookTypes.${book.bookType}`) : "-"}
-          </Typography>
-        </View>
-
-        <View
-          style={[
-            styles.divider,
-            {
-              marginVertical: 15,
-            },
-          ]}
-        />
-        
-        <View style={styles.parameterColumn}>
-          <Typography
-            fontSize={14}
-            fontWeight="medium"
-            color={colors.gray}
-            numberOfLines={1}
-            style={{ marginBottom: 2.5 }}
-          >
-            {t("modals.bookCharacteristics.labels.paperType")}
-          </Typography>
-
-          <Typography
-            fontSize={16}
-            fontWeight="bold"
-            color={colors.black}
-            numberOfLines={1}
-          >
-            {book?.paperType ? t(`paperTypes.${book.paperType}`) : "-"}
-          </Typography>
-        </View>
-
-        <View
-          style={[
-            styles.divider,
-            {
-              marginVertical: 15,
-            },
-          ]}
-        />
-        
-        <View style={styles.parameterColumn}>
-          <Typography
-            fontSize={14}
-            fontWeight="medium"
-            color={colors.gray}
-            numberOfLines={1}
-            style={{ marginBottom: 2.5 }}
-          >
-            {t("modals.bookCharacteristics.labels.isbn")}
-          </Typography>
-
-          <Typography
-            fontSize={16}
-            fontWeight="bold"
-            color={colors.black}
-            numberOfLines={1}
-          >
-            {book?.isbn || "-"}
-          </Typography>
-        </View>
-
-        <View
-          style={[
-            styles.divider,
-            {
-              marginVertical: 15,
-            },
-          ]}
-        />
-        
-        <View style={styles.parameterColumn}>
-          <Typography
-            fontSize={14}
-            fontWeight="medium"
-            color={colors.gray}
-            numberOfLines={1}
-            style={{ marginBottom: 2.5 }}
-          >
-            {t("modals.bookCharacteristics.labels.sku")}
-          </Typography>
-
-          <Typography
-            fontSize={16}
-            fontWeight="bold"
-            color={colors.black}
-            numberOfLines={1}
-          >
-            {book?.sku || "-"}
-          </Typography>
-        </View>
+            {index < fields.length - 1 && (
+              <View
+                style={[
+                  styles.divider,
+                  {
+                    marginVertical: 15,
+                  },
+                ]}
+              />
+            )}
+          </View>
+        ))}
       </View>
 
       <View style={[styles.notice, { marginTop: 15 }]}>

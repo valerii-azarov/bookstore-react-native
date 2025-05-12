@@ -97,7 +97,7 @@ const RateCalculator = ({
           type="input"
           value={rates.price === 0 ? "" : rates.price.toString()}
           onChangeText={(value) => handleRateChange("price", value)}
-          placeholder={labels.price}
+          placeholder={placeholders.price}
           error={errors.price}
           editable={manual}
           isNumeric

@@ -5,10 +5,10 @@ import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
 import { useBookStore } from "@/stores/bookStore";
 import {
-  selectBookStatus,
-  selectBookResponse,
+  selectCreateBookStatus,
+  selectCreateBookResponse,
   selectCreateBook,
-  selectResetBook,
+  selectResetBookOperationState,
 } from "@/selectors/bookSelectors";
 import { isbnRegex } from "@/constants/regex";
 import { colors } from "@/constants/theme";
@@ -69,17 +69,15 @@ const CreateBookModal = () => {
   const t = useTranslation();
   const isConnected = useIsConnected();
 
-  const bookStatus = useBookStore(selectBookStatus);
-  const bookResponse = useBookStore(selectBookResponse);
+  const createBookStatus = useBookStore(selectCreateBookStatus);
+  const createBookResponse = useBookStore(selectCreateBookResponse);
   
   const createBook = useBookStore(selectCreateBook);
-  const resetBook = useBookStore(selectResetBook);
+  const resetBookOperationState = useBookStore(selectResetBookOperationState);
 
-  const isCreating = bookStatus === "creating";
-  const isSuccess = bookResponse?.status === "success";
-  const isError = bookResponse?.status === "error";
-
-  const message = bookResponse?.message;
+  const isCreating = createBookStatus === "creating";
+  const status = createBookResponse?.status;
+  const message = createBookResponse?.message;
 
   const [formValues, setFormValues] = useState<BookFormValues>(initialValues);
   const [errors, setErrors] = useState<Partial<Record<keyof BookFormValues, string | null>>>({});
@@ -667,11 +665,11 @@ const CreateBookModal = () => {
           }}
         >
           <Typography fontSize={24} fontWeight="bold" style={{ marginBottom: 10, textAlign: "center" }}>
-            {t(`modals.createBook.messages.${isSuccess ? "success" : "error"}.title`)}
+            {t(`modals.createBook.messages.${status === "success" ? "success" : "error"}.title`)}
           </Typography>
           
           <Typography fontSize={16} fontWeight="medium" color={colors.blackTint5} style={{ textAlign: "center" }}>
-            {t(`modals.createBook.messages.${isSuccess ? "success" : "error"}.text`) || message}
+            {t(`modals.createBook.messages.${status === "success" ? "success" : "error"}.text`) || message}
           </Typography>
         </View>
       ),
@@ -685,7 +683,7 @@ const CreateBookModal = () => {
   const handleNext = () => {
     setDirection("forward");
     if (isLastStep) {
-      return isError ? router.back() : router.dismiss();
+      return status === "error" ? router.back() : router.dismiss();
     }
     if (isSecondToLastStep && !isCreating && isConnected) {
       createBook(formValues);
@@ -700,13 +698,13 @@ const CreateBookModal = () => {
   };
 
   useEffect(() => {
-    if (isSecondToLastStep && !isCreating && bookResponse) {
+    if (isSecondToLastStep && !isCreating && createBookResponse) {
       setCurrentStep((prev) => prev + 1);
     }
-  }, [isCreating, isSecondToLastStep, bookResponse]);
+  }, [isCreating, isSecondToLastStep, createBookResponse]);
 
   useEffect(() => {
-    return () => resetBook();
+    return () => resetBookOperationState("create");
   }, []);
 
   return (
@@ -735,7 +733,7 @@ const CreateBookModal = () => {
           onPrevious={handlePrevious}
           form={formValues}
           buttonLabels={{
-            next: t(`modals.createBook.buttons.${isError ? "return" : isLastStep ? "complete" : isSecondToLastStep ? "create" : "continue"}.text`),
+            next: t(`modals.createBook.buttons.${status === "error" ? "return" : isLastStep ? "complete" : isSecondToLastStep ? "create" : "continue"}.text`),
             previous: t("modals.createBook.buttons.back.text"),
           }}
           buttonProps={{ 

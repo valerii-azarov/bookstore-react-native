@@ -16,12 +16,12 @@ import { useBookStore } from "@/stores/bookStore";
 import { useCartStore } from "@/stores/cartStore";
 import { useFavoritesStore } from "@/stores/favoritesStore";
 import {
-  selectBook,
-  selectBookStatus,
-  selectBookResponse,
+  selectCurrentBook,
+  selectFetchBookStatus,
+  selectFetchBookResponse,
   selectSetBookById,
-  selectLoadBookById,
-  selectResetBook,
+  selectFetchBookById,
+  selectResetCurrentBook,
 } from "@/selectors/bookSelectors";
 import { selectIsAdmin } from "@/selectors/authSelectors";
 import { selectToggleCart, selectBuyNow } from "@/selectors/cartSelectors";
@@ -46,13 +46,13 @@ const BookDetailsScreen = () => {
   
   const isAdmin = useAuthStore(selectIsAdmin);
 
-  const book = useBookStore(selectBook);
-  const bookStatus = useBookStore(selectBookStatus);
-  const bookResponse = useBookStore(selectBookResponse);
+  const currentBook = useBookStore(selectCurrentBook);
+  const fetchBookStatus = useBookStore(selectFetchBookStatus);
+  const fetchBookResponse = useBookStore(selectFetchBookResponse);
   
   const setBookById = useBookStore(selectSetBookById);
-  const loadBookById = useBookStore(selectLoadBookById);
-  const resetBook = useBookStore(selectResetBook); 
+  const fetchBookById = useBookStore(selectFetchBookById);
+  const resetCurrentBook = useBookStore(selectResetCurrentBook);
 
   const toggleCart = useCartStore(selectToggleCart);
   const buyNow = useCartStore(selectBuyNow);
@@ -61,8 +61,8 @@ const BookDetailsScreen = () => {
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const isLoading = bookStatus === "loading";
-  const isError = !isLoading && bookResponse?.status === "error";
+  const isLoading = fetchBookStatus === "loading";
+  const isError = !isLoading && fetchBookResponse?.status === "error";
 
   const buyScale = useSharedValue(1);
   const cartScale = useSharedValue(1);
@@ -114,12 +114,92 @@ const BookDetailsScreen = () => {
         );
   };
 
+  const sections = [
+    {
+      type: "attribute",
+      title: t("screens.bookDetails.titles.details"),
+      items: [
+        {
+          key: "sku",
+          label: t("screens.bookDetails.labels.sku"),
+          value: currentBook?.sku || "-",
+        },
+        {
+          key: "quantity",
+          label: t("screens.bookDetails.labels.quantity"),
+          value: currentBook?.availableQuantity?.toString() || "-",
+        },
+        {
+          key: "createdAt",
+          label: t("screens.bookDetails.labels.createdAt"),
+          value: currentBook?.createdAt ? format(new Date(currentBook.createdAt), "dd.MM.yyyy HH:mm") : "-",
+        },
+        {
+          key: "updatedAt",
+          label: t("screens.bookDetails.labels.updatedAt"),
+          value: currentBook?.updatedAt ? format(new Date(currentBook.updatedAt), "dd.MM.yyyy HH:mm") : "-",
+        },
+      ],
+      isVisibleItems: isAdmin,
+    },
+    {
+      type: "attribute",
+      title: t("screens.bookDetails.titles.characteristics"),
+      items: [
+        {
+          key: "pageCount",
+          label: t("screens.bookDetails.labels.pageCount"),
+          value: currentBook?.pageCount?.toString() || "-",
+        },
+        {
+          key: "publisher",
+          label: t("screens.bookDetails.labels.publisher"),
+          value: currentBook?.publisher || "-",
+        },
+        {
+          key: "coverType",
+          label: t("screens.bookDetails.labels.coverType"),
+          value: currentBook?.coverType ? t(`coverTypes.${currentBook.coverType}`) : "-",
+        },
+        {
+          key: "publicationYear",
+          label: t("screens.bookDetails.labels.publicationYear"),
+          value: currentBook?.publicationYear?.toString() || "-",
+        },
+        {
+          key: "language",
+          label: t("screens.bookDetails.labels.language"),
+          value: currentBook?.language ? t(`languages.${currentBook.language}`) : "-",
+        },
+      ],
+      button: {
+        label: t("screens.bookDetails.buttons.viewAllCharacteristics.text"),
+        onPress: () => router.push("/book-characteristics"),
+      },
+    },
+    {
+      type: "text",
+      title: t("screens.bookDetails.titles.description"),
+      items: [
+        {
+          key: "description",
+          label: "",
+          value: currentBook?.description || "-",
+        },
+      ],
+      button: {
+        label: t("screens.bookDetails.buttons.viewFullDescription.text"),
+        onPress: () => router.push("/book-description"),
+      },
+    },
+  ];
+  
   useEffect(() => {
     if (bookId && isConnected) {
       setBookById(bookId);
-      loadBookById();
+      fetchBookById();
     }
-    return () => resetBook();
+    return () => resetCurrentBook();
   }, [bookId, isConnected]);
 
   return (
@@ -142,7 +222,7 @@ const BookDetailsScreen = () => {
         />
       )}
 
-      {isConnected && !isLoading && !isError && book !== null && (
+      {isConnected && !isLoading && !isError && currentBook !== null && (
         <ScrollView 
           contentContainerStyle={styles.scrollViewContainer}
           showsVerticalScrollIndicator={false}
@@ -153,7 +233,7 @@ const BookDetailsScreen = () => {
                 style={[
                   styles.sectionWrapper, 
                   { 
-                    backgroundColor: book.backgroundColor ? colorConverter.lighterHexColor(book.backgroundColor) : colors.grayTint5,
+                    backgroundColor: currentBook.backgroundColor ? colorConverter.lighterHexColor(currentBook.backgroundColor) : colors.grayTint5,
                     borderRadius: 0,
                   }
                 ]}
@@ -161,23 +241,23 @@ const BookDetailsScreen = () => {
                 <View style={styles.coverImageContainer}>
                   <Image
                     style={styles.coverImage}
-                    source={{ uri: selectedImage || book.coverImage }}
+                    source={{ uri: selectedImage || currentBook.coverImage }}
                     resizeMode="cover"
                   />
                 </View>
 
-                {(book.additionalImages || []).length > 0 && (
+                {(currentBook.additionalImages || []).length > 0 && (
                   <View style={styles.additionalImagesContainer}>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                      {[book.coverImage, ...(book.additionalImages || [])].map((imageUri, index) => (
+                      {[currentBook.coverImage, ...(currentBook.additionalImages || [])].map((imageUri, index) => (
                         <TouchableOpacity key={index} onPressIn={() => setSelectedImage(imageUri)}>
                           <Image
                             style={[
                               styles.thumbnailImage,
                               {
-                                borderColor: imageUri === (selectedImage || book.coverImage) ? colors.white : colors.gray,
-                                borderWidth: imageUri === (selectedImage || book.coverImage) ? 2 : 1,
-                                marginRight: index < [book.coverImage, ...(book.additionalImages || [])].length - 1 ? 10 : 0,
+                                borderColor: imageUri === (selectedImage || currentBook.coverImage) ? colors.white : colors.gray,
+                                borderWidth: imageUri === (selectedImage || currentBook.coverImage) ? 2 : 1,
+                                marginRight: index < [currentBook.coverImage, ...(currentBook.additionalImages || [])].length - 1 ? 10 : 0,
                               },
                             ]}
                             source={{ uri: imageUri }}
@@ -190,7 +270,7 @@ const BookDetailsScreen = () => {
                 )}
 
                 <View style={styles.detailsContainer}>
-                  {book.discount > 0 && (
+                  {currentBook.discount > 0 && (
                     <View
                       style={[
                         styles.detailBadge, 
@@ -200,7 +280,7 @@ const BookDetailsScreen = () => {
                       ]}
                     >
                       <Typography fontSize={16} fontWeight="bold" color={colors.white}>
-                        -{book.discount}%
+                        -{currentBook.discount}%
                       </Typography>
                     </View>
                   )}
@@ -217,7 +297,7 @@ const BookDetailsScreen = () => {
                   numberOfLines={1} 
                   style={{ marginBottom: 2.5 }}
                 >
-                  {book.authors.join(", ")}
+                  {currentBook.authors.join(", ")}
                 </Typography>
 
                 <Typography 
@@ -226,7 +306,7 @@ const BookDetailsScreen = () => {
                   color={colors.black} 
                   numberOfLines={2}
                 >
-                  {book.title}
+                  {currentBook.title}
                 </Typography>
 
                 <View
@@ -240,44 +320,44 @@ const BookDetailsScreen = () => {
 
                 <View style={styles.priceAndActionsRow}>
                   <View style={styles.priceColumn}>
-                    {book.availableQuantity === 0 && (
+                    {currentBook.availableQuantity === 0 && (
                       <Typography fontSize={16} fontWeight="bold" color={colors.black}>
                         Немає в наявності
                       </Typography>
                     )}
 
-                    {book.availableQuantity > 0 && (
+                    {currentBook.availableQuantity > 0 && (
                       <Typography
-                        fontSize={book.discount > 0 ? 20 : 24}
+                        fontSize={currentBook.discount > 0 ? 20 : 24}
                         fontWeight="bold"
-                        color={book.discount > 0 ? colors.red : colors.black}
+                        color={currentBook.discount > 0 ? colors.red : colors.black}
                         numberOfLines={1}
                         style={{ maxWidth: 150 }}
                       >
-                        {book.price}₴
+                        {currentBook.price}₴
                       </Typography>
                     )}
 
-                    {book.availableQuantity > 0 && book.discount > 0 && (
+                    {currentBook.availableQuantity > 0 && currentBook.discount > 0 && (
                       <Typography
                         fontSize={14}
                         color={colors.gray}
                         numberOfLines={1}
                         style={{ maxWidth: 150, textDecorationLine: "line-through" }}
                       >
-                        {book.originalPrice}₴
+                        {currentBook.originalPrice}₴
                       </Typography>
                     )}
                   </View>
 
                   {!isAdmin && (  
                     <View style={styles.actionsRow}>
-                      {book.availableQuantity > 0 && (
+                      {currentBook.availableQuantity > 0 && (
                         <TouchableOpacity
                           onPress={() => {
                             startBuyAnimation();
                             setTimeout(() => {
-                              buyNow(book, 1);
+                              buyNow(currentBook, 1);
                               router.push("/cart");
                             }, 500);
                           }}                     
@@ -299,8 +379,8 @@ const BookDetailsScreen = () => {
 
                       <TouchableOpacity
                         onPressIn={() => {
-                          startFavoriteAnimation(!book.isFavorite);
-                          toggleFavorite(book.id);
+                          startFavoriteAnimation(!currentBook.isFavorite);
+                          toggleFavorite(currentBook.id);
                         }}
                         style={[
                           styles.actionButton, 
@@ -313,17 +393,17 @@ const BookDetailsScreen = () => {
                         <Animated.View style={favoriteAnimatedStyle}>
                           <Icon 
                             iconSet="Ionicons"
-                            iconName={book.isFavorite ? "heart" : "heart-outline"} 
+                            iconName={currentBook.isFavorite ? "heart" : "heart-outline"} 
                             iconSize={24} 
-                            iconColor={book.isFavorite ? colors.red : colors.black} 
+                            iconColor={currentBook.isFavorite ? colors.red : colors.black} 
                           />
                         </Animated.View>
                       </TouchableOpacity>
 
                       <TouchableOpacity
                         onPressIn={() => {
-                          startCartAnimation(!book.inCart);
-                          toggleCart(book);
+                          startCartAnimation(!currentBook.inCart);
+                          toggleCart(currentBook);
                         }}
                         style={[
                           styles.actionButton, 
@@ -332,14 +412,14 @@ const BookDetailsScreen = () => {
                             height: 40,
                           }
                         ]}
-                        disabled={book.availableQuantity === 0}
+                        disabled={currentBook.availableQuantity === 0}
                       >
                         <Animated.View style={cartAnimatedStyle}>
                           <Icon
                             iconSet="Ionicons"
-                            iconName={book.inCart ? "bag-check" : "bag-add-outline"}
+                            iconName={currentBook.inCart ? "bag-check" : "bag-add-outline"}
                             iconSize={24}
-                            iconColor={book.availableQuantity === 0 ? colors.grayTint1 : colors.black}
+                            iconColor={currentBook.availableQuantity === 0 ? colors.grayTint1 : colors.black}
                           />
                         </Animated.View>
                       </TouchableOpacity>                    
@@ -349,360 +429,97 @@ const BookDetailsScreen = () => {
               </View>
             </View>
 
-            {isAdmin && (
-              <View style={[styles.sectionContainer, styles.paddedHorizontal]}>
-                <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
-                  {t("screens.bookDetails.titles.details")}
-                </Typography>
+            {sections.map((section, sectionIndex) => {
+              if (section.isVisibleItems === false) return null;
 
-                <View style={styles.sectionWrapper}>
-                  <View style={styles.parameterColumn}>
-                    <Typography
-                      fontSize={14}
-                      fontWeight="medium"
-                      color={colors.gray}
-                      numberOfLines={1}
-                      style={{ marginBottom: 2.5 }}
-                    >
-                      {t("screens.bookDetails.labels.sku")}
-                    </Typography>
+              return (
+                <View 
+                  key={`section-${sectionIndex}`}
+                  style={[styles.sectionContainer, styles.paddedHorizontal]}
+                >
+                  <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
+                    {section.title}
+                  </Typography>
 
-                    <Typography
-                      fontSize={16}
-                      fontWeight="bold"
-                      color={colors.black}
-                      numberOfLines={2}
-                    >
-                      {book.sku || "-"}
-                    </Typography>
-                  </View>
+                  <View style={styles.sectionWrapper}>
+                    {section.items.map((item, itemIndex) => (
+                      <View key={`item-${itemIndex}`}>
+                        {section.type === "attribute" && (
+                          <View 
+                            style={{
+                              flexDirection: "column",
+                              alignItems: "flex-start",
+                            }}
+                          >
+                            <Typography
+                              fontSize={14}
+                              fontWeight="medium"
+                              color={colors.gray}
+                              numberOfLines={1}
+                              style={{ marginBottom: 2.5 }}
+                            >
+                              {item.label}
+                            </Typography>
 
-                  <View
-                    style={[
-                      styles.divider,
-                      {
-                        marginVertical: 15,
-                      },
-                    ]}
-                  />
+                            <Typography
+                              fontSize={16}
+                              fontWeight="bold"
+                              color={colors.black}
+                              numberOfLines={1}
+                            >
+                              {item.value}
+                            </Typography>
+                          </View>
+                        )}
 
-                  <View style={styles.parameterColumn}>
-                    <Typography
-                      fontSize={14}
-                      fontWeight="medium"
-                      color={colors.gray}
-                      numberOfLines={1}
-                      style={{ marginBottom: 2.5 }}
-                    >
-                      {t("screens.bookDetails.labels.quantity")}
-                    </Typography>
-
-                    <Typography
-                      fontSize={16}
-                      fontWeight="bold"
-                      color={colors.black}
-                      numberOfLines={1}
-                    >
-                      {book.availableQuantity || 0}
-                    </Typography>
-                  </View>   
-
-                  {book.createdAt && (  
-                    <>
-                      <View
-                        style={[
-                          styles.divider,
-                          {
-                            marginVertical: 15,
-                          },
-                        ]}
-                      />
-
-                      <View style={styles.parameterColumn}>
-                        <Typography
-                          fontSize={14}
-                          fontWeight="medium"
-                          color={colors.gray}
-                          numberOfLines={1}
-                          style={{ marginBottom: 2.5 }}
-                        >
-                          {t("screens.bookDetails.labels.createdAt")}
-                        </Typography>
-
-                        <Typography
-                          fontSize={16}
-                          fontWeight="bold"
-                          color={colors.black}
-                          numberOfLines={1}
-                        >
-                          {format(new Date(book.createdAt), "dd.MM.yyyy HH:mm")}
-                        </Typography>
+                        {section.type === "text" && (
+                          <Typography
+                            fontSize={16}
+                            fontWeight="medium"
+                            color={colors.black}
+                            numberOfLines={5}
+                          >
+                            {item.value}
+                          </Typography>
+                        )}
+                        
+                        {(itemIndex < section.items.length - 1 || !!section.button) && (
+                          <View
+                            style={[
+                              styles.divider,
+                              {
+                                marginVertical: 15,
+                              },
+                            ]}
+                          />
+                        )}
                       </View>
-                    </>
-                  )}
+                    ))}
 
-                  {book.updatedAt && (
-                    <>
-                      <View
-                        style={[
-                          styles.divider,
-                          {
-                            marginVertical: 15,
-                          },
-                        ]}
-                      />
-
-                      <View style={styles.parameterColumn}>
-                        <Typography
-                          fontSize={14}
-                          fontWeight="medium"
-                          color={colors.gray}
-                          numberOfLines={1}
-                          style={{ marginBottom: 2.5 }}
-                        >
-                          {t("screens.bookDetails.labels.updatedAt")}
-                        </Typography>
-
+                    {section.button && (
+                      <TouchableOpacity
+                        style={{
+                          backgroundColor: colors.grayTint9,
+                          borderRadius: 10,
+                          padding: 10,
+                        }}
+                        onPress={section.button.onPress}
+                        activeOpacity={0.7}
+                      >
                         <Typography
                           fontSize={16}
                           fontWeight="bold"
                           color={colors.black}
-                          numberOfLines={1}
+                          style={{ textAlign: "center" }}
                         >
-                          {format(new Date(book.updatedAt), "dd.MM.yyyy HH:mm")}
+                          {section.button.label}
                         </Typography>
-                      </View> 
-                    </>
-                  )}              
+                      </TouchableOpacity>
+                    )}
+                  </View>
                 </View>
-              </View>
-            )}
-            
-            <View style={[styles.sectionContainer, styles.paddedHorizontal]}>
-              <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
-                {t("screens.bookDetails.titles.characteristics")}
-              </Typography>
-
-              <View style={styles.sectionWrapper}>
-                <View style={styles.parameterColumn}>
-                  <Typography
-                    fontSize={14}
-                    fontWeight="medium"
-                    color={colors.gray}
-                    numberOfLines={1}
-                    style={{ marginBottom: 2.5 }}
-                  >
-                    {t("screens.bookDetails.labels.pageCount")}
-                  </Typography>
-
-                  <Typography
-                    fontSize={16}
-                    fontWeight="bold"
-                    color={colors.black}
-                    numberOfLines={2}
-                  >
-                    {book.pageCount || "-"}
-                  </Typography>
-                </View>
-
-                <View
-                  style={[
-                    styles.divider,
-                    {
-                      marginVertical: 15,
-                    },
-                  ]}
-                />
-
-                <View style={styles.parameterColumn}>
-                  <Typography
-                    fontSize={14}
-                    fontWeight="medium"
-                    color={colors.gray}
-                    numberOfLines={1}
-                    style={{ marginBottom: 2.5 }}
-                  >
-                    {t("screens.bookDetails.labels.publisher")}
-                  </Typography>
-
-                  <Typography
-                    fontSize={16}
-                    fontWeight="bold"
-                    color={colors.black}
-                    numberOfLines={1}
-                  >
-                    {book.publisher || "-"}
-                  </Typography>
-                </View>
-
-                <View
-                  style={[
-                    styles.divider,
-                    {
-                      marginVertical: 15,
-                    },
-                  ]}
-                />
-
-                <View style={styles.parameterColumn}>
-                  <Typography
-                    fontSize={14}
-                    fontWeight="medium"
-                    color={colors.gray}
-                    numberOfLines={1}
-                    style={{ marginBottom: 2.5 }}
-                  >
-                    {t("screens.bookDetails.labels.coverType")}
-                  </Typography>
-
-                  <Typography
-                    fontSize={16}
-                    fontWeight="bold"
-                    color={colors.black}
-                    numberOfLines={1}
-                  >
-                    {book.coverType ? t(`coverTypes.${book.coverType}`) : "-"}
-                  </Typography>
-                </View>
-
-                <View
-                  style={[
-                    styles.divider,
-                    {
-                      marginVertical: 15,
-                    },
-                  ]}
-                />
-                
-                <View style={styles.parameterColumn}>
-                  <Typography
-                    fontSize={14}
-                    fontWeight="medium"
-                    color={colors.gray}
-                    numberOfLines={1}
-                    style={{ marginBottom: 2.5 }}
-                  >
-                    {t("screens.bookDetails.labels.publicationYear")}
-                  </Typography>
-
-                  <Typography
-                    fontSize={16}
-                    fontWeight="bold"
-                    color={colors.black}
-                    numberOfLines={1}
-                  >
-                    {book.publicationYear || "-"}
-                  </Typography>
-                </View>
-
-                <View
-                  style={[
-                    styles.divider,
-                    {
-                      marginVertical: 15,
-                    },
-                  ]}
-                />
-                
-                <View style={styles.parameterColumn}>
-                  <Typography
-                    fontSize={14}
-                    fontWeight="medium"
-                    color={colors.gray}
-                    numberOfLines={1}
-                    style={{ marginBottom: 2.5 }}
-                  >
-                    {t("screens.bookDetails.labels.language")}
-                  </Typography>
-
-                  <Typography
-                    fontSize={16}
-                    fontWeight="bold"
-                    color={colors.black}
-                    numberOfLines={1}
-                  >
-                    {book.language ? t(`languages.${book.language}`) : "-"}
-                  </Typography>
-                </View>
-
-                <View
-                  style={[
-                    styles.divider,
-                    {
-                      marginVertical: 15,
-                    },
-                  ]}
-                />
-
-                <TouchableOpacity
-                  style={{ 
-                    backgroundColor: colors.grayTint9,
-                    borderRadius: 10,
-                    padding: 10,
-                  }}
-                  onPress={() => { 
-                    router.push("/book-characteristics");
-                  }}
-                  activeOpacity={0.7}
-                >
-                  <Typography
-                    fontSize={16}
-                    fontWeight="bold"
-                    color={colors.black}
-                    style={{ textAlign: "center" }}
-                  >
-                    {t("screens.bookDetails.buttons.viewAllCharacteristics.text")}
-                  </Typography>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            <View style={[styles.sectionContainer, styles.paddedHorizontal]}>
-              <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
-                {t("screens.bookDetails.titles.description")}
-              </Typography>
-
-              <View style={styles.sectionWrapper}>
-                <Typography
-                  fontSize={16} 
-                  fontWeight="medium" 
-                  color={colors.black}
-                  numberOfLines={5}
-                >
-                  {book.description}
-                </Typography>
-
-                <View
-                  style={[
-                    styles.divider,
-                    {
-                      marginVertical: 15,
-                    },
-                  ]}
-                />
-
-                <TouchableOpacity
-                  style={{ 
-                    backgroundColor: colors.grayTint9,
-                    borderRadius: 10,
-                    padding: 10,
-                  }}
-                  onPress={() => { 
-                    router.push("/book-description");
-                  }}
-                  activeOpacity={0.7}
-                >
-                  <Typography
-                    fontSize={16}
-                    fontWeight="bold"
-                    color={colors.black}
-                    style={{ textAlign: "center" }}
-                  >
-                    {t("screens.bookDetails.buttons.viewFullDescription.text")}
-                  </Typography>
-                </TouchableOpacity>
-              </View>
-            </View>
+              );
+            })}
           </View>
         </ScrollView>     
       )}
@@ -781,10 +598,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
-  },
-  parameterColumn: {
-    flexDirection: "column",
-    alignItems: "flex-start",
   },
   divider: {
     height: 1.5,

@@ -189,26 +189,32 @@ export type BookField = keyof BaseBook;
 export type BookFormValues = Omit<BaseBook, "id" | "createdAt" | "updatedAt">;
 export type BookCreation = BookFormValues;
 
-// old fields
-export type BookPricing = {
-  price: number;
-  originalPrice?: number;
-  discount?: number;
-};
-
-export type BoookImages = {
-  coverImage: string;
-  additionalImages: string[];
-};
-
-export type CreateBook = Omit<BaseBook, "id" | "createdAt" | "updatedAt">;
-
 export type EditableBookField =
-  | keyof Omit<BaseBook, "price" | "originalPrice" | "discount" | "coverImage" | "additionalImages" | "createdAt" | "updatedAt">
-  | "images"
-  | "pricing";
+  | Exclude<
+      keyof BaseBook,
+      | "id"
+      | "originalPrice"
+      | "discount"
+      | "price"
+      | "coverImage"
+      | "additionalImages"
+      | "createdAt"
+      | "updatedAt"
+    >
+  | "rates"
+  | "images";
 
-export type EditableBookValueType = string | string[] | number | boolean | BookPricing | BoookImages | null;
+export type EditableBookValue = string | string[] | number | boolean | Rates | Images;
+// export type EditableBookValue = {
+//   [K in EditableBookField]:
+//     K extends keyof BaseBook
+//       ? BaseBook[K]
+//       : K extends "rates"
+//         ? Rates
+//         : K extends "images"
+//           ? Images
+//           : never;
+// }[EditableBookField];
 
 // nova post
 export interface BaseNovaPost {
@@ -344,7 +350,7 @@ export type EditableBookFields = Partial<Record<EditableBookField, BookFieldComp
 export type BookStepComponentType = {
   title: string;
   component: JSX.Element;
-  validate?: (form: CreateBook) => boolean;
+  validate?: (form: BookCreation) => boolean;
 };
 
 // other responses

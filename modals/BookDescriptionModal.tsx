@@ -1,7 +1,7 @@
 import { View, Linking, StyleSheet } from "react-native";
 import { useTranslation } from "@/contexts/translateContext";
 import { useBookStore } from "@/stores/bookStore";
-import { selectBook } from "@/selectors/bookSelectors";
+import { selectCurrentBook } from "@/selectors/bookSelectors";
 import { colors } from "@/constants/theme";
 
 import ModalTitleWrapper from "@/components/ModalTitleWrapper";
@@ -9,7 +9,7 @@ import Typography from "@/components/Typography";
 
 const BookDescriptionModal = () => {
   const t = useTranslation();
-  const book = useBookStore(selectBook);
+  const currentBook = useBookStore(selectCurrentBook);
 
   return (
     <ModalTitleWrapper
@@ -17,7 +17,7 @@ const BookDescriptionModal = () => {
     >
       <View style={styles.section}>
         <Typography fontSize={16} fontWeight="medium" color={colors.black}>
-          {book?.description}
+          {currentBook?.description}
         </Typography>
       </View>
 

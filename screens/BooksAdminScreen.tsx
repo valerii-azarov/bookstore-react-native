@@ -91,10 +91,11 @@ const BooksAdminScreen = () => {
       <BookItem
         item={item}
         isOwner
-        onView={() => router.push(`/book/${item.id}`)}
+        onView={() => {
+          router.push(`/book/${item.id}`);
+        }}
         onEdit={(bookId) => {
-          // this needs to add a screen edit book in future
-          console.log(`redirect to /edit-book/${bookId}`);
+          router.push(`/book-settings/${bookId}`);
         }}
         onDelete={(bookId) => confirmDeleteBook(bookId)}
       />

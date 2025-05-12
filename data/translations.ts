@@ -913,6 +913,137 @@ const translations: Translations = {
       },
     },
 
+    bookSettings: {
+      header: {
+        en: "Book Settings",
+        uk: "Параметри книги",
+      },
+      fields: {
+        id: {
+          en: "ID",
+          uk: "ID",
+        },
+        title: {
+          en: "Title",
+          uk: "Назва",
+        },
+        authors: {
+          en: "Authors",
+          uk: "Автори",
+        },
+        rates: {
+          en: "Cost",
+          uk: "Вартість",
+        },
+        images: {
+          en: "Images",
+          uk: "Зображення",
+        },
+        backgroundColor: {
+          en: "Background color",
+          uk: "Колір фону",
+        },
+        description: {
+          en: "Description",
+          uk: "Опис",
+        },
+        genres: {
+          en: "Genres",
+          uk: "Жанри",
+        },
+        language: {
+          en: "Language",
+          uk: "Мова",
+        },
+        publisher: {
+          en: "Publisher",
+          uk: "Видавництво",
+        },
+        publicationYear: {
+          en: "Publication year",
+          uk: "Рік видання",
+        },
+        isbn: {
+          en: "ISBN",
+          uk: "ISBN",
+        },
+        pageCount: {
+          en: "Page count",
+          uk: "Кількість сторінок",
+        },
+        coverType: {
+          en: "Cover type",
+          uk: "Обкладинка",
+        },
+        bookType: {
+          en: "Book type",
+          uk: "Тип книжки",
+        },
+        paperType: {
+          en: "Paper type",
+          uk: "Тип паперу",
+        },
+        size: {
+          en: "Size",
+          uk: "Розмір",
+        },
+        weight: {
+          en: "Weight",
+          uk: "Вага",
+        },
+        illustrations: {
+          en: "Illustrations",
+          uk: "Ілюстрації",
+        },
+        availableQuantity: {
+          en: "Quantity",
+          uk: "Кількість",
+        },
+        sku: {
+          en: "Article",
+          uk: "Артикул",
+        },
+        createdAt: {
+          en: "Creation date",
+          uk: "Дата створення",
+        },
+        updatedAt: {
+          en: "Update date",
+          uk: "Дата оновлення",
+        },
+      },      
+      values: {
+        illustrations: {
+          contains: {
+            en: "Contains illustrations",
+            uk: "Містить ілюстрації",
+          },
+          notContains: {
+            en: "No illustrations",
+            uk: "Без ілюстрацій",
+          },
+        },
+      },
+      messages: {
+        error: {
+          text: {
+            en: "An error occurred",
+            uk: "Виникла помилка",
+          },
+          subText: {
+            en: "Something went wrong",
+            uk: "Щось пішло не так",
+          },
+        },
+      },
+      buttons: {
+        edit: {
+          en: "Edit",
+          uk: "Змінити",
+        },
+      },
+    },
+
     // orders: { },
 
     orderHistory: {
@@ -1625,14 +1756,6 @@ const translations: Translations = {
 
     editBook: {
       header: {
-        images: {
-          en: "Change images",
-          uk: "Зміна зображень",
-        },
-        backgroundColor: {
-          en: "Change background color",
-          uk: "Зміна кольору фону",
-        },
         title: {
           en: "Change title",
           uk: "Зміна назви",
@@ -1641,9 +1764,21 @@ const translations: Translations = {
           en: "Change authors",
           uk: "Зміна авторів",
         },
-        pricing: {
+        rates: {
           en: "Change price",
           uk: "Зміна ціни",
+        },
+        images: {
+          en: "Change images",
+          uk: "Зміна зображень",
+        },
+        backgroundColor: {
+          en: "Change background color",
+          uk: "Зміна кольору фону",
+        },
+        description: {
+          en: "Change description",
+          uk: "Зміна опису",
         },
         genres: {
           en: "Change genres",
@@ -1661,13 +1796,13 @@ const translations: Translations = {
           en: "Change publication year",
           uk: "Зміна року публікації",
         },
+        isbn: {
+          en: "Change ISBN",
+          uk: "Зміна ISBN",
+        },
         pageCount: {
           en: "Change page count",
           uk: "Зміна кількості сторінок",
-        },
-        illustrations: {
-          en: "Change illustrations",
-          uk: "Зміна ілюстрацій",
         },
         coverType: {
           en: "Change cover type",
@@ -1689,21 +1824,229 @@ const translations: Translations = {
           en: "Change weight",
           uk: "Зміна ваги",
         },
-        isbn: {
-          en: "Change ISBN",
-          uk: "Зміна ISBN",
+        illustrations: {
+          en: "Change illustrations",
+          uk: "Зміна ілюстрацій",
+        },
+        availableQuantity: {
+          en: "Change quantity",
+          uk: "Зміна кількості",
         },
         sku: {
           en: "Change article",
           uk: "Зміна артикулу",
         },
-        quantity: {
-          en: "Change quantity",
-          uk: "Зміна кількості",
+      },
+      labels: {
+        title: {
+          en: "New title",
+          uk: "Нова назва",
+        },
+        authors: {
+          en: "New authors (comma-separated)",
+          uk: "Нові автори (через кому)",
+        },
+        rates: {
+          originalPrice: {
+            en: "New original price",
+            uk: "Нова початкова ціна",
+          },
+          discount: {
+            en: "New percents",
+            uk: "Нові відсотки",
+          },
+          price: {
+            en: "New price",
+            uk: "Нова ціна",
+          },
+        },
+        images: {
+          coverImage: {
+            en: "New Cover Image",
+            uk: "Нова обкладинка",
+          },
+          additionalImages: {
+            en: "New Additional Images",
+            uk: "Нові додаткові зображення",
+          },
+        },
+        backgroundColor: {
+          en: "New background color",
+          uk: "Новий колір фону",
         },
         description: {
-          en: "Change description",
-          uk: "Зміна опису",
+          en: "New description",
+          uk: "Новий опис",
+        },
+        genres: {
+          en: "New genres",
+          uk: "Нові жанри",
+        },
+        language: {
+          en: "New language",
+          uk: "Нова мова",
+        },
+        publisher: {
+          en: "New publisher",
+          uk: "Новий видавець",
+        },
+        publicationYear: {
+          en: "New publication year",
+          uk: "Новий рік публікації",
+        },
+        isbn: {
+          en: "New ISBN",
+          uk: "Новий ISBN",
+        },
+        pageCount: {
+          en: "New page count",
+          uk: "Нова кількість сторінок",
+        },
+        coverType: {
+          en: "New cover type",
+          uk: "Новий тип обкладинки",
+        },
+        bookType: {
+          en: "New book type",
+          uk: "Новий тип книги",
+        },
+        paperType: {
+          en: "New paper type",
+          uk: "Новий тип паперу",
+        },
+        size: {
+          en: "New size",
+          uk: "Новий розмір",
+        },
+        weight: {
+          en: "New weight",
+          uk: "Нова вага",
+        },
+        illustrations: {
+          en: "Does the book contain illustrations?",
+          uk: "Чи містить книга ілюстрації?",
+        },
+        availableQuantity: {
+          en: "New quantity",
+          uk: "Нова кількість",
+        },
+        sku: {
+          en: "New article",
+          uk: "Новий артикул",
+        },
+      },
+      placeholders: {
+        title: {
+          en: "Enter new title",
+          uk: "Введіть нову назву",
+        },
+        authors: {
+          en: "Enter new authors",
+          uk: "Введіть нових авторів",
+        },
+        rates: {
+          originalPrice: {
+            en: "Enter new original price",
+            uk: "Введіть нову початкову ціну",
+          },
+          discount: {
+            en: "Enter new percents",
+            uk: "Введіть нові відсотки",
+          },
+          price: {
+            en: "Enter new price",
+            uk: "Введіть нову ціну",
+          },
+        },
+        description: {
+          en: "Enter new description",
+          uk: "Введіть новий опис",
+        },
+        publisher: {
+          en: "Enter new publisher",
+          uk: "Введіть нового видавця",
+        },
+        publicationYear: {
+          en: "Enter new publication year",
+          uk: "Введіть новий рік публікації",
+        },
+        isbn: {
+          en: "Enter new ISBN",
+          uk: "Введіть новий ISBN",
+        },
+        pageCount: {
+          en: "Enter new page count",
+          uk: "Введіть нову кількість сторінок",
+        },
+        size: {
+          en: "Enter new size",
+          uk: "Введіть новий розмір",
+        },
+        weight: {
+          en: "Enter new weight",
+          uk: "Введіть нову вагу",
+        },
+        availableQuantity: {
+          en: "Enter new quantity",
+          uk: "Введіть нову кількість",
+        },
+        sku: {
+          en: "Enter new article",
+          uk: "Введіть новий артикул",
+        },
+      },
+      options: {
+        genres: {
+          en: "Select new genres",
+          uk: "Виберіть нові жанри",
+        },
+        language: {
+          en: "Select new language",
+          uk: "Виберіть нову мову",
+        },
+        coverType: {
+          en: "Select new type of cover",
+          uk: "Виберіть новий тип обкладинки",
+        },
+        bookType: {
+          en: "Select new book type",
+          uk: "Виберіть новий тип книги",
+        },
+        paperType: {
+          en: "Select new paper type",
+          uk: "Виберіть новий тип паперу",
+        },
+      },
+      checkboxes: {
+        illustrations: {
+          en: "Contains Illustrations",
+          uk: "Містить ілюстрації", 
+        },
+        manual: {
+          en: "Manual price entry",
+          uk: "Ручне введення",
+        },
+      },
+      prompts: {
+        coverImage: {
+          en: "Tap to select cover image",
+          uk: "Натисніть, щоб вибрати обкладинку",
+        },
+        additionalImages: {
+          en: "Tap to add image",
+          uk: "Натисніть, щоб додати зображення",
+        },
+      },
+      messages: {
+        denied: {
+          text: {
+            en: "Permission Denied",
+            uk: "Дозвіл відхилено",
+          },
+          subText: {
+            en: "We need camera roll permissions to select images",
+            uk: "Нам потрібні дозволи на доступ до галереї для вибору зображень",
+          },
         },
       },
       buttons: {
@@ -2569,6 +2912,20 @@ const translations: Translations = {
         },
       },
     },    
+    editBook: {
+      success: {
+        message: {
+          en: "Book updated successfully.",
+          uk: "Книгу успішно оновлено."
+        }
+      },
+      error: {
+        message: {
+          en: "Failed to update book. Please try again.",
+          uk: "Не вдалося оновити книгу. Спробуйте ще раз."
+        }
+      },  
+    },
     orderCopied: {
       title: {
         en: "Copied",

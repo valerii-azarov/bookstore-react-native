@@ -2,7 +2,7 @@ import { doc, getDoc, setDoc, updateDoc, deleteDoc, collection } from "@firebase
 import { db } from "./firebase";
 import { imagesApi } from "./imagesApi";
 import { viewingHistoryApi } from "./viewingHistoryApi";
-import { BaseBook, BookCreation, BookPricing, BoookImages, EditableBookField, EditableBookValueType } from "@/types";
+import { BaseBook, BookCreation, Rates, Images, EditableBookField, EditableBookValue } from "@/types";
 
 export const bookApi = {
   fetchBookById: async (bookId: string, userId?: string): Promise<BaseBook | null> => {
@@ -50,23 +50,23 @@ export const bookApi = {
     return { id: createdBookDoc.id, ...createdBookDoc.data() } as BaseBook;
   },
 
-  updateBook: async (bookId: string, field: EditableBookField, value: EditableBookValueType): Promise<BaseBook> => {
+  updateBook: async (bookId: string, field: EditableBookField, value: EditableBookValue): Promise<BaseBook> => {
     const bookRef = doc(db, "books", bookId);
     const updatedAt = new Date().toISOString();
 
-    if (field === "pricing") {
+    if (field === "rates") {
       if (value && typeof value === "object" && !Array.isArray(value)) {
-        const { price, originalPrice, discount } = value as BookPricing;
+        const { originalPrice, discount, price } = value as Rates;
         await updateDoc(bookRef, {
-          price: price || 0,
           originalPrice: originalPrice || 0,
           discount: discount || 0,
+          price: price || 0,
           updatedAt,
         });
       }
     } else if (field === "images") {
       if (value && typeof value === "object" && !Array.isArray(value)) {
-        const { coverImage, additionalImages } = value as BoookImages;
+        const { coverImage, additionalImages } = value as Images;
 
         const currentBook = await bookApi.fetchBookById(bookId);
         if (!currentBook) {

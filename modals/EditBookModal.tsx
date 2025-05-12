@@ -1,356 +1,335 @@
-import React, { useState, useMemo } from "react";
-import { View, Alert, TouchableWithoutFeedback, ScrollView, Keyboard, KeyboardAvoidingView, Platform, StyleSheet } from "react-native";
+import { useState, useEffect } from "react";
+import { View, Alert, ScrollView, StyleSheet } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
+import { isEqual } from "lodash";
+import { bookHandler } from "@/helpers/bookHandler";
+import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
-import { useBooksStore } from "@/stores/booksStore";
+import { useBookStore } from "@/stores/bookStore";
+import {
+  selectBookId,
+  selectCurrentBook,
+  selectUpdateBookStatus,
+  selectUpdateBookResponse,
+  selectUpdateBook, 
+  selectResetBookOperationState,
+} from "@/selectors/bookSelectors";
+import { 
+  genresKeys, 
+  languageKeys,
+  coverTypeKeys,
+  bookTypeKeys,
+  paperTypeKeys, 
+} from "@/constants/book";
 import { colors } from "@/constants/theme";
-import { colorConverter } from "@/helpers/colorConverter";
-import { genresKeys, languageKeys, coverTypeKeys, bookTypeKeys, paperTypeKeys } from "@/constants/book";
-import { BookPricing, EditableBookFields, EditableBookField, EditableBookValueType } from "@/types";
+import { EditableBookField, EditableBookValue } from "@/types";
 
 import ModalWrapper from "@/components/ModalWrapper";
-import Header from "@/components/Header";
-import BackButton from "@/components/BackButton";
+import KeyboardWrapper from "@/components/KeyboardWrapper";
 import Button from "@/components/Button";
-import ColorChanger from "@/components/ColorPicker";
+import BackButton from "@/components/BackButton";
+import Header from "@/components/Header";
+import Input from "@/components/Input";
+import ImagesField from "@/components/ImagesField";
+import Checkbox from "@/components/Checkbox";
+import ColorPicker from "@/components/ColorPicker";
+import Dropdown from "@/components/Dropdown";
+import MultiDropdown from "@/components/MultiDropdown";
+import RateCalculator from "@/components/RateCalculator";
+import TagsField from "@/components/TagsField";
+import Textarea from "@/components/Textarea";
 import Typography from "@/components/Typography";
-
-import BookField from "@/components/BookField";
-import BookImagesField from "@/components/BookImagesField";
-import BookPricingField from "@/components/BookPricingField";
-import BookSelectField from "@/components/BookSelectField";
-import BookTagsField from "@/components/BookTagsField";
-import BookTextareaField from "@/components/BookTextareaField";
-import BookCheckboxField from "@/components/BookCheckboxField";
 
 const EditBookModal = () => {
   const router = useRouter();
-  const { field, data } = useLocalSearchParams<{ field?: string; data?: string }>();
-    
+  const { field } = useLocalSearchParams<{ field: EditableBookField }>();
+
   const t = useTranslation();
-
-  const { bookId, bookStatus, updateBook } = useBooksStore();
+  const isConnected = useIsConnected();
   
-  const bookData = data ? JSON.parse(data) : null;
+  const bookId = useBookStore(selectBookId);
+  const currentBook = useBookStore(selectCurrentBook);
+  const updateBookStatus = useBookStore(selectUpdateBookStatus);
+  const updateBookResponse = useBookStore(selectUpdateBookResponse);
+
+  const updateBook = useBookStore(selectUpdateBook);
+  const resetBookOperationState = useBookStore(selectResetBookOperationState);
+
+  const isUpdating = updateBookStatus === "updating";
+  const status = updateBookResponse?.status;
+  const message = updateBookResponse?.message;
+
   const typedField = field as EditableBookField | undefined;
+
+  const initialValue = typedField
+    ? bookHandler.getInitialBookValue(currentBook, typedField)
+    : null;
+
+  const [newValue, setNewValue] = useState<EditableBookValue | null>(initialValue);
   
-  const initialValue = bookData && typedField ? bookData[typedField] : null;
-  const [editedValue, setEditedValue] = useState<EditableBookValueType>(initialValue);  
-      
-  const fields = useMemo<EditableBookFields>(() => {
-    const textFields: EditableBookField[] = ["title", "publisher", "size", "isbn", "sku"];
-    const numericFields: EditableBookField[] = ["pageCount", "publicationYear", "quantity"];
-    const numericNonIntegerFields: EditableBookField[] = ["weight"];
+  const isValueChanged = initialValue !== null && newValue !== null && !isEqual(initialValue, newValue);
 
-    return {
-      ...textFields.reduce((acc, field) => ({
-        ...acc,
-        [field]: {
-          component: (
-            <BookField
-              field={field}
-              initialValue={bookData?.[field]?.toString() || ""}
-              onChange={(newValue) => setEditedValue(newValue)}
-              isLabelColorWhite
-              isEditing
-            />
-          )
-        }
-      }), {}),
+  const handleUpdate = () => {
+    if (!bookId || !typedField || newValue === null) return;
 
-      ...numericFields.reduce((acc, field) => ({
-        ...acc,
-        [field]: {
-          component: (
-            <BookField
-              field={field}
-              initialValue={bookData?.[field]?.toString() || ""}
-              onChange={(newValue) => setEditedValue(newValue ? Number(newValue) : 0)}
-              isLabelColorWhite
-              isEditing
-              isNumeric
-              isInteger
-            />
-          )
-        }
-      }), {}),
+    if (isValueChanged) {
+      updateBook(bookId, typedField, newValue);
+    }
+  };
 
-      ...numericNonIntegerFields.reduce((acc, field) => ({
-        ...acc,
-        [field]: {
-          component: (
-            <BookField
-              field={field}
-              initialValue={bookData?.[field]?.toString() || ""}
-              onChange={(newValue) => setEditedValue(newValue ? Number(newValue) : 0)}
-              isLabelColorWhite
-              isEditing
-              isNumeric
-            />
-          )
-        }
-      }), {}),
-
-      language: {
-        component: (
-          <BookSelectField
-            field="language"
-            type="single"
-            options={languageKeys.map((key) => ({ label: t(`languages.${key}`), value: key }))}
-            initialValue={bookData?.language || ""}
-            onChange={(newValue) => setEditedValue(newValue)}
-            isLabelColorWhite
-            isEditing
-          />
-        )
-      },
-
-      coverType: {
-        component: (
-          <BookSelectField
-            field="coverType"
-            type="single"
-            options={coverTypeKeys.map((key) => ({ label: t(`coverTypes.${key}`), value: key }))}
-            initialValue={bookData?.coverType || ""}
-            onChange={(newValue) => setEditedValue(newValue)}
-            isLabelColorWhite
-            isEditing
-          />
-        )
-      },
-
-      bookType: {
-        component: (
-          <BookSelectField
-            field="bookType"
-            type="single"
-            options={bookTypeKeys.map((key) => ({ label: t(`bookTypes.${key}`), value: key }))}
-            initialValue={bookData?.bookType || ""}
-            onChange={(newValue) => setEditedValue(newValue)}
-            isLabelColorWhite
-            isEditing
-          />
-        )
-      },
-
-      paperType: {
-        component: (
-          <BookSelectField
-            field="paperType"
-            type="single"
-            options={paperTypeKeys.map((key) => ({ label: t(`paperTypes.${key}`), value: key }))}
-            initialValue={bookData?.paperType || ""}
-            onChange={(newValue) => setEditedValue(newValue)}
-            isLabelColorWhite
-            isEditing
-          />
-        )
-      },
-
-      genres: {
-        component: (
-          <BookSelectField
-            field="genres"
-            type="multiple"
-            options={genresKeys.map((key) => ({ label: t(`genres.${key}`), value: key }))}
-            initialValue={bookData?.genres || []}
-            onChange={(newValue) => setEditedValue(newValue)}
-            isLabelColorWhite
-            isEditing
-            showSearch
-            showSelected
-          />
-        )
-      },
-
-      backgroundColor: { 
-        component: (
-          <ColorChanger
-            initialColor={bookData?.backgroundColor || colors.creamTint9}
-            onColorChange={(hex) => setEditedValue(hex)}
-          />
-        )
-      },
-
-      images: { 
-        component: (
-          <BookImagesField
-            initialValues={{
-              coverImage: bookData?.coverImage || "",
-              additionalImages: bookData?.additionalImages || [],
-            }}
-            onChange={(value) => setEditedValue(value)}
-            isLabelColorWhite
-            isBorderColorWhite
-          />
-        )
-      },
-
-      pricing: { 
-        component: (
-          <BookPricingField
-            initialValues={{
-              price: bookData?.price || 0,
-              originalPrice: bookData?.originalPrice || 0,
-              discount: bookData?.discount || 0,
-            }}
-            onPriceChange={(values) => setEditedValue(values)}
-            isLabelColorWhite
-          />
-        )
-      },
-
-      authors: { 
-        component: (
-          <BookTagsField
-            field="authors"
-            initialValue={bookData?.authors || []}
-            onChange={(value) => setEditedValue(value)}
-            isLabelColorWhite
-            isEditing
-          />
-        )
-      },
-
-      description: { 
-        component: (
-          <BookTextareaField
-            field="description"
-            initialValue={bookData?.description || ""}
-            onChange={(value) => setEditedValue(value)}
-            isLabelColorWhite
-            isEditing
-          />
-        )
-      },
-
-      illustrations: { 
-        component: (
-          <BookCheckboxField
-            field="illustrations"
-            initialValue={bookData?.illustrations || false}
-            onChange={(value) => setEditedValue(value)}
-            checkboxColor={bookData?.backgroundColor}
-            isCheckboxColorDarker
-            isLabelColorWhite
-          />
-        )
-      },
-    };
-  }, [t, bookData]);
-  
-  const handleSave = () => {
-    if (!bookId || !typedField) return;
-
-    updateBook(bookId, typedField, editedValue)
-      .then(() => {
-        setTimeout(() => {
-          router.back();
-        }, 500);
-      })
-      .catch((error) => {
-        console.error(error);
-        Alert.alert("Error", "Failed to save changes.");
-      });
-  };  
-
-  const isValueChanged = useMemo(() => {
-    if (initialValue === editedValue) return false;
-
-    if (typedField === "pricing" && initialValue && editedValue) {
-      const { price, originalPrice, discount } = initialValue as BookPricing;
-      const { price: newPrice, originalPrice: newOriginalPrice, discount: newDiscount } = editedValue as BookPricing;
-
-      return (
-        price !== newPrice ||
-        originalPrice !== newOriginalPrice ||
-        discount !== newDiscount
+  useEffect(() => {
+    if (status === "error" && message) {
+      Alert.alert(
+        t("alerts.static.error.title"),
+        message || t("alerts.editBook.error.message")
       );
     }
-
-    if (Array.isArray(initialValue) && Array.isArray(editedValue)) {
-      return (
-        initialValue.length !== editedValue.length ||
-        !initialValue.every((item, index) => item === editedValue[index])
+    return () => resetBookOperationState("update");
+  }, [status, message]);
+  
+  useEffect(() => {
+    if (status === "success") {
+      Alert.alert(
+        t("alerts.static.success.title"),
+        t("alerts.editBook.success.message"),
+        [{ text: "OK", onPress: () => setTimeout(() => router.back(), 500) }]
       );
     }
+    return () => resetBookOperationState("update");
+  }, [status, router]);
 
-    return initialValue !== editedValue;
-  }, [initialValue, editedValue, typedField]);
+  const textFields: EditableBookField[] = ["title", "publisher", "size", "isbn", "sku"];
+  const numericFields: EditableBookField[] = ["pageCount", "publicationYear", "availableQuantity"];
+  const numericNonIntegerFields: EditableBookField[] = ["weight"];
+
+  const hiddenLabelFields: EditableBookField[] = ["backgroundColor", "rates", "images"];
 
   return (
-    <ModalWrapper style={{ backgroundColor: bookData.backgroundColor || colors.creamTint9 }}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <KeyboardAvoidingView
-          style={styles.keyboardAvoidingView}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
+    <ModalWrapper>
+      <KeyboardWrapper>
+        <Header
+          title={t(`modals.editBook.header.${field}`)}
+          titleSize={18}
+          iconLeft={<BackButton />}
+          style={{
+            paddingHorizontal: 15,
+            marginBottom: 10,
+          }}
+        />
+        
+        <ScrollView 
+          contentContainerStyle={styles.scrollViewContainer}
+          showsVerticalScrollIndicator={false}
         >
-          <Header
-            title={t(`modals.editBook.header.${field}`)}
-            iconLeft={
-              <BackButton
-                style={{
-                  backgroundColor: bookData.backgroundColor
-                    ? colorConverter.lighterHexColor(bookData.backgroundColor)
-                    : colors.grayTint4,
-                }}
-              />
-            }
-            style={styles.header}
-            titleStyle={styles.headerTitle}
-          />
+          <View style={[styles.content, styles.padded]}>
+            {typedField && newValue !== null && ( 
+              <View style={styles.field}>
+                {!hiddenLabelFields.includes(typedField) && (
+                  <Typography
+                    fontSize={typedField === "illustrations" ? 16 : 14}
+                    fontWeight="medium"
+                    color={colors.black}
+                    style={{ 
+                      marginBottom: typedField === "illustrations" ? 10 : 5,
+                    }}
+                  >
+                    {t(`modals.editBook.labels.${typedField}`)}
+                  </Typography>
+                )}
 
-          <ScrollView 
-            style={{ flex: 1 }}
-            contentContainerStyle={styles.scrollViewContent}
-          >
-            {typedField && fields[typedField]?.component}
-          </ScrollView>
+                {textFields.includes(typedField) && typeof newValue === "string" && (
+                  <Input 
+                    value={newValue}
+                    onChangeText={(text) => setNewValue(text)}
+                    placeholder={t(`modals.editBook.placeholders.${typedField}`)}
+                  />
+                )}
 
-          <View style={styles.buttonContainer}>
-            <Button
-              onPress={handleSave}
-              style={{
-                backgroundColor: isValueChanged
-                  ? bookData.backgroundColor
-                    ? colorConverter.darkerHexColor(bookData.backgroundColor)
-                    : colors.gray
-                  : colors.grayTint4,
-              }}
-              loading={bookStatus === "updating"}
-              disabled={!isValueChanged}
-            >
-              <Typography fontSize={16} fontWeight="bold" color={colors.white}>
-                {t("modals.editBook.buttons.save.text")}
-              </Typography>
-            </Button>
+                {numericFields.includes(typedField) && typeof newValue === "number" && (
+                  <Input
+                    value={newValue.toString()}
+                    onChangeText={(text) => setNewValue(text)}
+                    placeholder={t(`modals.editBook.placeholders.${typedField}`)}
+                    isNumeric
+                    isInteger
+                  />
+                )}
+                
+                {numericNonIntegerFields.includes(typedField) && typeof newValue === "number" && (
+                  <Input
+                    value={newValue.toString()}
+                    onChangeText={(text) => setNewValue(text)}
+                    placeholder={t(`modals.editBook.placeholders.${typedField}`)}
+                    isNumeric
+                  />
+                )}
+
+                {typedField === "description" && typeof newValue === "string" && (
+                  <Textarea 
+                    value={newValue}
+                    onChangeText={(text) => setNewValue(text)}
+                    placeholder={t("modals.editBook.placeholders.description")}
+                    minHeight={100}
+                    maxHeight={500}
+                    shape="rounded"
+                  />
+                )}
+                
+                {typedField === "illustrations" && typeof newValue === "boolean" && (
+                  <View style={{ alignItems: "flex-start" }}>
+                    <Checkbox
+                      checked={newValue}
+                      onPress={() => setNewValue(!newValue)}
+                      label={t("modals.editBook.checkboxes.illustrations")}
+                      labelSize={16}
+                    />
+                  </View>
+                )}
+                
+                {typedField === "authors" && Array.isArray(newValue) && (
+                  <TagsField
+                    initialValue={newValue}
+                    onChange={(value) => setNewValue(value)}
+                    placeholder={t("modals.editBook.placeholders.authors")}
+                  />
+                )}
+
+                {typedField === "language" && typeof newValue === "string" && (
+                  <Dropdown
+                    options={languageKeys.map((key) => ({ label: t(`languages.${key}`), value: key }))}
+                    initialValue={newValue}
+                    onChange={(value) => setNewValue(value)}
+                    placeholder={t("modals.editBook.options.language")}
+                    shape="rounded"
+                  />
+                )}
+
+                {typedField === "coverType" && typeof newValue === "string" && (
+                  <Dropdown
+                    options={coverTypeKeys.map((key) => ({ label: t(`coverTypes.${key}`), value: key }))}
+                    initialValue={newValue}
+                    onChange={(value) => setNewValue(value)}
+                    placeholder={t("modals.editBook.options.coverType")}
+                    shape="rounded"
+                  />
+                )}
+                
+                {typedField === "bookType" && typeof newValue === "string" && (
+                  <Dropdown
+                    options={bookTypeKeys.map((key) => ({ label: t(`bookTypes.${key}`), value: key }))}
+                    initialValue={newValue}
+                    onChange={(value) => setNewValue(value)}
+                    placeholder={t("modals.editBook.options.bookType")}
+                    shape="rounded"
+                  />
+                )}
+                
+                {typedField === "paperType" && typeof newValue === "string" && (
+                  <Dropdown
+                    options={paperTypeKeys.map((key) => ({ label: t(`paperTypes.${key}`), value: key }))}
+                    initialValue={newValue}
+                    onChange={(value) => setNewValue(value)}
+                    placeholder={t("modals.editBook.options.paperType")}
+                    shape="rounded"
+                  />
+                )}
+                
+                {typedField === "genres" && Array.isArray(newValue) && (
+                  <MultiDropdown 
+                    options={genresKeys.map((key) => ({ label: t(`genres.${key}`), value: key }))}
+                    initialValues={newValue}
+                    onChange={(value) => setNewValue(value)}
+                    placeholder={t("modals.editBook.options.genres")}
+                    showTags
+                    shape="rounded"
+                  />
+                )}
+
+                {typedField === "backgroundColor" && typeof newValue === "string" && (
+                  <ColorPicker
+                    initialColor={newValue}
+                    onColorChange={(hex) => setNewValue(hex)}
+                  />
+                )}
+
+                {typedField === "rates" && typeof newValue === "object" && "price" in newValue && (
+                  <RateCalculator 
+                    initialRates={newValue}
+                    onRatesChange={(rates) => setNewValue(rates)}
+                    labels={{
+                      originalPrice: t("modals.editBook.labels.rates.originalPrice"),
+                      discount: t("modals.editBook.labels.rates.discount"),
+                      price: t("modals.editBook.labels.rates.price"),
+                    }}
+                    placeholders={{
+                      originalPrice: t("modals.editBook.placeholders.rates.originalPrice"),
+                      discount: t("modals.editBook.placeholders.rates.discount"),
+                      price: t("modals.editBook.placeholders.rates.price"),
+                    }}
+                    checkboxes={{
+                      manual: t("modals.editBook.checkboxes.manual"),
+                    }}
+                  />
+                )}
+
+                {typedField === "images" && typeof newValue === "object" && "coverImage" in newValue && (
+                  <ImagesField 
+                    initialImages={newValue}
+                    onImagesChange={(images) => setNewValue(images)}
+                    labels={{
+                      coverImage: t("modals.editBook.labels.images.coverImage"),
+                      additionalImages: t("modals.editBook.labels.images.additionalImages"),
+                    }}
+                    prompts={{
+                      coverImage: t("modals.editBook.prompts.coverImage"),
+                      additionalImages: t("modals.editBook.prompts.additionalImages"),
+                    }}
+                    messages={{
+                      denied: {
+                        text: t("modals.editBook.messages.denied.text"),
+                        subText: t("modals.editBook.messages.denied.subText"),
+                      }
+                    }}
+                  />
+                )}
+              </View>
+            )}
           </View>
-        </KeyboardAvoidingView>
-      </TouchableWithoutFeedback>
+        </ScrollView>
+
+        <View style={styles.buttonContainer}>
+          <Button 
+            onPress={handleUpdate}
+            loading={isUpdating}
+            disabled={isUpdating || !isValueChanged || !isConnected}
+          >
+            <Typography fontSize={16} fontWeight="bold" color={colors.white}>
+              {t("modals.editBook.buttons.save.text")}
+            </Typography>
+          </Button>
+        </View> 
+      </KeyboardWrapper>
     </ModalWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  header: {
-    paddingHorizontal: 15,
-    marginBottom: 15,
+  scrollViewContainer: {
+    flexGrow: 1,
   },
-  headerTitle: {
-    color: colors.white,
-  },
-  keyboardAvoidingView: {
+  content: {
     flex: 1,
   },
-  scrollViewContent: {
-    flexGrow: 1,
-    paddingHorizontal: 15,
-    paddingBottom: 15,
+  field: { 
+    minHeight: 75,
   },
   buttonContainer: {
-    paddingTop: 10,
+    backgroundColor: colors.grayTint9,
+    padding: 10,
     paddingHorizontal: 15,
-    paddingBottom: 15,
+  },
+  padded: {
+    padding: 15,
   },
 });
 

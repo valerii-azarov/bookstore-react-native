@@ -131,10 +131,19 @@ const InitialLayout = () => {
         }}
       />
       <Stack.Screen
+        name="(admin)/book-settings/[bookId]"
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
         name="(admin)/(modals)/edit-book/[field]"
-        options={{ 
+        options={{
           headerShown: false,
-          presentation: "transparentModal",
+          ...(Platform.OS === "ios"
+            ? { 
+                animation: "slide_from_bottom", 
+                animationDuration: 250,
+              }
+            : {}),
         }}
       />
       <Stack.Screen
