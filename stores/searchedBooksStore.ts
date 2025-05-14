@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { QueryDocumentSnapshot, DocumentData } from "@firebase/firestore";
 import { booksApi } from "@/api/booksApi";
 import { DEFAULT_BOOKS_LIMIT } from "@/constants/settings";
-import { BaseBook, BookSearchKey, BooksResponse, StatusType, ResponseType } from "@/types";
+import { BaseBook, BooksResponse, StatusType, ResponseType } from "@/types";
 
 interface SearchedBooksStore {
   searchedBooks: BaseBook[];
@@ -11,8 +11,8 @@ interface SearchedBooksStore {
   searchedBooksResponse: ResponseType | null;
   searchedBooksHasMore: boolean;
   searchQuery: string;
-  searchKeys: BookSearchKey[];
-  setSearchQuery: (query: string, keys: BookSearchKey[], asBooksResponse?: boolean) => void;
+  searchKeys: Array<keyof BaseBook>;
+  setSearchQuery: (query: string, keys: Array<keyof BaseBook>, asBooksResponse?: boolean) => void;
   loadSearchedBooks: (reset?: boolean, asBooksResponse?: boolean) => Promise<void>;
   loadMoreSearchedBooks: () => void;
   refreshSearchedBooks: () => void;
@@ -28,7 +28,7 @@ export const useSearchedBooksStore = create<SearchedBooksStore>((set, get) => ({
   searchQuery: "",
   searchKeys: [],
 
-  setSearchQuery: (query: string, keys: BookSearchKey[], asBooksResponse = false) => {
+  setSearchQuery: (query: string, keys: Array<keyof BaseBook>, asBooksResponse = false) => {
     set({ 
       searchedBooksLastDoc: null, 
       searchedBooksHasMore: false, 

@@ -2,7 +2,9 @@ import { create } from "zustand";
 import { categoriesApi } from "@/api/categoriesApi";
 import { genresKeys } from "@/constants/book";
 import { bookHandler } from "@/helpers/bookHandler";
-import { CategoriesType, StatusType, ResponseType } from "@/types";
+import { Book, StatusType, ResponseType } from "@/types";
+
+type CategoriesType = { [key: string]: Book[] };
 
 import { useAuthStore } from "./authStore";
 import { useCartStore } from "./cartStore";

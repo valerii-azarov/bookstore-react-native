@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { Order, OrderHistoryByDate, OrderStateType, OrderStatusStyle, TimelineType, TimelineStep } from "@/types";
+import { Order, OrderHistoryByDate, OrderStatusType, OrderStatusStyle, TimelineType, TimelineStep } from "@/types";
 
 export const orderHandler = {
   groupOrdersByDate: (existing: OrderHistoryByDate[] = [], incoming: Order[] = []): OrderHistoryByDate[] => {
@@ -20,8 +20,8 @@ export const orderHandler = {
     return Object.entries(grouped).map(([date, orders]) => ({ date, orders }));
   },
 
-  getOrderStatusStyle: (status: OrderStateType, t: (key: string) => string): OrderStatusStyle => {
-    const statusMap: Record<OrderStateType, OrderStatusStyle> = {
+  getOrderStatusStyle: (status: OrderStatusType, t: (key: string) => string): OrderStatusStyle => {
+    const statusMap: Record<OrderStatusType, OrderStatusStyle> = {
       processing: {
         label: t("orderStatuses.titles.processing"),
         backgroundColor: "#FFB300",
@@ -43,8 +43,8 @@ export const orderHandler = {
     return statusMap[status];
   },
 
-  getOrderTimelineSteps: <T extends OrderStateType>(currentState: T, t: (key: string) => string): TimelineStep<T>[] => {
-    const statusMap: Record<OrderStateType, TimelineType> = {
+  getOrderTimelineSteps: <T extends OrderStatusType>(currentState: T, t: (key: string) => string): TimelineStep<T>[] => {
+    const statusMap: Record<OrderStatusType, TimelineType> = {
       processing: {
         title: t("orderStatuses.titles.processing"),
         subtitle: t("orderStatuses.subtitles.processing"),
@@ -71,7 +71,7 @@ export const orderHandler = {
       },
     };
   
-    const stateKeys = Object.keys(statusMap) as OrderStateType[];
+    const stateKeys = Object.keys(statusMap) as OrderStatusType[];
     const currentStateIndex = stateKeys.indexOf(currentState);
   
     return stateKeys.map((state, index) => ({

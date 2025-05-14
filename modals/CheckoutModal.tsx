@@ -26,7 +26,7 @@ import {
   selectResetOrder,
 } from "@/selectors/orderSelectors";
 import { colors } from "@/constants/theme";
-import { OrderFormValues, OptionType, DirectionType } from "@/types";
+import { OrderFormValues, Option, DirectionType } from "@/types";
 
 import ModalWrapper from "@/components/ModalWrapper";
 import KeyboardWrapper from "@/components/KeyboardWrapper";
@@ -89,12 +89,12 @@ const CheckoutModal = () => {
 
   const orderMessage = orderResponse?.message;  
 
-  const cityOptions: OptionType[] = cities.map((city: any) => ({
+  const cityOptions: Option<string>[] = cities.map((city: any) => ({
     label: city.description,
     value: city.ref,
   }));
 
-  const warehouseOptions: OptionType[] = warehouses.map((warehouse: any) => ({
+  const warehouseOptions: Option<string>[] = warehouses.map((warehouse: any) => ({
     label: warehouse.description,
     value: warehouse.ref,
   }));
@@ -103,14 +103,14 @@ const CheckoutModal = () => {
   const [direction, setDirection] = useState<DirectionType>("forward");
   const [currentStep, setCurrentStep] = useState<number>(0);
 
-  const [selectedCity, setSelectedCity] = useState<OptionType | null>(null);
-  const [selectedWarehouse, setSelectedWarehouse] = useState<OptionType | null>(null);
+  const [selectedCity, setSelectedCity] = useState<Option<string> | null>(null);
+  const [selectedWarehouse, setSelectedWarehouse] = useState<Option<string> | null>(null);
 
   const handleCitySearch = (text: string) => {
     text.trim() ? searchCities(text) : resetCities();
   };
 
-  const handleCitySelect = (selectedOption: OptionType | null) => {
+  const handleCitySelect = (selectedOption: Option<string> | null) => {
     setSelectedCity(selectedOption);
     setSelectedWarehouse(null);
     setFormValues((prev) => ({ ...prev, city: selectedOption?.label || "" }));
@@ -128,7 +128,7 @@ const CheckoutModal = () => {
     }
   };
 
-  const handleWarehouseSelect = (selectedOption: OptionType | null) => {
+  const handleWarehouseSelect = (selectedOption: Option<string> | null) => {
     setSelectedWarehouse(selectedOption);
     setFormValues((prev) => ({ ...prev, warehouse: selectedOption?.label || "" }));
   };

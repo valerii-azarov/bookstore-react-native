@@ -1,7 +1,7 @@
 import { getDocs, collection, query, orderBy, limit, startAfter, QueryDocumentSnapshot, DocumentData } from "@firebase/firestore";
 import { db } from "./firebase";
 import { fuseSearch } from "@/helpers/fuseSearch";
-import { BaseBook, BookSearchKey, BooksResponse } from "@/types";
+import { BaseBook, BooksResponse } from "@/types";
 
 export const booksApi = {
   fetchBooks: async (
@@ -25,7 +25,7 @@ export const booksApi = {
 
   searchBooks: async <T>(
     query: string, 
-    keys: BookSearchKey[],
+    keys: Array<keyof BaseBook>,
     options: {
       limit?: number;
       lastDoc?: QueryDocumentSnapshot<DocumentData> | null;

@@ -8,15 +8,15 @@ import {
   StyleSheet,
 } from "react-native";
 import { colors } from "@/constants/theme";
-import { OptionType, ShapeType } from "@/types";
+import { Option, ShapeType } from "@/types";
 
 import Icon from "./Icon";
 import Input from "./Input";
 import Typography from "./Typography";
 
-type SearchDropdownProps = {
-  data: OptionType[];
-  onSelect: (option: OptionType | null) => void;
+type SearchDropdownProps <T extends string> = {
+  data: Option<T>[];
+  onSelect: (option: Option<T> | null) => void;
   onSearch: (text: string) => void;
   searchPlaceholder?: string;
   style?: StyleProp<ViewStyle>;
@@ -30,7 +30,7 @@ type SearchDropdownProps = {
   disabled?: boolean;
 };
 
-const SearchDropdown = ({
+const SearchDropdown = <T extends string>({
   data,
   onSelect,
   onSearch,
@@ -44,7 +44,7 @@ const SearchDropdown = ({
   emptyMessage = "Items not found",
   errorMessage = "An error occurred",
   disabled = false,
-}: SearchDropdownProps) => {
+}: SearchDropdownProps<T>) => {
   const [searchText, setSearchText] = useState<string>("");
   const [pressedItem, setPressedItem] = useState<string | null>(null);
   const [isFocused, setIsFocused] = useState<boolean>(false);
@@ -118,7 +118,7 @@ const SearchDropdown = ({
       {isFocused && searchText.length > 0 && (
         <FlatList
           data={data}
-          renderItem={({ item }: { item: OptionType }) => (
+          renderItem={({ item }: { item: Option<T> }) => (
             <TouchableOpacity
               style={[
                 styles.dropdownItem,
@@ -134,7 +134,7 @@ const SearchDropdown = ({
               </Typography>
             </TouchableOpacity>
           )}
-          keyExtractor={(item: OptionType) => item.value}
+          keyExtractor={(item: Option<T>) => item.value}
           ListFooterComponent={() => {
             const message = isLoading ? loadingMessage : isError ? errorMessage : isEmpty || data.length === 0 ? emptyMessage : null;
             

@@ -1,75 +1,73 @@
 import * as IconSets from "@expo/vector-icons";
 import { QueryDocumentSnapshot, DocumentData } from "@firebase/firestore";
 
-// route 
-export type AppRoute = "/profile" | "/favorites" | "/viewing-history";
-// type AppRoute = "/profile" | "/favorites" | "/viewing-history" | "/bonuses" | "/offers";
+export type AppRoute = "/profile" | "/favorites" | "/viewing-history"; // | "/bonuses" | "/offers";
 
-// lang
-export type Language = "en" | "uk";
+export type LanguageType = "en" | "uk";
 
-// weight
-export type WeightType = "light" | "regular" | "medium" | "bold";
+export type ModeType = "list" | "grid" | "horizontal";
 
-// size
 export type SizeType = "small" | "medium" | "large";
 
-// resize mode
+export type WeightType = "light" | "regular" | "medium" | "bold";
+
+export type DirectionType = "forward" | "backward";
+
 export type ResizeModeType = "cover" | "contain" | "stretch" | "center";
 
-// tab
-export type TabType = {
-  name: string;
-  label: string;
-  icon: React.ReactElement;
-};
-
-// message type
 export type MessageType = "success" | "error";
 
-// new types
-export type FieldType = "input" | "textarea";
-
-export type ShapeType = "square" | "rounded";
-
-// images
-export type Images = {
-  coverImage: string;
-  additionalImages: string[];
-};
-
-// rates
-export type Rates = {
-  originalPrice: number;
-  discount: number;
-  price: number;
-};
-
-// this needs to be removed
-export type OptionType = {
-  label: string;
-  value: string;
-};
-
-// new option for test
-export interface Option<T extends string> {
-  label: string;
-  value: T;
-}
-
-// response
 export type ResponseType = {
   status: "success" | "error";
   message?: string;
 };
 
-// role
+export type StatusType = 
+  | "idle"
+  | "loading"
+  | "fetching"
+  | "refreshing"
+  | "creating"
+  | "updating"
+  | "deleting";
+
+export type AuthStatusType = 
+  | "idle"
+  | "initializing"
+  | "fetching"
+  | "registering"
+  | "authenticating"
+  | "loggingOut";
+
+export type FavoriteStatusType = "idle" | "toggling";  
+
+export type FieldType = "input" | "textarea";
+
+export type ShapeType = "square" | "rounded";
+
+// responses
+export interface BooksResponse {
+  books: BaseBook[];
+  lastDoc: QueryDocumentSnapshot<DocumentData> | null;
+}
+
+export interface OrdersResponse {
+  orders: Order[];
+  lastDoc: QueryDocumentSnapshot<DocumentData> | null;
+}
+
+// option
+export interface Option<T extends string> {
+  label: string;
+  value: T;
+}
+
+// user
 export enum Role {
   User = 1,
   Admin = 2,
 }
 
-// user
 export interface BaseUser {
   uid?: string;
   firstName: string;
@@ -84,7 +82,9 @@ export interface User extends BaseUser {
   orders: string[];
 };
 
-// auth fields
+export type ProfileField = keyof Omit<BaseUser, "uid" | "email" | "role">;
+
+// auth
 export interface AuthFields {
   firstName: string;
   lastName: string;
@@ -93,19 +93,15 @@ export interface AuthFields {
   confirmPassword: string;
 }
 
-// sign up
 export type SignUpField = keyof AuthFields;
 
-export type SignUpFormValues = AuthFields;
+export interface SignUpFormValues extends AuthFields {}
+export interface SignUpCreation extends Omit<AuthFields, "confirmPassword"> {}
 
-export type SignUpCreation = Omit<AuthFields, "confirmPassword">;
-
-// sign in
 export type SignInField = keyof Omit<AuthFields, "firstName" | "lastName" | "confirmPassword">;
 
-export type SignInFormValues = Pick<AuthFields, "email" | "password">;
+export interface SignInFormValues extends Pick<AuthFields, "email" | "password"> {}
 
-// password visibility and validation
 export interface PasswordVisibility {
   password: boolean;
   confirmPassword: boolean;
@@ -117,31 +113,7 @@ export interface PasswordValidations {
   confirmMatch: boolean;
 }
 
-// profile fields
-export type ProfileField = keyof Omit<BaseUser, "uid" | "email" | "role">;
-
-// menu
-export interface MenuItem {
-  key: string;
-  label: string;
-  iconSet: keyof typeof IconSets;
-  iconName: string;
-  iconSize?: number;
-  iconColor?: string;
-  textColor?: string;
-  route?: AppRoute;
-  onPress?: () => void;
-  component?: React.ReactNode;
-  hideChevron?: boolean;
-  isVisible?: boolean;
-}
-
-export interface MenuSection {
-  title: string;
-  items: MenuItem[];
-}
-
-// book fields
+// book
 export interface BaseBook {
   id: string;
   title: string;
@@ -185,15 +157,27 @@ export interface ViewingHistoryEntry {
   timestamp: Date;
 }
 
-export type Cart = BaseBook & CartEntry;
-export type Favorite = BaseBook & FavoriteEntry;
-export type ViewingHistory = BaseBook & ViewingHistoryEntry;
+export interface Images {
+  coverImage: string;
+  additionalImages: string[];
+}
 
-export type Book = BaseBook & Partial<Cart & Favorite>;
+export interface Rates {
+  originalPrice: number;
+  discount: number;
+  price: number;
+}
+
+export interface Cart extends BaseBook, CartEntry {}
+export interface Favorite extends BaseBook, FavoriteEntry {}
+export interface ViewingHistory extends BaseBook, ViewingHistoryEntry {}
+
+export interface Book extends BaseBook, Partial<CartEntry>, Partial<FavoriteEntry> {}
+
 export type BookField = keyof BaseBook;
 
-export type BookFormValues = Omit<BaseBook, "id" | "createdAt" | "updatedAt">;
-export type BookCreation = BookFormValues;
+export interface BookFormValues extends Omit<BaseBook, "id" | "createdAt" | "updatedAt"> {}
+export interface BookCreation extends BookFormValues {}
 
 export type EditableBookField =
   | Exclude<
@@ -211,16 +195,6 @@ export type EditableBookField =
   | "images";
 
 export type EditableBookValue = string | string[] | number | boolean | Rates | Images;
-// export type EditableBookValue = {
-//   [K in EditableBookField]:
-//     K extends keyof BaseBook
-//       ? BaseBook[K]
-//       : K extends "rates"
-//         ? Rates
-//         : K extends "images"
-//           ? Images
-//           : never;
-// }[EditableBookField];
 
 // nova post
 export interface BaseNovaPost {
@@ -234,26 +208,8 @@ export interface NovaPostWarehouse extends BaseNovaPost {
   cityRef: string;
 }
 
-// icon
-export type IconType = {
-  iconSet: keyof typeof IconSets;
-  iconName: string;
-}
-
-// timeline
-export type TimelineType = IconType & {
-  title: string;
-  subtitle: string;
-}
-
-export interface TimelineStep<T> extends TimelineType {
-  id?: string;
-  completed: boolean;
-  state: T;
-}
-
 // order
-export type OrderStateType = "processing" | "shipped" | "delivered" | "received";
+export type OrderStatusType = "processing" | "shipped" | "delivered" | "received";
 
 export interface OrderStatusStyle {
   label: string;
@@ -272,7 +228,7 @@ export interface Order {
     originalPrice: number;
     coverImage: string;
   }[];
-  status: OrderStateType;
+  status: OrderStatusType;
   paymentMethod: string;
   isPaid: boolean;
   customer: {
@@ -325,18 +281,19 @@ export interface OrderCreation extends Omit<Order, "id" | "userId" | "createdAt"
 
 export interface OrderReceiptCreation extends Omit<OrderReceipt, "id" | "userId" | "orderId" | "createdAt"> {}
 
-// histories
+// order history
 export interface OrderHistoryByDate {
   date: string;
   orders: Order[];
 }
 
+// viewing history
 export interface ViewingHistoryByDate {
   date: string;
   books: ViewingHistory[];
 };
 
-// components
+// others
 export interface Step<T> {
   title: string;
   hideTitle?: boolean;
@@ -347,59 +304,44 @@ export interface Step<T> {
   scrollEnabled?: boolean;
 }
 
-export type BookFieldComponentType = {
-  component: JSX.Element;
-};
+export interface MenuItem {
+  key: string;
+  label: string;
+  iconSet: keyof typeof IconSets;
+  iconName: string;
+  iconSize?: number;
+  iconColor?: string;
+  textColor?: string;
+  route?: AppRoute;
+  onPress?: () => void;
+  component?: React.ReactNode;
+  hideChevron?: boolean;
+  isVisible?: boolean;
+}
 
-export type EditableBookFields = Partial<Record<EditableBookField, BookFieldComponentType>>;
-
-export type BookStepComponentType = {
+export interface MenuSection {
   title: string;
-  component: JSX.Element;
-  validate?: (form: BookCreation) => boolean;
-};
+  items: MenuItem[];
+}
 
-// other responses
-export type BooksResponse = {
-  books: BaseBook[];
-  lastDoc: QueryDocumentSnapshot<DocumentData> | null;
-};
+export interface IconType {
+  iconSet: keyof typeof IconSets;
+  iconName: string;
+}
 
-export type OrdersResponse = {
-  orders: Order[];
-  lastDoc: QueryDocumentSnapshot<DocumentData> | null;
-};
+export interface TimelineType extends IconType {
+  title: string;
+  subtitle: string;
+}
 
-// categories
-export type CategoriesType = { [key: string]: Book[] };
+export interface TimelineStep<T> extends TimelineType {
+  id?: string;
+  completed: boolean;
+  state: T;
+}
 
-// auth status
-export type AuthStatusType = 
-  | "idle"
-  | "initializing"
-  | "fetching"
-  | "registering"
-  | "authenticating"
-  | "loggingOut";
-
-// new status for test
-export type StatusType = 
-  | "idle"
-  | "loading"
-  | "fetching"
-  | "refreshing"
-  | "creating"
-  | "updating"
-  | "deleting";
-
-// favorite status
-export type FavoriteStatusType = "idle" | "toggling";
-
-// others
-export type BookSearchKey = keyof BaseBook;
-
-export type ModeType = "list" | "grid" | "horizontal";
-
-export type HeightType = "small" | "medium" | "large";
-
-export type DirectionType = "forward" | "backward";
+export interface TabType {
+  name: string;
+  label: string;
+  icon: React.ReactElement;
+}

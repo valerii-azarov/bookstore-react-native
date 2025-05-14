@@ -3,12 +3,12 @@ import translations from "@/data/translations";
 import { languageHandler } from "@/helpers/languageHandler";
 import { useLanguageStore } from "@/stores/languageStore";
 import { selectLanguage, selectSetLanguage } from "@/selectors/languageSelectors";
-import { Language } from "@/types";
+import { LanguageType } from "@/types";
 
-type LanguageContextType = Language;
-const LanguageContext = createContext<LanguageContextType>("en" as Language);
+type LanguageContextType = LanguageType;
+const LanguageContext = createContext<LanguageContextType>("en" as LanguageType);
 
-type SetLanguageContextType = (lang: Language) => void;
+type SetLanguageContextType = (lang: LanguageType) => void;
 const SetLanguageContext = createContext<SetLanguageContextType>({} as SetLanguageContextType);
 
 type TranslationContextType = (key: string) => string;
@@ -18,7 +18,7 @@ export const TranslateProvider = ({ children }: { children: React.ReactNode }) =
   const language = useLanguageStore(selectLanguage);
   const setLanguageStore = useLanguageStore(selectSetLanguage);
 
-  const setLanguage = (lang: Language) => setLanguageStore(lang);
+  const setLanguage = (lang: LanguageType) => setLanguageStore(lang);
 
   const t = (key: string): string => {
     const keys = key.split(".");

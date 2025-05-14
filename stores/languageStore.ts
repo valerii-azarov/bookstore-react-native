@@ -1,11 +1,11 @@
 import { create } from "zustand";
 import { persist, devtools, createJSONStorage } from "zustand/middleware";
 import { asyncStorage } from "@/storages/asyncStorage"; // import { mmkvStorage } from "@/storages/mmkvStorage";
-import { Language } from "@/types";
+import { LanguageType } from "@/types";
 
 interface LanguageState {
-  language: Language;
-  setLanguage: (lang: Language) => void;
+  language: LanguageType;
+  setLanguage: (lang: LanguageType) => void;
 }
 
 export const useLanguageStore = create<LanguageState>()(
@@ -13,7 +13,7 @@ export const useLanguageStore = create<LanguageState>()(
     persist(
       (set) => ({
         language: "en",
-        setLanguage: (lang: Language) => set({ language: lang }),
+        setLanguage: (lang: LanguageType) => set({ language: lang }),
       }),
       {
         name: "language-storage",

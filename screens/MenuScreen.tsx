@@ -15,7 +15,7 @@ import {
   selectResetAuthOperationState, 
 } from "@/selectors/authSelectors";
 import { colors } from "@/constants/theme";
-import { Option, Language, MenuSection } from "@/types";
+import { Option, LanguageType, MenuSection } from "@/types";
 
 import ScreenWrapper from "@/components/ScreenWrapper";
 import Header from "@/components/Header";
@@ -37,7 +37,7 @@ const MenuScreen = () => {
   const logout = useAuthStore(selectLogout);
   const resetAuthOperationState = useAuthStore(selectResetAuthOperationState);
 
-  const languageOptions: Option<Language>[] = [
+  const languageOptions: Option<LanguageType>[] = [
     { label: "Укр", value: "uk" },
     { label: "En", value: "en" },
   ];
@@ -122,7 +122,7 @@ const MenuScreen = () => {
           iconSize: 28,
           iconColor: colors.black,
           component: (
-            <Switcher<Language>
+            <Switcher<LanguageType>
               options={languageOptions}
               selectedValue={language}
               onChange={(value) => {
