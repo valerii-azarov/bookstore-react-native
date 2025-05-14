@@ -1,23 +1,35 @@
 import { View, StyleSheet } from "react-native";
-import { Ionicons as Icon } from "@expo/vector-icons";
 import { colors } from "@/constants/theme";
 
+import Icon from "./Icon";
 import Typography from "@/components/Typography";
 
-interface FieldValidationProps {
+type FieldValidationProps = {
   isValid: boolean;
   message: string;
-}
+};
 
 const FieldValidation = ({ isValid, message }: FieldValidationProps) => (
-  <View style={styles.container}>
+  <View
+    style={[
+      styles.container,
+      {
+        minHeight: 25,
+      },
+    ]}
+  >
     <Icon
-      name={isValid ? "checkmark-circle" : "close-circle"}
-      size={18}
-      color={isValid ? colors.greenTint3 : colors.grayTint3}
-      style={styles.icon}
+      iconSet="Ionicons"
+      iconName={isValid ? "checkmark-circle" : "close-circle"}
+      iconSize={18}
+      iconColor={isValid ? colors.greenTint3 : colors.grayTint3}
     />
-    <Typography fontSize={14} fontWeight="medium" color={isValid ? colors.greenTint3 : colors.grayTint3}>
+
+    <Typography
+      fontSize={14}
+      fontWeight="medium"
+      color={isValid ? colors.greenTint3 : colors.grayTint3}
+    >
       {message}
     </Typography>
   </View>
@@ -25,12 +37,8 @@ const FieldValidation = ({ isValid, message }: FieldValidationProps) => (
 
 const styles = StyleSheet.create({
   container: {
-    minHeight: 25,
     flexDirection: "row",
-    alignItems: "center",
-  },
-  icon: {
-    marginRight: 5,
+    gap: 5,
   },
 });
 

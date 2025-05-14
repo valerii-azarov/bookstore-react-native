@@ -1,9 +1,16 @@
-import { useState, useCallback } from "react";
-import { View, FlatList, TouchableOpacity, StyleSheet, StyleProp, ViewStyle } from "react-native";
-import { Ionicons as Icon } from "@expo/vector-icons";
+import React, { useState, useCallback } from "react";
+import { 
+  View, 
+  ViewStyle,
+  FlatList, 
+  TouchableOpacity,  
+  StyleProp,
+  StyleSheet,
+} from "react-native";
 import { colors } from "@/constants/theme";
 import { OptionType, ShapeType } from "@/types";
 
+import Icon from "./Icon";
 import Input from "./Input";
 import Typography from "./Typography";
 
@@ -70,7 +77,12 @@ const SearchDropdown = ({
         onBlur={() => setTimeout(() => setIsFocused(false), 200)}
         editable={!disabled}
         iconLeft={
-          <Icon name="search-outline" size={24} color={colors.grayTint3} />
+          <Icon 
+            iconSet="Ionicons"
+            iconName="search-outline" 
+            iconSize={24} 
+            iconColor={colors.grayTint3} 
+          />
         }
         iconRight={
           searchText.length > 0 && !disabled ? (
@@ -83,7 +95,12 @@ const SearchDropdown = ({
               }}
               style={styles.clearButton}
             >
-              <Icon name="close-outline" size={24} color={colors.gray} />
+              <Icon 
+                iconSet="Ionicons"
+                iconName="close-outline" 
+                iconSize={24} 
+                iconColor={colors.gray} 
+              />
             </TouchableOpacity>
           ) : undefined
         }

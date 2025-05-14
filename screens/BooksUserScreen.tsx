@@ -16,7 +16,6 @@ import {
 import { selectToggleCart, selectGetCartCount } from "@/selectors/cartSelectors";
 import { selectToggleFavorite } from "@/selectors/favoritesSelectors";
 import { colors } from "@/constants/theme";
-import { verticalScale } from "@/helpers/common";
 import { Book } from "@/types";
 
 import ScreenWrapper from "@/components/ScreenWrapper";
@@ -80,6 +79,9 @@ const BooksUserScreen = () => {
             onView={() => router.push(`/book/${item.id}`)}
             onAddToFavorites={(bookId) => toggleFavorite(bookId)}
             onAddToCart={(item) => toggleCart(item)}
+            labels={{
+              details: t("components.bookItem.details")
+            }}
           />
         )}
         keyExtractor={(item: Book) => item.id}
@@ -113,7 +115,12 @@ const BooksUserScreen = () => {
             onPress={() => router.push("/cart")}
           />
         }
-        style={[styles.header, { minHeight: verticalScale(40) }]}
+        style={[
+          styles.header, 
+          { 
+            minHeight: 40,
+          }
+        ]}
       />
       
       <ScrollView
@@ -128,8 +135,13 @@ const BooksUserScreen = () => {
         }
         scrollEnabled={isConnected && !isEmpty && !isError && !isRefreshing}
       >
-        {!isConnected && <ErrorNetwork />}
-
+        {!isConnected && (
+          <ErrorNetwork 
+            message={t("components.errorNetwork.title")}
+            subMessage={t("components.errorNetwork.subtitle")}
+          />
+        )}
+        
         {isConnected && isLoading && <SkeletonCategories />}
 
         {isConnected && isError && !isLoading && (

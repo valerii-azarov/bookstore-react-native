@@ -1,22 +1,31 @@
 import { View, TouchableOpacity, StyleSheet } from "react-native";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSequence, interpolate } from "react-native-reanimated";
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withTiming, 
+  withSequence, 
+  interpolate,
+} from "react-native-reanimated";
 import { format } from "date-fns";
-import { orderHandler } from "@/helpers/orderHandler";
-import { useTranslation } from "@/contexts/translateContext";
 import { colors } from "@/constants/theme";
 import { Order } from "@/types";
 
 import Image from "./Image";
 import Typography from "./Typography";
 
-interface OrderHistoryItemProps {
+type OrderHistoryItemProps = {
   item: Order;
   onViewDetails: () => void;
-}
+  statusLabel?: string;
+  statusBackgroundColor?: string;
+};
 
-const OrderHistoryItem = ({ item, onViewDetails }: OrderHistoryItemProps) => {
-  const t = useTranslation();
-  
+const OrderHistoryItem = ({ 
+  item, 
+  onViewDetails,
+  statusLabel = "Processing",
+  statusBackgroundColor = "#FFB300",
+}: OrderHistoryItemProps) => {
   const circleScale = useSharedValue(0);
   const circleOpacity = useSharedValue(0);
   const contentOpacity = useSharedValue(1);
@@ -49,7 +58,7 @@ const OrderHistoryItem = ({ item, onViewDetails }: OrderHistoryItemProps) => {
   const maxWidth = imageWidth + (3 - 1) * overlapOffset;
   const currentWidth = imageWidth + (coverBooks.length - 1) * overlapOffset;
   const offset = coverBooks.length < 3 ? (maxWidth - currentWidth) / 2 : 0;
-
+  
   return (
     <TouchableOpacity 
       style={styles.container} 
@@ -64,6 +73,7 @@ const OrderHistoryItem = ({ item, onViewDetails }: OrderHistoryItemProps) => {
             <Image
               key={index}
               source={{ uri: book.coverImage }}
+              textSize={6}
               style={[
                 styles.coverImage,
                 {
@@ -71,7 +81,6 @@ const OrderHistoryItem = ({ item, onViewDetails }: OrderHistoryItemProps) => {
                   transform: [{ translateX: offset + index * overlapOffset }],
                 },
               ]}
-              textSize={6}
               resizeMode="cover"
             />
           ))}
@@ -99,12 +108,12 @@ const OrderHistoryItem = ({ item, onViewDetails }: OrderHistoryItemProps) => {
               style={[
                 styles.statusBadge,
                 {
-                  backgroundColor: orderHandler.getOrderStatusStyle(item.status, t).backgroundColor,
+                  backgroundColor: statusBackgroundColor,
                 },
               ]}
             >
               <Typography fontSize={14} fontWeight="bold" color={colors.white}>
-                {orderHandler.getOrderStatusStyle(item.status, t).label}
+                {statusLabel}
               </Typography>
             </View>
           </View>

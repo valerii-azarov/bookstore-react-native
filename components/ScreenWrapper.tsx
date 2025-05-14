@@ -1,5 +1,10 @@
-import { StatusBar } from "expo-status-bar";
-import { View, ViewStyle, StyleProp, StyleSheet, Platform } from "react-native";
+import { 
+  View, 
+  ViewStyle, 
+  StyleProp, 
+  StyleSheet, 
+  Platform, 
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "@/constants/theme";
 
@@ -21,9 +26,12 @@ const ScreenWrapper = ({
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.container, containerStyle]}>
-      <StatusBar style="dark" />
-
+    <View 
+      style={[
+        styles.container, 
+        containerStyle
+      ]}
+    >
       <View
         style={[
           styles.statusBar,
@@ -36,7 +44,7 @@ const ScreenWrapper = ({
           },
         ]}
       />
-
+      
       <View style={styles.content}>
         {children}
       </View>

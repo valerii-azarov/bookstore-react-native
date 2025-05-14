@@ -1,6 +1,13 @@
 import React, { useEffect } from "react";
 import { View, StyleSheet } from "react-native";
-import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing, interpolateColor } from "react-native-reanimated";
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withRepeat, 
+  withTiming, 
+  Easing, 
+  interpolateColor,
+} from "react-native-reanimated";
 import { colors } from "@/constants/theme";
 
 const SkeletonOrderHistoryList = ({ count = 5 }: { count?: number }) => {

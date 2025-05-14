@@ -1,30 +1,46 @@
-import { useState, useEffect } from "react";
-import { View, Image as ImageComponent, ImageStyle, ViewStyle, StyleSheet, StyleProp } from "react-native";
-import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing, interpolateColor } from "react-native-reanimated";
-import { useTranslation } from "@/contexts/translateContext";
+import React, { useState, useEffect } from "react";
+import { 
+  View, 
+  Image as ImageComponent,
+  ImageStyle, 
+  ViewStyle, 
+  StyleSheet, 
+  StyleProp, 
+} from "react-native";
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withRepeat, 
+  withTiming, 
+  Easing, 
+  interpolateColor, 
+} from "react-native-reanimated";
 import { colors } from "@/constants/theme";
+import { ResizeModeType } from "@/types";
 
 import Typography from "./Typography";
 
 type ImageProps = {
   source: { uri: string };
-  style?: StyleProp<ImageStyle | ViewStyle>;
   textSize?: number;
   textColor?: string;
   fallbackColor?: string;
-  resizeMode?: "cover" | "contain" | "stretch" | "center";
+  style?: StyleProp<ImageStyle | ViewStyle>;
+  resizeMode?: ResizeModeType;
+  messages?: { failed: string };
 };
 
 const Image = ({ 
-  source, 
-  style, 
+  source,
   textSize = 12, 
   textColor = colors.gray,
   fallbackColor = colors.grayTint8,
-  resizeMode = "cover"
-}: ImageProps) => {
-  const t = useTranslation();
-  
+  style,
+  resizeMode = "cover",
+  messages = {
+    failed: "Image failed to load",
+  }
+}: ImageProps) => {  
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
 
@@ -63,7 +79,13 @@ const Image = ({
   return (
     <View style={styles.container}>
       {loading && !error && (
-        <Animated.View style={[styles.fallback, style as ViewStyle, loadingAnimatedStyle]} />
+        <Animated.View 
+          style={[
+            styles.fallback,
+            style as ViewStyle,
+            loadingAnimatedStyle,
+          ]} 
+        />
       )}
       
       {error && (
@@ -79,9 +101,9 @@ const Image = ({
           <Typography
             fontSize={textSize}
             color={textColor}
-            style={{ textAlign: "center" }}
+            style={styles.fallbackText}
           >
-             {t("components.image.failedToLoad.text")}
+             {messages.failed}
           </Typography>
         </View>
       )}
@@ -89,8 +111,8 @@ const Image = ({
       <ImageComponent
         source={source}
         style={[
-          style as ImageStyle,
           error || loading ? styles.hidden : styles.visible,
+          style as ImageStyle,
         ]}
         onLoad={handleLoad}
         onError={handleError}
@@ -107,6 +129,9 @@ const styles = StyleSheet.create({
   fallback: {
     justifyContent: "center",
     alignItems: "center",
+  },
+  fallbackText: {
+    textAlign: "center",
   },
   hidden: {
     opacity: 0,

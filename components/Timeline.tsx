@@ -8,11 +8,16 @@ import Typography from "./Typography";
 type TimelineProps<T> = {
   steps: TimelineStep<T>[];
   hiddenSteps?: string[];
-  style?: StyleProp<ViewStyle>;
   color?: string;
-}
+  style?: StyleProp<ViewStyle>;
+};
 
-const Timeline = <T extends string>({ steps, hiddenSteps = [], style, color = colors.orange }: TimelineProps<T>) => {
+const Timeline = <T extends string>({
+  steps,
+  hiddenSteps = [],
+  color = colors.orange,
+  style,
+}: TimelineProps<T>) => {
   const filteredSteps = steps.filter((step) => !hiddenSteps.includes(step.state || "") || step.completed);
 
   const renderStep = ({ item, index }: { item: TimelineStep<T>; index: number }) => {

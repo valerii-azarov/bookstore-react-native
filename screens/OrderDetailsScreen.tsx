@@ -63,8 +63,13 @@ const OrderDetailsScreen = () => {
       onBackPress={() => router.back()}
       hideFooter
     >
-      {!isConnected && <ErrorNetwork />}
-
+      {!isConnected && (
+        <ErrorNetwork 
+          message={t("components.errorNetwork.title")}
+          subMessage={t("components.errorNetwork.subtitle")}
+        />
+      )}
+      
       {isConnected && isLoading && (
         <Loading size="small" color={colors.orange} />
       )}
@@ -105,8 +110,9 @@ const OrderDetailsScreen = () => {
 
                   <IconButton 
                     onPress={() => copyOrderId(order.id)}
-                    iconName="copy"
-                    enableAnimation 
+                    buttonIconSet="Ionicons"
+                    buttonIconName="copy"
+                    animated 
                   />
                 </View>
               </View>
@@ -162,8 +168,8 @@ const OrderDetailsScreen = () => {
                       <View style={styles.imageWrapper}>
                         <Image
                           source={{ uri: book.coverImage }}
-                          style={styles.coverImage}
                           textSize={6}
+                          style={styles.coverImage}
                           resizeMode="cover"
                         />
                       </View>

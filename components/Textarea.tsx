@@ -1,5 +1,13 @@
 import React, { forwardRef } from "react";
-import { View, TextInput, TextInputProps, StyleSheet, ViewStyle, StyleProp, TextStyle } from "react-native";
+import { 
+  View, 
+  ViewStyle,
+  TextInput, 
+  TextInputProps,
+  TextStyle, 
+  StyleProp,
+  StyleSheet,
+} from "react-native";
 import { colors } from "@/constants/theme";
 import { ShapeType } from "@/types";
 

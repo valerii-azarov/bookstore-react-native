@@ -208,8 +208,13 @@ const BookDetailsScreen = () => {
       onBackPress={() => router.back()}
       hideFooter
     >
-      {!isConnected && <ErrorNetwork />}
-
+      {!isConnected && (
+        <ErrorNetwork 
+          message={t("components.errorNetwork.title")}
+          subMessage={t("components.errorNetwork.subtitle")}
+        />
+      )}
+      
       {isConnected && isLoading && (
         <Loading size="small" color={colors.orange} />
       )}
@@ -240,8 +245,8 @@ const BookDetailsScreen = () => {
               > 
                 <View style={styles.coverImageContainer}>
                   <Image
-                    style={styles.coverImage}
                     source={{ uri: selectedImage || currentBook.coverImage }}
+                    style={styles.coverImage}
                     resizeMode="cover"
                   />
                 </View>
@@ -252,6 +257,7 @@ const BookDetailsScreen = () => {
                       {[currentBook.coverImage, ...(currentBook.additionalImages || [])].map((imageUri, index) => (
                         <TouchableOpacity key={index} onPressIn={() => setSelectedImage(imageUri)}>
                           <Image
+                            source={{ uri: imageUri }}
                             style={[
                               styles.thumbnailImage,
                               {
@@ -260,7 +266,6 @@ const BookDetailsScreen = () => {
                                 marginRight: index < [currentBook.coverImage, ...(currentBook.additionalImages || [])].length - 1 ? 10 : 0,
                               },
                             ]}
-                            source={{ uri: imageUri }}
                             resizeMode="cover"
                           />
                         </TouchableOpacity>

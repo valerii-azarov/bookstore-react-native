@@ -1,4 +1,10 @@
-import { View, ViewStyle, StyleProp, StyleSheet, Platform } from "react-native";
+import { 
+  View, 
+  ViewStyle, 
+  StyleProp, 
+  StyleSheet, 
+  Platform, 
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "@/constants/theme";
 
@@ -7,7 +13,7 @@ type ModalWrapperProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-const ModalWrapper = ({ children, style}: ModalWrapperProps) => {
+const ModalWrapper = ({ children, style }: ModalWrapperProps) => {
   const insets = useSafeAreaInsets();
 
   return (

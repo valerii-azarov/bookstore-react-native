@@ -1,15 +1,25 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { View, StyleSheet } from "react-native";
-import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming } from "react-native-reanimated";
-import { useTranslation } from "@/contexts/translateContext";
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withRepeat, 
+  withTiming, 
+} from "react-native-reanimated";
 import { colors } from "@/constants/theme";
 
 import Icon from "./Icon";
 import Typography from "./Typography";
 
-const ErrorNetwork = () => {
-  const t = useTranslation();
+type ErrorNetworkProps = {
+  message?: string;
+  subMessage?: string;
+};
 
+const ErrorNetwork = ({
+  message = "No Internet Connection",
+  subMessage = "Check your network settings and try again",
+}: ErrorNetworkProps) => {
   const scale = useSharedValue(1);
 
   const animatedIconStyle = useAnimatedStyle(() => ({
@@ -25,7 +35,12 @@ const ErrorNetwork = () => {
   }, []);
 
   return (
-    <View style={[styles.container, styles.padded]}>
+    <View 
+      style={[
+        styles.container, 
+        styles.padded
+      ]}
+    >
       <Animated.View style={animatedIconStyle}>
         <Icon
           iconSet="MaterialIcons"
@@ -41,7 +56,7 @@ const ErrorNetwork = () => {
         color={colors.redTint1}
         style={styles.message}
       >
-        {t("components.errorNetwork.title")}
+        {message}
       </Typography>
 
       <Typography
@@ -49,7 +64,7 @@ const ErrorNetwork = () => {
         color={colors.grayTint1}
         style={styles.subMessage}
       >
-        {t("components.errorNetwork.subtitle")}
+        {subMessage}
       </Typography>
     </View>
   );

@@ -1,5 +1,11 @@
 import { View, StyleSheet, TouchableOpacity } from "react-native";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSequence, interpolate } from "react-native-reanimated";
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withTiming, 
+  withSequence, 
+  interpolate,
+} from "react-native-reanimated";
 import { format } from "date-fns";
 import { colors } from "@/constants/theme";
 import { ViewingHistory } from "@/types";
@@ -7,10 +13,10 @@ import { ViewingHistory } from "@/types";
 import Image from "./Image";
 import Typography from "./Typography";
 
-interface ViewingHistoryItemProps {
+type ViewingHistoryItemProps = {
   item: ViewingHistory;
   onViewDetails: () => void;
-}
+};
 
 const ViewingHistoryItem = ({ item, onViewDetails }: ViewingHistoryItemProps) => {
   const circleScale = useSharedValue(0);
@@ -65,8 +71,8 @@ const ViewingHistoryItem = ({ item, onViewDetails }: ViewingHistoryItemProps) =>
       <Animated.View style={[styles.contentWrapper, contentStyle]}>
         <Image
           source={{ uri: item.coverImage }}
-          style={styles.coverImage}
           textSize={6}
+          style={styles.coverImage}
           resizeMode="cover"
         />
         

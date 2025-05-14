@@ -3,13 +3,13 @@ import { colors } from "@/constants/theme";
 
 import Typography from "./Typography";
 
-interface DottedLineProps {
+type DottedLineProps = {
   style?: StyleProp<ViewStyle>;
   color?: string;
   size?: number;
   dashCount?: number;
   dashSymbol?: string;
-}
+};
 
 const DottedLine = ({ style, color = colors.black, size = 14, dashCount = 50, dashSymbol = "- " }: DottedLineProps) => {
   return (

@@ -1,13 +1,21 @@
 import React, { useRef, useEffect } from "react";
 import { View, ScrollView, StyleSheet } from "react-native";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSequence, withDelay, SlideInLeft, SlideInRight } from "react-native-reanimated";
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withTiming, 
+  withSequence, 
+  withDelay, 
+  SlideInLeft, 
+  SlideInRight, 
+} from "react-native-reanimated";
 import { colors } from "@/constants/theme";
 import { Step, DirectionType } from "@/types";
 
 import Button from "./Button";
 import Typography from "./Typography";
 
-interface FormStepperProps<T> {
+type FormStepperProps<T> = {
   steps: Step<T>[];
   currentStep: number;
   direction: DirectionType;
@@ -24,12 +32,17 @@ interface FormStepperProps<T> {
     previous?: string;
   };
   buttonProps?: {
-    next?: { disabled?: boolean; loading?: boolean };
-    previous?: { disabled?: boolean };
+    next?: { 
+      disabled?: boolean; 
+      loading?: boolean;
+    };
+    previous?: { 
+      disabled?: boolean;
+    };
   };
   containerStyle?: object;
   buttonContainerStyle?: object;
-}
+};
 
 const FormStepper = <T,>({
   steps,

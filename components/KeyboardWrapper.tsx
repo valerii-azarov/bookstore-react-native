@@ -1,9 +1,16 @@
-import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, TouchableWithoutFeedback, ViewStyle } from "react-native";
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  ViewStyle,
+  StyleSheet,
+  Platform,
+} from "react-native";
 
-interface KeyboardWrapperProps {
+type KeyboardWrapperProps = {
   children: React.ReactNode;
   style?: ViewStyle;
-}
+};
 
 const KeyboardWrapper = ({ children, style }: KeyboardWrapperProps) => {
   return (

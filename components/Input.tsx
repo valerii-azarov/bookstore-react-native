@@ -1,10 +1,18 @@
 import React, { forwardRef, useState, useEffect } from "react";
 import Animated from "react-native-reanimated";
-import { View, ViewStyle, TextStyle, TextInput, TextInputProps, StyleSheet, StyleProp, Platform } from "react-native";
+import { 
+  View, 
+  ViewStyle,
+  TextStyle, 
+  TextInput, 
+  TextInputProps, 
+  StyleSheet, 
+  StyleProp, 
+  Platform,
+} from "react-native";
 import { colors } from "@/constants/theme";
-import { HeightEnum } from "@/constants/common";
 import { converter } from "@/helpers/converter";
-import { HeightType, ShapeType } from "@/types";
+import { SizeType, ShapeType } from "@/types";
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
@@ -13,7 +21,7 @@ export type InputProps = TextInputProps & {
   iconRight?: React.ReactElement;
   containerStyle?: StyleProp<ViewStyle>;
   inputStyle?: StyleProp<TextStyle>;
-  inputHeight?: HeightType;
+  inputHeight?: SizeType;
   isNumeric?: boolean;
   isInteger?: boolean;
   shape?: ShapeType;
@@ -46,6 +54,14 @@ const Input = forwardRef<TextInput, InputProps>(
       }   
     }; 
 
+    const inputSize: Record<SizeType, number> = {
+      small: 35,
+      medium: 45,
+      large: 55,
+    };
+    
+    const adjustedHeight = inputSize[inputHeight];
+
     useEffect(() => {
       if (value) {
         setInputValue(value);
@@ -58,7 +74,7 @@ const Input = forwardRef<TextInput, InputProps>(
           styles.container,
           {
             borderRadius: shape === "square" ? 0 : 12,
-            height: HeightEnum[inputHeight],
+            height: adjustedHeight,
           },
           containerStyle,
         ]}

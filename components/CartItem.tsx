@@ -1,169 +1,239 @@
-import { useRef } from "react";
-import { View, Alert, TouchableOpacity, StyleSheet } from "react-native";
-import { Swipeable } from "react-native-gesture-handler";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSequence } from "react-native-reanimated";
-import { Ionicons } from "@expo/vector-icons";
-import { useTranslation } from "@/contexts/translateContext";
+import React, { forwardRef, useRef, useImperativeHandle } from "react";
+import { View, Alert, TouchableOpacity, Dimensions, StyleSheet } from "react-native";
+import ReanimatedSwipeable, { type SwipeableProps } from "react-native-gesture-handler/ReanimatedSwipeable";
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withTiming, 
+  withSequence,
+} from "react-native-reanimated";
 import { colors } from "@/constants/theme";
 import { Cart } from "@/types";
 
+import Icon from "./Icon";
 import Image from "./Image";
 import Typography from "./Typography";
 
-interface CartItemProps {
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+
+type CartItemProps = Partial<SwipeableProps> & {
   item: Cart;
   onViewDetails: () => void;
   onRemoveFromCart: (bookId: string) => void;
   onUpdateQuantity: (bookId: string, quantity: number) => void;
-}
+  alerts?: {
+    title: string;
+    message: string;
+    buttons: {
+      cancel: string;
+      confirm: string;
+    };
+  },
+};
 
-const CartItem = ({ item, onRemoveFromCart, onViewDetails, onUpdateQuantity }: CartItemProps) => {
-  const swipeableRef = useRef<Swipeable>(null);
+export type SwipeableRef = React.ComponentRef<typeof ReanimatedSwipeable>;
 
-  const t = useTranslation();
+const CartItem = forwardRef<SwipeableRef, CartItemProps>(
+  (
+    { 
+      item,
+      onViewDetails, 
+      onRemoveFromCart, 
+      onUpdateQuantity,
+      alerts = {
+        title: "Delete Book",
+        message: "Do you want to remove this book from your cart?",
+        buttons: {
+          cancel: "Cancel",
+          confirm: "Confirm",
+        },
+      },
+      ...props
+    }, 
+    ref
+  ) => {
+    const swipeableRef = useRef<SwipeableRef>(null);
 
-  const scale = useSharedValue(1);
+    useImperativeHandle(ref, () => swipeableRef.current as SwipeableRef, []);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
+    const scale = useSharedValue(1);
+    const buttonScale = useSharedValue(1);
 
-  const startAnimation = () => {
-    scale.value = withSequence(
-      withTiming(0.9, { duration: 250 }),
-      withTiming(1, { duration: 250 })
-    );
-  };
+    const animatedStyle = useAnimatedStyle(() => ({
+      transform: [{ scale: scale.value }],
+    }));
 
-  const confirmDeleteCart = () => {
-    Alert.alert(
-      t("alerts.confirmDeleteCartBook.title"),
-      t("alerts.confirmDeleteCartBook.message"),
-      [
-        { 
-          text: t("alerts.confirmDeleteCartBook.cancel"), 
-          style: "cancel", 
+    const buttonAnimatedStyle = useAnimatedStyle(() => ({
+      transform: [{ scale: buttonScale.value }],
+    }));
+
+    const startAnimation = () => {
+      scale.value = withSequence(
+        withTiming(0.9, { duration: 250 }),
+        withTiming(1, { duration: 250 })
+      );
+    };
+
+    const confirmDeleteCart = () => {
+      Alert.alert(alerts.title, alerts.message, [
+        {
+          text: alerts.buttons.cancel,
+          style: "cancel",
           onPress: () => swipeableRef.current?.close(),
         },
-        { 
-          text: t("alerts.confirmDeleteCartBook.confirm"), 
-          style: "destructive", 
+        {
+          text: alerts.buttons.confirm,
+          style: "destructive",
           onPress: () => onRemoveFromCart(item.id),
         },
-      ]
-    );
-  };
+      ]);
+    };
 
-  const handlePress = () => {
-    startAnimation();
-    setTimeout(onViewDetails, 500);
-  };
+    const handlePress = () => {
+      startAnimation();
+      setTimeout(onViewDetails, 500);
+    };
 
-  return (
-    <Swipeable 
-      ref={swipeableRef} 
-      renderRightActions={() => (
-        <TouchableOpacity 
-          onPress={confirmDeleteCart} 
-          style={styles.deleteButton}
+    const handlePressIn = () => {
+      buttonScale.value = withTiming(0.95, { duration: 100 });
+    };
+
+    const handlePressOut = () => {
+      buttonScale.value = withTiming(1, { duration: 100 });
+    };
+
+    const renderDeleteAction = () => {    
+      return (          
+        <Animated.View 
+          style={[
+            styles.actionButton,
+            {
+              marginLeft: 15,
+            },
+            buttonAnimatedStyle
+          ]}
         >
-          <Ionicons name="trash" size={28} color={colors.white} />
-        </TouchableOpacity>
-      )}
-    >
-      <View style={styles.container}>
-        <View style={styles.imageContainer}>
-          <TouchableOpacity onPress={handlePress} activeOpacity={0.7}>
-            <Animated.View style={animatedStyle}>
-              <Image
-                source={{ uri: item.coverImage }}
-                style={styles.image}
-                textSize={8}
-                resizeMode="cover"
-              />
-            </Animated.View>
+          <TouchableOpacity
+            style={styles.actionButtonInner}
+            onPress={confirmDeleteCart}
+            onPressIn={handlePressIn}
+            onPressOut={handlePressOut}
+            activeOpacity={0.7}
+          >
+            <Icon
+              iconSet="MaterialIcons"
+              iconName="delete" 
+              iconSize={24} 
+              iconColor={colors.white} 
+            />
           </TouchableOpacity>
+        </Animated.View>    
+      );
+    };
 
-          {item.discount > 0 && (
-            <View style={styles.discountBadgeContainer}>
-              <View style={styles.discountBadge}>
-                <Typography fontSize={10} fontWeight="bold" color={colors.white}>
-                  {`-${item.discount}%`}
-                </Typography>
+    return (
+      <ReanimatedSwipeable 
+        ref={swipeableRef}
+        rightThreshold={40}
+        renderRightActions={renderDeleteAction}
+        {...props}
+      >
+        <View style={styles.container}>
+          <View style={styles.imageContainer}>
+            <TouchableOpacity onPress={handlePress} activeOpacity={0.7}>
+              <Animated.View style={animatedStyle}>
+                <Image
+                  source={{ uri: item.coverImage }}
+                  textSize={8}
+                  style={styles.image}
+                  resizeMode="cover"
+                />
+              </Animated.View>
+            </TouchableOpacity>
+
+            {item.discount > 0 && (
+              <View style={styles.discountBadgeContainer}>
+                <View style={styles.discountBadge}>
+                  <Typography fontSize={10} fontWeight="bold" color={colors.white}>
+                    {`-${item.discount}%`}
+                  </Typography>
+                </View>
               </View>
-            </View>
-          )}
-        </View>
+            )}
+          </View>
 
-        <View style={styles.contentContainer}>
-          <Typography fontSize={12} fontWeight="bold" color={colors.gray} numberOfLines={1}>
-            {item.authors?.join(", ")}
-          </Typography>
+          <View style={styles.contentContainer}>
+            <Typography fontSize={12} fontWeight="bold" color={colors.gray} numberOfLines={1}>
+              {item.authors?.join(", ")}
+            </Typography>
 
-          <Typography fontSize={16} fontWeight="bold" numberOfLines={1} style={styles.title}>
-            {item.title}
-          </Typography>
+            <Typography fontSize={16} fontWeight="bold" numberOfLines={1} style={styles.title}>
+              {item.title}
+            </Typography>
 
-          <View style={styles.infoContainer}>
-            <View style={styles.priceContainer}>
-              {item.discount > 0 && (
+            <View style={styles.infoContainer}>
+              <View style={styles.priceContainer}>
+                {item.discount > 0 && (
+                  <Typography 
+                    fontSize={14} 
+                    numberOfLines={1} 
+                    ellipsizeMode="tail" 
+                    color={colors.grayTint5} 
+                    style={styles.originalPrice}
+                  >
+                    {`${(item.originalPrice * item.cartQuantity).toFixed(2)}₴`}
+                  </Typography>
+                )}
+
                 <Typography 
-                  fontSize={14} 
+                  fontSize={20} 
+                  fontWeight="bold" 
                   numberOfLines={1} 
                   ellipsizeMode="tail" 
-                  color={colors.grayTint5} 
-                  style={styles.originalPrice}
+                  color={item.discount > 0 ? colors.red : colors.black} style={styles.price}
                 >
-                  {`${(item.originalPrice * item.cartQuantity).toFixed(2)}₴`}
+                  {`${(item.price * item.cartQuantity).toFixed(2)}₴`}
                 </Typography>
-              )}
+              </View>
 
-              <Typography 
-                fontSize={20} 
-                fontWeight="bold" 
-                numberOfLines={1} 
-                ellipsizeMode="tail" 
-                color={item.discount > 0 ? colors.red : colors.black} style={styles.price}
-              >
-                {`${(item.price * item.cartQuantity).toFixed(2)}₴`}
-              </Typography>
-            </View>
+              <View style={styles.quantityContainer}>
+                <TouchableOpacity
+                  onPress={() => onUpdateQuantity(item.id, item.cartQuantity - 1)}
+                  disabled={item.cartQuantity <= 1}
+                  style={styles.quantityButton}
+                >
+                  <Icon
+                    iconSet="Ionicons" 
+                    iconName="remove" 
+                    iconSize={20} 
+                    iconColor={item.cartQuantity <= 1 ? colors.grayTint5 : colors.black} 
+                  />
+                </TouchableOpacity>
 
-            <View style={styles.quantityContainer}>
-              <TouchableOpacity
-                onPress={() => onUpdateQuantity(item.id, item.cartQuantity - 1)}
-                disabled={item.cartQuantity <= 1}
-                style={styles.quantityButton}
-              >
-                <Ionicons 
-                  name="remove" 
-                  size={20} 
-                  color={item.cartQuantity <= 1 ? colors.grayTint5 : colors.black} 
-                />
-              </TouchableOpacity>
+                <Typography fontSize={16} style={styles.quantityText}>
+                  {item.cartQuantity}
+                </Typography>
 
-              <Typography fontSize={16} style={styles.quantityText}>
-                {item.cartQuantity}
-              </Typography>
-
-              <TouchableOpacity
-                onPress={() => onUpdateQuantity(item.id, item.cartQuantity + 1)}
-                disabled={item.cartQuantity >= item.availableQuantity}
-                style={styles.quantityButton}
-              >
-                <Ionicons 
-                  name="add" 
-                  size={20} 
-                  color={item.cartQuantity >= item.availableQuantity ? colors.grayTint5 : colors.black} 
-                />
-              </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => onUpdateQuantity(item.id, item.cartQuantity + 1)}
+                  disabled={item.cartQuantity >= item.availableQuantity}
+                  style={styles.quantityButton}
+                >
+                  <Icon 
+                    iconSet="Ionicons"
+                    iconName="add" 
+                    iconSize={20} 
+                    iconColor={item.cartQuantity >= item.availableQuantity ? colors.grayTint5 : colors.black} 
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>
-      </View>
-    </Swipeable>  
-  );
-};
+      </ReanimatedSwipeable>  
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -242,11 +312,16 @@ const styles = StyleSheet.create({
     minWidth: 20,
     textAlign: "center",
   },
-  deleteButton: {
-    width: 100,
-    backgroundColor: colors.red,
-    borderRadius: 10,
-    marginLeft: 15,
+  actionButton: {
+    width: SCREEN_WIDTH * 0.2,
+    maxWidth: 100,
+    backgroundColor: colors.redTint1,
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+  actionButtonInner: {
+    flex: 1,
+    paddingVertical: 10,
     alignItems: "center",
     justifyContent: "center",
   },

@@ -1,12 +1,16 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withTiming,
+} from "react-native-reanimated";
 import { colors } from "@/constants/theme";
 import { Option } from "@/types";
 
 import Typography from "./Typography";
 
-interface SwitcherProps<T extends string> {
+type SwitcherProps<T extends string> = {
   options: Option<T>[];
   selectedValue: T;
   onChange: (val: T) => void;
@@ -15,7 +19,7 @@ interface SwitcherProps<T extends string> {
   borderRadius?: number;
   padding?: number;
   textSize?: number;
-}
+};
 
 const Switcher = <T extends string>({
   options,
@@ -67,6 +71,7 @@ const Switcher = <T extends string>({
           indicatorStyle,
         ]}
       />
+
       {options.map(({ label, value }) => (
         <TouchableOpacity
           key={value}
@@ -78,7 +83,7 @@ const Switcher = <T extends string>({
             fontSize={textSize}
             fontWeight={selectedValue === value ? "bold" : "medium"}
             color={colors.black}
-            style={{ textAlign: "center" }}
+            style={styles.optionText}
           >
             {label}
           </Typography>
@@ -105,7 +110,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     zIndex: 1,
-  }
+  },
+  optionText: { 
+    textAlign: "center",
+  },
 });
 
 export default Switcher;

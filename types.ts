@@ -8,8 +8,14 @@ export type AppRoute = "/profile" | "/favorites" | "/viewing-history";
 // lang
 export type Language = "en" | "uk";
 
-// fonts
-export type FontWeight = "light" | "regular" | "medium" | "bold";
+// weight
+export type WeightType = "light" | "regular" | "medium" | "bold";
+
+// size
+export type SizeType = "small" | "medium" | "large";
+
+// resize mode
+export type ResizeModeType = "cover" | "contain" | "stretch" | "center";
 
 // tab
 export type TabType = {

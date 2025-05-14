@@ -61,6 +61,9 @@ const CategoryBooksScreen = () => {
         onView={() => router.push(`/book/${item.id}`)}
         onAddToFavorites={(bookId) => toggleFavorite(bookId)}
         onAddToCart={(item) => toggleCart(item)}
+        labels={{
+          details: t("components.bookItem.details")
+        }}
       />
     );
   }, [router]);
@@ -85,7 +88,12 @@ const CategoryBooksScreen = () => {
       title= {t(`genres.${category}`)} 
       onBackPress={() => router.back()}
     >
-      {!isConnected && <ErrorNetwork />}
+      {!isConnected && (
+        <ErrorNetwork 
+          message={t("components.errorNetwork.title")}
+          subMessage={t("components.errorNetwork.subtitle")}
+        />
+      )}
       
       {isConnected && isLoading && (
         <Loading size="small" color={colors.orange} />

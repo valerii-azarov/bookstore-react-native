@@ -1,11 +1,14 @@
 import React, { useEffect } from "react";
 import { View, TouchableOpacity, StyleSheet, Platform } from "react-native";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming} from "react-native-reanimated";
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withTiming,
+} from "react-native-reanimated";
 import { colors } from "@/constants/theme";
-import { verticalScale } from "@/helpers/common";
 import { TabType } from "@/types";
 
-import Typography from "@/components/Typography";
+import Typography from "./Typography";
 
 type TabBarProps = {
   tabs: TabType[];
@@ -41,7 +44,15 @@ const TabBar = ({ tabs, activeIndex, onTabPress }: TabBarProps) => {
   };
 
   return (
-    <View style={styles.tabBarContainer}>
+    <View 
+      style={[
+        styles.tabBarContainer,
+        {
+          height: Platform.OS === "ios" ? 75 : 65,
+          paddingBottom: Platform.OS === "ios" ? 10 : 0,
+        }
+      ]}
+    >
       {tabs.map((tab, index) => {
         const isActive = activeIndex === index;
         const { animatedTextStyle, animatedIconStyle } = createAnimatedStyles(isActive);
@@ -59,6 +70,7 @@ const TabBar = ({ tabs, activeIndex, onTabPress }: TabBarProps) => {
                   color: isActive ? colors.orange : colors.gray,
                 })}
               </Animated.View>
+              
               <Animated.View style={[animatedTextStyle, styles.labelContainer]}>
                 <Typography
                   fontSize={12}
@@ -81,11 +93,9 @@ const TabBar = ({ tabs, activeIndex, onTabPress }: TabBarProps) => {
 const styles = StyleSheet.create({
   tabBarContainer: {
     flexDirection: "row",
-    height: Platform.OS === "ios" ? verticalScale(75) : verticalScale(65),
     backgroundColor: colors.white,
     borderTopColor: colors.grayTint7,
     borderTopWidth: 1,
-    paddingBottom: Platform.OS === "ios" ? 10 : 0,
   },
   tabButton: {
     flex: 1,

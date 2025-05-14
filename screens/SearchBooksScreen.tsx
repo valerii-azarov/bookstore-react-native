@@ -79,6 +79,15 @@ const SearchBooksScreen = () => {
       isOwner={isAdmin}
       disableSwipe
       onView={() => router.push(`/book/${item.id}`)}
+      labels={{
+        available: t("components.searchedBooksItem.labels.available"),
+        unavailable: t("components.searchedBooksItem.labels.unavailable"),
+        article: t("components.searchedBooksItem.labels.article"),
+      }}  
+      actionLabels={{
+        edit: t("components.searchedBooksItem.actions.edit"),
+        delete: t("components.searchedBooksItem.actions.delete"),
+      }}
     />
   ), [isAdmin, router]);
 

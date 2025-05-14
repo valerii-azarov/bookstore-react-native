@@ -1,70 +1,90 @@
-import { View, ViewStyle, TouchableWithoutFeedback, StyleProp, StyleSheet } from "react-native";
-import { Ionicons as Icon } from "@expo/vector-icons";
+import React, { forwardRef } from "react";
+import { 
+  View, 
+  ViewStyle, 
+  TouchableWithoutFeedback, 
+  TouchableWithoutFeedbackProps, 
+  StyleProp, 
+  StyleSheet, 
+} from "react-native";
 import { colors } from "@/constants/theme";
-import { colorConverter } from "@/helpers/colorConverter";
-import { verticalScale } from "@/helpers/common";
 
+import Icon from "./Icon";
 import Typography from "./Typography";
 
-type CheckboxProps = {
+type CheckboxProps = TouchableWithoutFeedbackProps & {
   checked: boolean;
   onPress: () => void;
   label?: string;
   labelSize?: number;
   labelColor?: string;
-  iconSize?: number;
-  iconColor?: string;
-  isColorDarker?: boolean;
+  checkboxIconSize?: number;
+  checkboxIconColor?: string;
   style?: StyleProp<ViewStyle>;
 };
 
-const Checkbox = ({
-  checked,
-  onPress,
-  label,
-  labelSize = 14,
-  labelColor = colors.black,
-  iconSize = 18,
-  iconColor = colors.orange,
-  isColorDarker = false,
-  style,
-}: CheckboxProps) => {
-  return (
-    <TouchableWithoutFeedback onPress={onPress}>
-      <View 
-        style={[
-          styles.container, 
-          style,
-        ]}
+const Checkbox = forwardRef<TouchableWithoutFeedback, CheckboxProps>(
+  (
+    {
+      checked,
+      onPress,
+      label,
+      labelSize = 14,
+      labelColor = colors.black,
+      checkboxIconSize = 18,
+      checkboxIconColor = colors.orange,
+      style,
+      ...props 
+    }, 
+    ref
+  ) => {
+    return (
+      <TouchableWithoutFeedback 
+        ref={ref}
+        onPress={onPress}
+        {...props}
       >
-        <View
+        <View 
           style={[
-            styles.checkbox,
-            {
-              width: verticalScale(iconSize + 7),
-              height: verticalScale(iconSize + 7),
-              backgroundColor: checked ? isColorDarker ? colorConverter.darkerHexColor(iconColor) : iconColor : colors.white,
-            },
+            styles.container, 
+            style,
           ]}
         >
-          {checked && (
-            <Icon name="checkmark" size={iconSize} color={colors.white} />
+          <View
+            style={[
+              styles.checkbox,
+              {
+                width: checkboxIconSize + 7,
+                height: checkboxIconSize + 7,
+                backgroundColor: checked ? checkboxIconColor : colors.white,
+              },
+            ]}
+          >
+            {checked && (
+              <Icon 
+                iconSet="Ionicons"
+                iconName="checkmark" 
+                iconSize={checkboxIconSize} 
+                iconColor={colors.white} 
+              />
+            )}
+          </View>
+
+          {label && (
+            <Typography
+              fontSize={labelSize}
+              fontWeight="medium"
+              color={labelColor}
+              style={styles.label}
+            >
+              {label}
+            </Typography>
           )}
         </View>
-        {label && (
-          <Typography
-            fontSize={labelSize}
-            fontWeight="medium"
-            color={labelColor}
-            style={styles.label}
-          >
-            {label}
-          </Typography>
-        )}
-      </View>
-    </TouchableWithoutFeedback>
-  );
-};
+      </TouchableWithoutFeedback>
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   container: {

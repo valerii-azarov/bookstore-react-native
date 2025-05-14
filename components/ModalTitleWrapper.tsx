@@ -1,5 +1,12 @@
-import { useState, useMemo } from "react";
-import { View, StyleSheet, Dimensions } from "react-native";
+import React, { useState, useMemo } from "react";
+import { 
+  View, 
+  ViewStyle, 
+  StyleProp, 
+  StyleSheet, 
+  Dimensions,
+  Platform, 
+} from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedScrollHandler,
@@ -8,9 +15,9 @@ import Animated, {
   Extrapolate,
   withTiming,
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "@/constants/theme";
 
-import ModalWrapper from "@/components/ModalWrapper";
 import BackButton from "@/components/BackButton";
 import Typography from "@/components/Typography";
 
@@ -29,14 +36,18 @@ const ANIMATION_DURATION = 100;
 type ModalTitleWrapperProps = {
   title: string;
   children: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
   scrollEnabled?: boolean;
 };
 
 const ModalTitleWrapper = ({
   title,
   children,
+  style,
   scrollEnabled = true,
 }: ModalTitleWrapperProps) => {
+  const insets = useSafeAreaInsets();
+
   const scrollY = useSharedValue(0);
   const animationProgress = useSharedValue(0);
   
@@ -101,7 +112,16 @@ const ModalTitleWrapper = ({
   });
 
   return (
-    <ModalWrapper>
+    <View
+      style={[
+        styles.container,
+        {
+          paddingTop: Platform.OS === "ios" ? insets.top : 15 + insets.top,
+          paddingBottom: Platform.OS === "ios" ? insets.bottom : insets.bottom,
+        },
+        style,
+      ]}
+    >
       <Animated.View style={[styles.header, headerAnimatedStyle]}>
         <View style={styles.buttonContainer}>
           <BackButton />
@@ -139,11 +159,15 @@ const ModalTitleWrapper = ({
           {children}
         </View>
       </Animated.ScrollView>
-    </ModalWrapper>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   header: {
     position: "relative",
     paddingHorizontal: 15,

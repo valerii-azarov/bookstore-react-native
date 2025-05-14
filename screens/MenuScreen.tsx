@@ -15,7 +15,6 @@ import {
   selectResetAuthOperationState, 
 } from "@/selectors/authSelectors";
 import { colors } from "@/constants/theme";
-import { verticalScale } from "@/helpers/common";
 import { Option, Language, MenuSection } from "@/types";
 
 import ScreenWrapper from "@/components/ScreenWrapper";
@@ -215,10 +214,10 @@ const MenuScreen = () => {
         // }
 
         style={[
-          styles.header,
-          {
-            minHeight: verticalScale(40),
-          },
+          styles.header, 
+          { 
+            minHeight: 40,
+          }
         ]}
       />
 

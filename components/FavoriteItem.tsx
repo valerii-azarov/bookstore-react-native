@@ -1,6 +1,11 @@
 import { View, StyleSheet, TouchableOpacity } from "react-native";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, withRepeat, withSequence } from "react-native-reanimated";
-import { useTranslation } from "@/contexts/translateContext";
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withTiming, 
+  withRepeat, 
+  withSequence, 
+} from "react-native-reanimated";
 import { colors } from "@/constants/theme";
 import { Favorite } from "@/types";
 
@@ -8,15 +13,21 @@ import Icon from "./Icon";
 import Image from "./Image";
 import Typography from "./Typography";
 
-interface FavoriteItemProps {
+type FavoriteItemProps = {
   item: Favorite;
   onViewDetails: () => void;
   onToggleFavorite?: (item: Favorite) => void;
-}
+  labels?: { favorite: string; };
+};
 
-const FavoriteItem = ({ item, onViewDetails, onToggleFavorite }: FavoriteItemProps) => {
-  const t = useTranslation();
-  
+const FavoriteItem = ({ 
+  item, 
+  onViewDetails, 
+  onToggleFavorite, 
+  labels = {
+    favorite: "Favorite"
+  }
+}: FavoriteItemProps) => {
   const imageScale = useSharedValue(1);
   const favoriteScale = useSharedValue(1);
   
@@ -66,8 +77,8 @@ const FavoriteItem = ({ item, onViewDetails, onToggleFavorite }: FavoriteItemPro
           <Animated.View style={imageAnimatedStyle}>
             <Image
               source={{ uri: item.coverImage }}
-              style={styles.coverImage}
               textSize={6}
+              style={styles.coverImage}
               resizeMode="cover"
             />
           </Animated.View>
@@ -99,7 +110,7 @@ const FavoriteItem = ({ item, onViewDetails, onToggleFavorite }: FavoriteItemPro
               </Animated.View>
 
               <Typography fontSize={14} fontWeight="bold" color={colors.black}>
-                {t("components.favoriteBookItem.labels.favorite")}
+                {labels.favorite}
               </Typography>
             </View>
           </TouchableOpacity>

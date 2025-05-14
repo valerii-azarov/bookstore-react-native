@@ -1,5 +1,4 @@
 import { View, TouchableOpacity, StyleSheet } from "react-native";
-import { useTranslation } from "@/contexts/translateContext";
 import { colors } from "@/constants/theme";
 import { colorConverter } from "@/helpers/colorConverter";
 import { Book, ModeType } from "@/types";
@@ -15,6 +14,7 @@ type CategoryBookItemProps = {
   onView: () => void;
   onAddToFavorites?: (bookId: string) => void;
   onAddToCart?: (item: Book) => void;
+  labels?: { details: string; };
 }
 
 const CategoryBookItem = ({ 
@@ -22,10 +22,11 @@ const CategoryBookItem = ({
   mode,
   onView, 
   onAddToFavorites, 
-  onAddToCart 
+  onAddToCart,
+  labels = {
+    details: "Details"
+  } 
 }: CategoryBookItemProps) => {
-  const t = useTranslation();
-
   return (
     <View
       style={[
@@ -60,7 +61,6 @@ const CategoryBookItem = ({
           <View style={styles.imageContainer}>
             <Image
               source={{ uri: item?.coverImage }}
-              style={styles.coverImage}
               textSize={10}
               textColor={colors.white}
               fallbackColor={
@@ -68,6 +68,7 @@ const CategoryBookItem = ({
                   ? colorConverter.lighterHexColor(item.backgroundColor)
                   : colors.grayTint4
               }
+              style={styles.coverImage}
               resizeMode="cover"
             />
 
@@ -165,7 +166,7 @@ const CategoryBookItem = ({
           </TouchableOpacity>
 
           <RedirectButton 
-            title={t("components.bookItem.details")}
+            title={labels.details}
             onPress={onView}
             style={[
               styles.detailButton,

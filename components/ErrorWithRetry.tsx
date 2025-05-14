@@ -14,15 +14,20 @@ type ErrorWithRetryProps = {
 };
 
 const ErrorWithRetry = ({
-  message,
-  subMessage,
-  buttonText,
+  message = "An error occurred",
+  subMessage = "Something went wrong. Please try again",
+  buttonText = "Retry",
   onRetry,
   hideSubMessage = false,
   hideButton = false,
 }: ErrorWithRetryProps) => {
   return (
-    <View style={[styles.container, styles.padded]}>
+    <View 
+      style={[
+        styles.container, 
+        styles.padded
+      ]}
+    >
       <Icon
         iconSet="MaterialIcons"
         iconName="error-outline"

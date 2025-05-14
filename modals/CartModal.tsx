@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { View, FlatList, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useRouter } from "expo-router";
@@ -18,7 +19,7 @@ import ModalWrapper from "@/components/ModalWrapper";
 import Button from "@/components/Button";
 import BackButton from "@/components/BackButton";
 import Header from "@/components/Header";
-import CartItem from "@/components/CartItem";
+import CartItem, { SwipeableRef } from "@/components/CartItem";
 import Typography from "@/components/Typography";
 
 const CartModal = () => { 
@@ -38,6 +39,8 @@ const CartModal = () => {
   
   const isHasItems = cartBooks.length > 0;
   const isEmpty = cartBooks.length === 0;
+
+  const swipeableRefs = useRef<Array<SwipeableRef | null>>([]);
 
   return (
     <ModalWrapper>
@@ -69,10 +72,28 @@ const CartModal = () => {
                   entering={FadeInDown.delay(index * 100)}
                 >  
                   <CartItem
+                    ref={(ref) => {
+                      if (ref) {
+                        swipeableRefs.current[index] = ref;
+                      }
+                    }}
                     item={item}
                     onViewDetails={() => router.push(`/book/${item.id}`)}
-                    onRemoveFromCart={removeFromCart}
+                    onRemoveFromCart={() => {
+                      if (swipeableRefs.current[index]) {
+                        swipeableRefs.current[index]?.close();
+                      }
+                      setTimeout(() => removeFromCart(item.id), 500);
+                    }}
                     onUpdateQuantity={updateQuantity}
+                    alerts={{
+                      title: t("alerts.confirmDeleteCartBook.title"),
+                      message: t("alerts.confirmDeleteCartBook.message"),
+                      buttons: {
+                        cancel: t("alerts.confirmDeleteCartBook.cancel"),
+                        confirm: t("alerts.confirmDeleteCartBook.confirm"),
+                      }
+                    }}
                   />
                 </Animated.View>
               )}

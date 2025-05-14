@@ -1,62 +1,82 @@
-import { View, ViewStyle, TouchableOpacity, StyleSheet } from "react-native";
+import React, { forwardRef } from "react";
+import { 
+  View,
+  ViewStyle, 
+  TouchableOpacity, 
+  TouchableOpacityProps, 
+  StyleProp, 
+  StyleSheet, 
+} from "react-native";
 import * as IconSets from "@expo/vector-icons";
 import { colors } from "@/constants/theme";
-import { horizontalScale, verticalScale } from "@/helpers/common";
 
 import Icon from "./Icon";
 import Typography from "./Typography";
 
-type IconBadgeProps = {
+type IconBadgeProps = TouchableOpacityProps & {
   badgeCount: number;
+  onPress?: () => void;
   badgeIconSet: keyof typeof IconSets;
   badgeIconName: string;
   badgeIconSize?: number;
   badgeIconColor?: string;
-  onPress?: () => void;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 };
 
-const IconBadge = ({
-  badgeCount,
-  badgeIconSet,
-  badgeIconName,
-  badgeIconSize = 24,
-  badgeIconColor = colors.orange,
-  onPress,
-  style,
-}: IconBadgeProps) => {
-  const displayedCount = badgeCount >= 100 ? "99+" : badgeCount.toString();
+type ButtonRef = React.ComponentRef<typeof TouchableOpacity>;
 
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[styles.container, style]}
-    >
-      <Icon
-        iconSet={badgeIconSet}
-        iconName={badgeIconName}
-        iconSize={badgeIconSize}
-        iconColor={badgeIconColor}
-      />
+const IconBadge = forwardRef<ButtonRef, IconBadgeProps>(
+  (
+    {
+      badgeCount,
+      onPress,
+      badgeIconSet,
+      badgeIconName,
+      badgeIconSize = 24,
+      badgeIconColor = colors.orange,
+      style,
+      ...props 
+    }, 
+    ref
+  ) => {
+    const displayedCount = badgeCount >= 100 ? "99+" : badgeCount.toString();
 
-      {badgeCount > 0 && (
-        <View
-          style={[
-            styles.badge,
-            {
-              minWidth: horizontalScale(displayedCount.length > 2 ? 32 : 16),
-              paddingHorizontal: horizontalScale(displayedCount.length > 2 ? 6 : 4),
-            },
-          ]}
-        >
-          <Typography fontSize={10} fontWeight="bold" color={colors.white}>
-            {displayedCount}
-          </Typography>
-        </View>
-      )}
-    </TouchableOpacity>
-  );
-};
+    return (
+      <TouchableOpacity
+        ref={ref}
+        onPress={onPress}
+        style={[
+          styles.container, 
+          style
+        ]}
+        {...props}
+      >
+        <Icon
+          iconSet={badgeIconSet}
+          iconName={badgeIconName}
+          iconSize={badgeIconSize}
+          iconColor={badgeIconColor}
+        />
+
+        {badgeCount > 0 && (
+          <View
+            style={[
+              styles.badge,
+              {
+                minWidth: displayedCount.length > 2 ? 32 : 16,
+                paddingHorizontal: displayedCount.length > 2 ? 6 : 4,
+              },
+            ]}
+          >
+            <Typography fontSize={10} fontWeight="bold" color={colors.white}>
+              {displayedCount}
+            </Typography>
+          </View>
+        )}
+      </TouchableOpacity>
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -64,12 +84,12 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   badge: {
+    backgroundColor: colors.red,
+    borderRadius: 10,
+    height: 16,
     position: "absolute",
     top: -3,
     right: -5,
-    backgroundColor: colors.red,
-    borderRadius: 10,
-    height: verticalScale(16),
     justifyContent: "center",
     alignItems: "center",
   },

@@ -52,8 +52,13 @@ const FavoritesScreen = () => {
       title= {t("screens.favorites.header.text")} 
       onBackPress={() => router.back()}
     >
-      {!isConnected && <ErrorNetwork />}
-
+      {!isConnected && (
+        <ErrorNetwork 
+          message={t("components.errorNetwork.title")}
+          subMessage={t("components.errorNetwork.subtitle")}
+        />
+      )}
+      
       {isConnected && isLoading && (
         <Loading size="small" color={colors.orange} />
       )}
@@ -88,6 +93,9 @@ const FavoritesScreen = () => {
                   }
                 }}
                 onToggleFavorite={() => toggleFavorite(item.id)}
+                labels={{
+                  favorite: t("components.favoriteBookItem.labels.favorite"),
+                }}
               />
             </Animated.View>
           )}

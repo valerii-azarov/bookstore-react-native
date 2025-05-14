@@ -4,6 +4,7 @@ import { enUS, uk } from "date-fns/locale";
 import { View, FlatList, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { orderHandler } from "@/helpers/orderHandler";
 import { useIsConnected } from "@/contexts/networkContext";
 import { useLanguage, useTranslation } from "@/contexts/translateContext";
 import { useOrderHistoryStore } from "@/stores/orderHistoryStore";
@@ -18,7 +19,6 @@ import {
   selectResetOrderHistory,
 } from "@/selectors/orderHistorySelectors";
 import { colors } from "@/constants/theme";
-import { verticalScale } from "@/helpers/common";
 import { OrderHistoryByDate } from "@/types";
 
 import ScreenWrapper from "@/components/ScreenWrapper";
@@ -93,6 +93,12 @@ const OrderHistoryScreen = () => {
                     params: { orderId: order.id },
                   })
                 }
+                statusLabel={
+                  orderHandler.getOrderStatusStyle(order.status, t).label
+                }
+                statusBackgroundColor={
+                  orderHandler.getOrderStatusStyle(order.status, t).backgroundColor
+                }
               />
             </Animated.View>
           ))}
@@ -121,15 +127,20 @@ const OrderHistoryScreen = () => {
         title={t("screens.orderHistory.header.text")}
         titleSize={18}
         style={[
-          styles.header,
-          {
-            minHeight: verticalScale(40),
-          },
+          styles.header, 
+          { 
+            minHeight: 40,
+          }
         ]}
       />
       
       <View style={styles.content}>
-        {!isConnected && <ErrorNetwork />}
+        {!isConnected && (
+          <ErrorNetwork 
+            message={t("components.errorNetwork.title")}
+            subMessage={t("components.errorNetwork.subtitle")}
+          />
+        )}
 
         {isConnected && isError && !isLoading && (
           <ErrorWithRetry

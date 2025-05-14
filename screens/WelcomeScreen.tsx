@@ -14,7 +14,6 @@ import {
   selectCoverImagesResponse,
   selectLoadCoverImages, 
 } from "@/selectors/imagesSelectors";
-import { verticalScale } from "@/helpers/common";
 import { colors } from "@/constants/theme";
 
 import ScreenWrapper from "@/components/ScreenWrapper";
@@ -104,12 +103,12 @@ const WelcomeScreen = () => {
             numColumns={numColumns}
             renderItem={({ item }) => (
               <Image 
+                source={{ uri: item }}  
                 style={{
                   width: imageWidth,
                   height: imageHeight,
                   margin: 5,
                 }} 
-                source={{ uri: item }}
                 resizeMode="cover" 
               />
             )}
@@ -179,7 +178,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   footer: {
-    paddingBottom: Platform.OS === "ios" ? verticalScale(45) : verticalScale(25),
+    paddingBottom: Platform.OS === "ios" ? 45 : 25,
     flexDirection: "column",
     alignItems: "center",
   },
@@ -192,7 +191,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   startButton: {
-    height: verticalScale(50),
+    height: 50,
     paddingHorizontal: 30,
     borderRadius: 30,
     borderCurve: "continuous",

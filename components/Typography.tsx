@@ -1,15 +1,21 @@
 import React, { forwardRef } from "react";
-import { Text, TextProps, TextStyle, StyleProp, StyleSheet } from "react-native";
+import { 
+  Text, 
+  TextProps, 
+  TextStyle, 
+  StyleProp, 
+  StyleSheet,
+} from "react-native";
 import Animated from "react-native-reanimated";
 import { colors } from "@/constants/theme";
-import { getFontSize, getFontFamily } from "@/helpers/common";
-import { FontWeight } from "@/types";
+import { fontHandler } from "@/helpers/fontHandler";
+import { WeightType } from "@/types";
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
 
 type TypographyProps = TextProps & {
   fontSize?: number;
-  fontWeight?: FontWeight;
+  fontWeight?: WeightType;
   color?: string;
   style?: StyleProp<TextStyle>;
 };
@@ -26,14 +32,17 @@ const Typography = forwardRef<Text, TypographyProps>(
     },
     ref
   ) => {
+    const adjustedFontSize = fontHandler.resolveFontSize(fontSize);
+    const adjustedFontWeight = fontHandler.resolveFontFamily(fontWeight);
+
     return (
       <AnimatedText
         ref={ref}
         style={[
           styles.text,
           {
-            fontSize: getFontSize(fontSize),
-            fontFamily: getFontFamily(fontWeight),
+            fontSize: adjustedFontSize,
+            fontFamily: adjustedFontWeight,
             color,
           },
           style,

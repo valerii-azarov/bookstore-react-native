@@ -1,14 +1,24 @@
-import { StatusBar } from "expo-status-bar";
-import { View, TouchableOpacity, Platform, StyleProp, ViewStyle, StyleSheet } from "react-native";
+import { 
+  View,
+  ViewStyle, 
+  TouchableOpacity, 
+  StyleProp,
+  StyleSheet,
+  Platform,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Animated, { useSharedValue, useAnimatedStyle, withSequence, withTiming } from "react-native-reanimated";
-import { Ionicons as Icon } from "@expo/vector-icons";
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withSequence, 
+  withTiming,
+} from "react-native-reanimated";
 import { colors } from "@/constants/theme";
-import { verticalScale } from "@/helpers/common";
 
+import Icon from "./Icon";
 import Typography from "./Typography";
 
-interface ViewWrapperProps {
+type ViewWrapperProps = {
   title: string;
   onBackPress: () => void;
   children: React.ReactNode;
@@ -16,7 +26,7 @@ interface ViewWrapperProps {
   contentStyle?: StyleProp<ViewStyle>;
   hideHeaderBorder?: boolean;
   hideFooter?: boolean;
-}
+};
 
 const ViewWrapper = ({ 
   title, 
@@ -66,15 +76,13 @@ const ViewWrapper = ({
 
   return (
     <View style={styles.container}>
-      <StatusBar style="dark" />
-
       <View
         style={[
           styles.header,
           {
             borderBottomWidth: hideHeaderBorder ? 0 : 1,
             paddingTop: Platform.OS === "ios" ? insets.top : 15 + insets.top,
-            minHeight: Platform.OS === "ios" ? verticalScale(100) : verticalScale(85),
+            minHeight: Platform.OS === "ios" ? 100 : 85,
           },
           headerStyle,
         ]}
@@ -88,7 +96,12 @@ const ViewWrapper = ({
             <Animated.View style={[styles.circle, circleStyle]} />
             
             <Animated.View style={arrowStyle}>
-              <Icon name="arrow-back-sharp" size={28} color={colors.black} />
+              <Icon 
+                iconSet="Ionicons"
+                iconName="arrow-back-sharp" 
+                iconSize={28} 
+                iconColor={colors.black} 
+              />
             </Animated.View>
           </TouchableOpacity>
         </View>

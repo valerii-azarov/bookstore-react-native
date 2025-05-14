@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
-import { View, Alert, Image, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
+import { 
+  View, 
+  Alert,
+  Image, 
+  TouchableOpacity, 
+  ScrollView, 
+  StyleSheet, 
+} from "react-native";
 import { colors } from "@/constants/theme";
 import { Images } from "@/types";
 

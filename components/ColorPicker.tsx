@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
-import ColorPickerComponent, { Panel1, Preview, HueSlider, Swatches } from "reanimated-color-picker";
+import ColorPickerComponent, {
+  Panel1,
+  Preview,
+  HueSlider,
+  Swatches,
+} from "reanimated-color-picker";
 import { colors } from "@/constants/theme";
 
 import "@/reanimatedConfig";
@@ -66,7 +71,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   panel: {
-    height: 250,
+    height: 200,
     borderRadius: 8,
     marginBottom: 15,
   },

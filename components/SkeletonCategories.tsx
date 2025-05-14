@@ -1,7 +1,17 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { View, FlatList, StyleSheet } from "react-native";
-import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing, interpolateColor } from "react-native-reanimated";
-import { DEFAULT_CATEGORIES_LIMIT, DEFAULT_BOOKS_LIMIT } from "@/constants/settings";
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withRepeat, 
+  withTiming, 
+  Easing, 
+  interpolateColor,
+} from "react-native-reanimated";
+import { 
+  DEFAULT_CATEGORIES_LIMIT, 
+  DEFAULT_BOOKS_LIMIT 
+} from "@/constants/settings";
 import { colors } from "@/constants/theme";
 
 import SkeletonCategoryBookItem from "./SkeletonCategoryBookItem";

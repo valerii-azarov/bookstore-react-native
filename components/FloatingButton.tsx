@@ -1,50 +1,71 @@
-import { ViewStyle, TouchableOpacity, StyleProp, StyleSheet } from "react-native";
+import React, { forwardRef } from "react";
+import { 
+  ViewStyle, 
+  TouchableOpacity, 
+  TouchableOpacityProps, 
+  StyleProp, 
+  StyleSheet, 
+} from "react-native";
 import { colors } from "@/constants/theme";
-import { verticalScale } from "@/helpers/common";
+import { SizeType } from "@/types";
 
-const sizeMap = {
-  small: 40,
-  medium: 50,
-  large: 60,
-};
-
-type FloatingButtonProps = {
+type FloatingButtonProps = TouchableOpacityProps & {
   onPress: () => void;
   icon: React.ReactElement;
   style?: StyleProp<ViewStyle>;
-  size?: "small" | "medium" | "large";
+  size?: SizeType;
 };
 
-const FloatingButton = ({ onPress, icon, style, size = "medium", ...props }: FloatingButtonProps) => {
-  const scaledSize = sizeMap[size];
+type ButtonRef = React.ComponentRef<typeof TouchableOpacity>;
 
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[
-        styles.button,
-        {
-          width: verticalScale(scaledSize),
-          height: verticalScale(scaledSize),
-        },
-        style,
-      ]}
-      {...props}
-    >
-      {icon}
-    </TouchableOpacity>
-  );
-};
+const FloatingButton = forwardRef<ButtonRef, FloatingButtonProps>(
+  (
+    {
+      onPress, 
+      icon, 
+      style, 
+      size = "medium", 
+      ...props 
+    }, 
+    ref
+  ) => {
+    const buttonSize: Record<SizeType, number> = {
+      small: 45,
+      medium: 55,
+      large: 65,
+    };
+    
+    const adjustedSize = buttonSize[size];
+
+    return (
+      <TouchableOpacity
+        ref={ref}
+        onPress={onPress}
+        style={[
+          styles.button,
+          {
+            width: adjustedSize,
+            height: adjustedSize,
+          },
+          style,
+        ]}
+        {...props}
+      >
+        {icon}
+      </TouchableOpacity>
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   button: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
     backgroundColor: colors.orange,
-    borderColor: colors.orangeTint7,
+    borderColor: colors.orangeTint8,
     borderRadius: 30,
     borderWidth: 1,
+    position: "absolute",
+    bottom: 15,
+    right: 15,
     justifyContent: "center",
     alignItems: "center",
   },
