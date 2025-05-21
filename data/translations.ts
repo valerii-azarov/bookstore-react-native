@@ -2836,6 +2836,19 @@ const translations: Translations = {
       },
     },
 
+    alerts: {
+      noNetwork: {
+        title: {
+          en: "Error",
+          uk: "Помилка",
+        },
+        message: {
+          en: "No internet connection. Please check your network and try again",
+          uk: "Немає підключення до Інтернету. Будь ласка, перевірте мережу та спробуйте ще раз",
+        },
+      },
+    },
+
     messages: {
       errorNetwork: {
         title: {

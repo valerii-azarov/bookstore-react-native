@@ -149,9 +149,8 @@ const MenuScreen = () => {
           onPress: () => {
             if (!isConnected) {
               Alert.alert(
-                t("alerts.static.error.title"),
-                t("alerts.noNetwork.message"),
-                [{ text: "OK" }]
+                t("common.alerts.noNetwork.title"),
+                t("common.alerts.noNetwork.message"),
               );
               return;
             }
