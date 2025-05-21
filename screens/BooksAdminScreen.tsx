@@ -55,15 +55,15 @@ const BooksAdminScreen = () => {
 
   const confirmDeleteBook = (bookId: string, index: number) => {
     Alert.alert(
-      t("alerts.confirmDeleteBook.title"),
-      t("alerts.confirmDeleteBook.message"),
+      t("screens.books.alerts.confirmDelete.title"),
+      t("screens.books.alerts.confirmDelete.message"),
       [
         {
-          text: t("alerts.static.cancel"),
+          text: t("screens.books.alerts.confirmDelete.buttons.cancel"),
           style: "cancel",
         },
         {
-          text: t("alerts.confirmDeleteBook.confirm"),
+          text: t("screens.books.alerts.confirmDelete.buttons.confirm"),
           style: "destructive",
           onPress: async () => {
             await deleteBook(bookId)
@@ -73,15 +73,15 @@ const BooksAdminScreen = () => {
                 }
                 
                 Alert.alert(
-                  t("alerts.confirmDeleteBook.success.title"),
-                  t("alerts.confirmDeleteBook.success.message"),
+                  t("screens.books.alerts.confirmDelete.responses.success.title"),
+                  t("screens.books.alerts.confirmDelete.responses.success.message"),
                   [{ text: "OK" }]
                 );
               })
               .catch((error) => {
                 Alert.alert(
-                  t("alerts.static.error.title"),
-                  error.message || t("alerts.confirmDeleteBook.error.message")
+                  t("screens.books.alerts.confirmDelete.responses.error.title"),
+                  error.message || t("screens.books.alerts.confirmDelete.responses.error.message")
                 );
               });
           },
@@ -117,13 +117,13 @@ const BooksAdminScreen = () => {
         onEdit={(bookId) => router.push(`/book-settings/${bookId}`)}
         onDelete={(bookId) => confirmDeleteBook(bookId, index)}
         labels={{
-          available: t("components.searchedBooksItem.labels.available"),
-          unavailable: t("components.searchedBooksItem.labels.unavailable"),
-          article: t("components.searchedBooksItem.labels.article"),
+          available: t("components.bookItem.labels.availability.available"),
+          unavailable: t("components.bookItem.labels.availability.unavailable"),
+          article: t("components.bookItem.labels.article"),
         }}
         actionLabels={{
-          edit: t("components.searchedBooksItem.actions.edit"),
-          delete: t("components.searchedBooksItem.actions.delete"),
+          edit: t("components.bookItem.actions.edit"),
+          delete: t("components.bookItem.actions.delete"),
         }}
         onSwipeableOpen={() => handleSwipeOpen(index)}
       />
@@ -150,7 +150,7 @@ const BooksAdminScreen = () => {
           color={colors.black} 
           style={{ marginBottom: 5 }}
         >
-          {t("screens.books.headers.titleAdmin")}
+          {t("screens.books.header.title.admin")}
         </Typography>
 
         <TouchableOpacity
@@ -171,7 +171,7 @@ const BooksAdminScreen = () => {
             color={colors.grayTint3}
             style={{ marginLeft: 10 }}
           >
-            {t(`screens.books.placeholders.titleAndSku.text`)}
+            {t("screens.books.searchInput.title")}
           </Typography>
         </TouchableOpacity>
       </View>
@@ -179,17 +179,17 @@ const BooksAdminScreen = () => {
       <View style={styles.content}>
         {isError && !isLoading && (
           <ErrorWithRetry
-            message={t("screens.books.messages.error.text")}
-            subMessage={t("screens.books.messages.error.subText")}
-            buttonText={t("screens.books.buttons.error.text")}
+            message={t("common.messages.errorWithRetry.title")}
+            subMessage={t("common.messages.errorWithRetry.subtitle")}
+            buttonText={t("common.buttons.errorWithRetry")}
             onRetry={() => loadBooks(true)}
           />
         )}
 
         {isEmpty && !isError && !isLoading && (
           <Empty 
-            message={t("screens.books.messages.empty.text")}
-            subMessage={t("screens.books.messages.empty.subText")}
+            message={t("screens.books.messages.empty.title")}
+            subMessage={t("screens.books.messages.empty.subtitle")}
           />
         )}
         

@@ -83,11 +83,9 @@ const CheckoutModal = () => {
   const isEmptyWarehouses = !isLoadingWarehouses && warehouses.length === 0;
   const isErrorWarehouses = !isLoadingWarehouses && warehousesResponse?.status === "error";
 
-  const isOrderCreating = orderStatus === "creating";
-  const isOrderSuccess = orderResponse?.status === "success";
-  const isOrderError = orderResponse?.status === "error";
-
-  const orderMessage = orderResponse?.message;  
+  const isCreating = orderStatus === "creating";
+  const status = orderResponse?.status;
+  const message = orderResponse?.message;
 
   const cityOptions: Option<string>[] = cities.map((city: any) => ({
     label: city.description,
@@ -135,47 +133,47 @@ const CheckoutModal = () => {
 
   const steps = [
     {
-      title: t("modals.checkout.titles.step1"),
+      title: t("modals.checkout.steps.step1.title"),
       component: (
         <View style={{ flexDirection: "column", gap: 15 }}>
           <View style={{ flex: 1, minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.checkout.labels.city")}
+              {t("modals.checkout.steps.step1.fields.city.label")}
             </Typography>
 
             <SearchDropdown
               data={cityOptions}
               onSelect={handleCitySelect}
               onSearch={handleCitySearch}
-              searchPlaceholder={t("modals.checkout.placeholders.citySearch")}
+              searchPlaceholder={t("modals.checkout.steps.step1.fields.city.placeholder")}
               shape="rounded"
               isLoading={isLoadingCities}
               isEmpty={isEmptyCities}
               isError={isErrorCities}
-              loadingMessage={t("modals.checkout.messages.loadingCities")}
-              emptyMessage={t("modals.checkout.messages.emptyCities")}
-              errorMessage={t("modals.checkout.messages.errorCities")}
+              loadingMessage={t("modals.checkout.steps.step1.fields.city.responses.loading")}
+              emptyMessage={t("modals.checkout.steps.step1.fields.city.responses.empty")}
+              errorMessage={t("modals.checkout.steps.step1.fields.city.responses.error")}
               disabled={!isConnected}
             />
           </View>
           
           <View style={{ flex: 1, minHeight: 75, marginBottom: 10 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.checkout.labels.warehouse")}
+              {t("modals.checkout.steps.step1.fields.warehouse.label")}
             </Typography>
 
             <SearchDropdown
               data={warehouseOptions}
               onSelect={handleWarehouseSelect}
               onSearch={handleWarehouseSearch}
-              searchPlaceholder={t("modals.checkout.placeholders.warehouseSearch")}
+              searchPlaceholder={t("modals.checkout.steps.step1.fields.warehouse.placeholder")}
               shape="rounded"
               isLoading={isLoadingWarehouses}
               isEmpty={isEmptyWarehouses}
               isError={isErrorWarehouses}
-              loadingMessage={t("modals.checkout.messages.loadingWarehouses")}
-              emptyMessage={t("modals.checkout.messages.emptyWarehouses")}
-              errorMessage={t("modals.checkout.messages.errorWarehouses")}
+              loadingMessage={t("modals.checkout.steps.step1.fields.warehouse.responses.loading")}
+              emptyMessage={t("modals.checkout.steps.step1.fields.warehouse.responses.empty")}
+              errorMessage={t("modals.checkout.steps.step1.fields.warehouse.responses.error")}
               disabled={!selectedCity || !isConnected}
             />
           </View>
@@ -189,7 +187,7 @@ const CheckoutModal = () => {
             }}
           >
             <Typography fontSize={14} fontWeight="medium" color={colors.gray}>
-              {t("modals.checkout.messages.deliveryInfo")}
+              {t("modals.checkout.steps.step1.notice.subtitle")}
             </Typography>
           </View>
         </View>
@@ -197,51 +195,51 @@ const CheckoutModal = () => {
       validate: (form: OrderFormValues) => !!form.city && !!form.warehouse,
     },
     {
-      title: t("modals.checkout.titles.step2"),
+      title: t("modals.checkout.steps.step2.title"),
       component: (
         <View style={{ flexDirection: "column", gap: 15 }}>
           <View style={{ flex: 1, minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.checkout.labels.lastName")}
+              {t("modals.checkout.steps.step2.fields.lastName.label")}
             </Typography>
       
             <Input
               value={formValues.lastName}
               onChangeText={(text) => setFormValues((prev) => ({ ...prev, lastName: text }))}
-              placeholder={t("modals.checkout.placeholders.lastName")}
+              placeholder={t("modals.checkout.steps.step2.fields.lastName.placeholder")}
               keyboardType="default"
             />
           </View>
       
           <View style={{ flex: 1, minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.checkout.labels.firstName")}
+              {t("modals.checkout.steps.step2.fields.firstName.label")}
             </Typography>
       
             <Input 
               value={formValues.firstName}
               onChangeText={(text) => setFormValues((prev) => ({ ...prev, firstName: text }))}
-              placeholder={t("modals.checkout.placeholders.firstName")}
+              placeholder={t("modals.checkout.steps.step2.fields.firstName.placeholder")}
               keyboardType="default"
             />
           </View>  
       
           <View style={{ flex: 1, minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.checkout.labels.middleName")}
+              {t("modals.checkout.steps.step2.fields.middleName.label")}
             </Typography>
       
             <Input 
               value={formValues.middleName}
               onChangeText={(text) => setFormValues((prev) => ({ ...prev, middleName: text }))}
-              placeholder={t("modals.checkout.placeholders.middleName")}
+              placeholder={t("modals.checkout.steps.step2.fields.middleName.placeholder")}
               keyboardType="default"
             />
           </View>
       
           <View style={{ flex: 1, minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.checkout.labels.phoneNumber")}
+              {t("modals.checkout.steps.step2.fields.phoneNumber.label")}
             </Typography>
       
             <Input 
@@ -257,12 +255,12 @@ const CheckoutModal = () => {
       scrollEnabled: true,
     },
     {
-      title: t("modals.checkout.titles.step3"),
+      title: t("modals.checkout.steps.step3.title"),
       component: (
         <View>
           <View style={{ flexDirection: "column" }}>
             <Typography fontSize={16} fontWeight="medium" style={{ marginBottom: 5 }}>
-              {t("modals.checkout.labels.totalAmount")}
+              {t("modals.checkout.steps.step3.labels.totalAmount")}
             </Typography>
             
             <Typography fontSize={28} fontWeight="bold" numberOfLines={1} ellipsizeMode="tail" color={colors.black}>
@@ -279,22 +277,14 @@ const CheckoutModal = () => {
           />
           
           <Typography fontSize={16} fontWeight="medium" color={colors.black} style={{ marginBottom: 10 }}>
-            {t("modals.checkout.labels.selectPaymentMethod")}
+            {t("modals.checkout.steps.step3.fields.paymentMethod.label")}
           </Typography>
 
           <View style={{ alignItems: "flex-start" }}>
             <Checkbox
-              checked={formValues.paymentMethod === "cash"}
-              onPress={() => setFormValues((prev) => ({ ...prev, paymentMethod: "cash" }))}
-              label={t("modals.checkout.checkboxes.cash")}
-              labelSize={16}
-              style={{ marginBottom: 15 }}
-            />
-
-            <Checkbox
               checked={formValues.paymentMethod === "cod"}
               onPress={() => setFormValues((prev) => ({ ...prev, paymentMethod: "cod" }))}
-              label={t("modals.checkout.checkboxes.cod")}
+              label={t("modals.checkout.steps.step3.fields.paymentMethod.values.cod")}
               labelSize={16}
               style={{ marginBottom: 15 }}
             />
@@ -302,7 +292,7 @@ const CheckoutModal = () => {
             <Checkbox
               checked={formValues.paymentMethod === "card"}
               onPress={() => setFormValues((prev) => ({ ...prev, paymentMethod: "card" }))}
-              label={t("modals.checkout.checkboxes.card")}
+              label={t("modals.checkout.steps.step3.fields.paymentMethod.values.card")}
               labelSize={16}
               labelColor={colors.grayTint5}
               style={{
@@ -321,11 +311,11 @@ const CheckoutModal = () => {
             }}
           >
             <Typography fontSize={16} fontWeight="bold" style={{ marginBottom: 5 }}>
-              {t("modals.checkout.messages.paymentNotice.title")} 
+              {t("modals.checkout.steps.step3.notice.title")} 
             </Typography>
 
             <Typography fontSize={14} fontWeight="medium" color={colors.gray}>
-              {t("modals.checkout.messages.paymentNotice.text")}
+              {t("modals.checkout.steps.step3.notice.subtitle")}
             </Typography>
           </View>
         </View>
@@ -333,57 +323,61 @@ const CheckoutModal = () => {
       validate: (form: OrderFormValues) => !!form.paymentMethod,
     },
     {
-      title: t("modals.checkout.titles.step4"),
+      title: t("modals.checkout.steps.step4.title"),
       component: (
         <View>
           <Typography fontSize={16} fontWeight="medium" color={colors.black} style={{ marginBottom: 15 }}>
-            {t("modals.checkout.labels.checkData")}
+            {t("modals.checkout.steps.step4.labels.check")}
           </Typography>
       
           <View style={{ marginBottom: 15 }}>
             <Typography fontSize={16} fontWeight="bold" color={colors.black} style={{ marginBottom: 2.5 }}>
-              {t("modals.checkout.labels.deliveryAddress")}
+              {t("modals.checkout.steps.step4.fields.deliveryAddress.label")}
             </Typography>
       
             <Typography fontSize={16} fontWeight="medium" color={colors.black} numberOfLines={2}>
-              {selectedCity?.label && selectedWarehouse?.label ? `${selectedCity.label}, ${selectedWarehouse.label}` : t("modals.checkout.messages.noCityOrWarehouse")}
+              {selectedCity?.label && selectedWarehouse?.label 
+                ? `${selectedCity.label}, ${selectedWarehouse.label}` 
+                : t("modals.checkout.steps.step4.fields.deliveryAddress.notSpecified")}
             </Typography>
           </View>
       
           <View style={{ marginBottom: 15 }}>
             <Typography fontSize={16} fontWeight="bold" color={colors.black} style={{ marginBottom: 2.5 }}>
-              {t("modals.checkout.labels.recipient")}
+              {t("modals.checkout.steps.step4.fields.recipient.label")}
             </Typography>
       
             <Typography fontSize={16} fontWeight="medium" color={colors.black} numberOfLines={1}>
-              {formValues.lastName || formValues.firstName ? `${formValues.lastName || ""} ${formValues.firstName || ""} ${formValues.middleName || ""}`.trim() : t("modals.checkout.messages.noName")}
+              {formValues.lastName || formValues.firstName 
+                ? `${formValues.lastName || ""} ${formValues.firstName || ""} ${formValues.middleName || ""}`.trim() 
+                : t("modals.checkout.steps.step4.fields.recipient.notSpecified")}
             </Typography>
           </View>
       
           <View style={{ marginBottom: 15 }}>
             <Typography fontSize={16} fontWeight="bold" color={colors.black} style={{ marginBottom: 2.5 }}>
-              {t("modals.checkout.labels.phoneNumber")}
+              {t("modals.checkout.steps.step4.fields.phoneNumber.label")}
             </Typography>
       
             <Typography fontSize={16} fontWeight="medium" color={colors.black} numberOfLines={1}>
-              {formValues.phoneNumber || t("modals.checkout.messages.noPhone")}
+              {formValues.phoneNumber || t("modals.checkout.steps.step4.fields.phoneNumber.notSpecified")}
             </Typography>
           </View>
       
           <View style={{ marginBottom: 15 }}>
             <Typography fontSize={16} fontWeight="bold" color={colors.black} style={{ marginBottom: 2.5 }}>
-              {t("modals.checkout.labels.paymentMethodLabel")}
+              {t("modals.checkout.steps.step4.fields.paymentMethod.label")}
             </Typography>
       
             <Typography fontSize={16} fontWeight="medium" color={colors.black} numberOfLines={1}>
-              {t(`modals.checkout.checkboxes.${formValues.paymentMethod || "noPaymentMethod"}`)}
+              {t(`modals.checkout.steps.step4.fields.paymentMethod.${formValues.paymentMethod ? `values.${formValues.paymentMethod}` : "notSpecified"}`)}
             </Typography>
           </View>
         </View>
       ),
     },
     {
-      title: t("modals.checkout.titles.step5"),
+      title: t("modals.checkout.steps.step5.title"),
       component: (
         <View 
           style={{
@@ -393,11 +387,11 @@ const CheckoutModal = () => {
           }}
         > 
           <Typography fontSize={18} fontWeight="bold" style={{ marginBottom: 10 }}>
-            {t("modals.checkout.messages.paymentSystem.title")}
+            {t("modals.checkout.steps.step5.notice.title")}
           </Typography>
 
           <Typography fontSize={14} fontWeight="medium" color={colors.gray}>
-            {t("modals.checkout.messages.paymentSystem.text")} 
+            {t("modals.checkout.steps.step5.notice.subtitle")} 
           </Typography>
         </View>
       ),
@@ -414,11 +408,11 @@ const CheckoutModal = () => {
           }}
         >
           <Typography fontSize={24} fontWeight="bold" style={{ marginBottom: 10, textAlign: "center" }}>
-            {t(`modals.checkout.messages.${isOrderSuccess ? "success" : "error"}.title`)}
+            {t(`modals.checkout.messages.${status === "success" ? "success" : "error"}.title`)}
           </Typography>
           
           <Typography fontSize={16} fontWeight="medium" color={colors.blackTint5} style={{ textAlign: "center" }}>
-            {t(`modals.checkout.messages.${isOrderSuccess ? "success" : "error"}.text`) || orderMessage}
+            {t(`modals.checkout.messages.${status === "success" ? "success" : "error"}.subtitle`) || message}
           </Typography>
         </View>
       ),
@@ -432,9 +426,9 @@ const CheckoutModal = () => {
   const handleNext = () => {
     setDirection("forward");
     if (isLastStep) {
-      return isOrderError ? router.back() : router.dismissAll();
+      return status === "error" ? router.back() : router.dismissAll();
     }
-    if (isSecondToLastStep && !isOrderCreating && isConnected) {
+    if (isSecondToLastStep && !isCreating && isConnected) {
       createOrder(formValues);
       return;
     }
@@ -447,10 +441,10 @@ const CheckoutModal = () => {
   };
 
   useEffect(() => {
-    if (isSecondToLastStep && !isOrderCreating && orderResponse) {
+    if (isSecondToLastStep && !isCreating && orderResponse) {
       setCurrentStep((prev) => prev + 1);
     }
-  }, [isOrderCreating, isSecondToLastStep, orderResponse]);
+  }, [isCreating, isSecondToLastStep, orderResponse]);
 
   useEffect(() => {
     return () => {
@@ -464,7 +458,7 @@ const CheckoutModal = () => {
     <ModalWrapper>
       <KeyboardWrapper>
         <Header
-          title={t("modals.checkout.header.text")}
+          title={t("modals.checkout.header.title")}
           iconLeft={<BackButton />}
           style={{
             paddingHorizontal: 15,
@@ -485,13 +479,13 @@ const CheckoutModal = () => {
           onPrevious={handlePrevious}
           form={formValues}
           buttonLabels={{
-            next: t(`modals.checkout.buttons.${isOrderError ? "return" : isLastStep ? "complete" : isSecondToLastStep ? "confirm" : "continue"}.text`),
-            previous: t("modals.checkout.buttons.back.text"),
+            next: t(`modals.checkout.buttons.${status === "error" ? "return" : isLastStep ? "complete" : isSecondToLastStep ? "confirm" : "continue"}`),
+            previous: t("modals.checkout.buttons.back"),
           }}
           buttonProps={{ 
             next: { 
-              disabled: isOrderCreating || !isConnected, 
-              loading: isOrderCreating 
+              disabled: isCreating || !isConnected, 
+              loading: isCreating 
             },
             previous: { disabled: isFirstStep },
           }}

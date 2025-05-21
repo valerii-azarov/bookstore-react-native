@@ -45,7 +45,7 @@ const CartModal = () => {
   return (
     <ModalWrapper>
       <Header
-        title={t("modals.cart.header.text")}
+        title={t("modals.cart.header.title")}
         titleSize={18}
         iconLeft={<BackButton />}
         style={{
@@ -87,11 +87,11 @@ const CartModal = () => {
                     }}
                     onUpdateQuantity={updateQuantity}
                     alerts={{
-                      title: t("alerts.confirmDeleteCartBook.title"),
-                      message: t("alerts.confirmDeleteCartBook.message"),
+                      title: t("modals.cart.alerts.confirmDelete.title"),
+                      message: t("modals.cart.alerts.confirmDelete.message"),
                       buttons: {
-                        cancel: t("alerts.confirmDeleteCartBook.cancel"),
-                        confirm: t("alerts.confirmDeleteCartBook.confirm"),
+                        cancel: t("modals.cart.alerts.confirmDelete.buttons.cancel"),
+                        confirm: t("modals.cart.alerts.confirmDelete.buttons.confirm"),
                       }
                     }}
                   />
@@ -113,7 +113,7 @@ const CartModal = () => {
                 numberOfLines={1}
                 style={styles.totalTitle}
               >
-                {t("modals.cart.titles.order")}
+                {t("modals.cart.labels.order")}
               </Typography>
 
               <View 
@@ -125,7 +125,7 @@ const CartModal = () => {
                 ]}
               >
                 <Typography fontSize={14} fontWeight="medium" color={colors.gray}>
-                  {t("modals.cart.labels.subtotal.text")}
+                  {t("modals.cart.labels.subtotal")}
                 </Typography>
 
                 <Typography 
@@ -142,7 +142,7 @@ const CartModal = () => {
               {discountAmount > 0 && (  
                 <View style={styles.totalRow}>
                   <Typography fontSize={14} fontWeight="medium" color={colors.gray}>
-                    {t("modals.cart.labels.discount.text")}
+                    {t("modals.cart.labels.discount")}
                   </Typography>
 
                   <Typography 
@@ -169,7 +169,7 @@ const CartModal = () => {
 
               <View style={styles.totalRow}>
                 <Typography fontSize={14} fontWeight="medium" color={colors.gray}>
-                  {t("modals.cart.labels.total.text")}
+                  {t("modals.cart.labels.total")}
                 </Typography>
 
                 <Typography 
@@ -192,7 +192,7 @@ const CartModal = () => {
                 disabled={!isConnected || isEmpty}
               >
                 <Typography fontSize={16} fontWeight="bold" color={colors.white}>
-                  {t("modals.cart.buttons.checkout.text")}
+                  {t("modals.cart.buttons.checkout")}
                 </Typography>
               </Button>
             </View>
@@ -201,7 +201,7 @@ const CartModal = () => {
 
         {isEmpty && (
           <Typography fontSize={16} fontWeight="medium" color={colors.gray}>
-            {t("modals.cart.messages.empty.text")}
+            {t("modals.cart.messages.empty.title")}
           </Typography>
         )}
       </View>

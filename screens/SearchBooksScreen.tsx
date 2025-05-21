@@ -80,13 +80,13 @@ const SearchBooksScreen = () => {
       disableSwipe
       onView={() => router.push(`/book/${item.id}`)}
       labels={{
-        available: t("components.searchedBooksItem.labels.available"),
-        unavailable: t("components.searchedBooksItem.labels.unavailable"),
-        article: t("components.searchedBooksItem.labels.article"),
-      }}  
+        available: t("components.bookItem.labels.availability.available"),
+        unavailable: t("components.bookItem.labels.availability.unavailable"),
+        article: t("components.bookItem.labels.article"),
+      }} 
       actionLabels={{
-        edit: t("components.searchedBooksItem.actions.edit"),
-        delete: t("components.searchedBooksItem.actions.delete"),
+        edit: t("components.bookItem.actions.edit"),
+        delete: t("components.bookItem.actions.delete"),
       }}
     />
   ), [isAdmin, router]);
@@ -114,14 +114,14 @@ const SearchBooksScreen = () => {
   
   return (
     <ViewWrapper 
-      title={t("screens.searchBooks.header.text")}
+      title={t("screens.searchBooks.header.title")}
       onBackPress={() => router.back()}
       hideHeaderBorder
     >
       <View style={styles.searchContainer}>
         <Input
           ref={inputRef}
-          placeholder={t(`screens.searchBooks.placeholders.${isAdmin ? "titleAndSku" : "title"}.text`)}
+          placeholder={t(`screens.searchBooks.searchInput.title.${isAdmin ? "admin" : "user"}`)}
           placeholderTextColor={colors.grayTint5}
           value={searchQuery}
           onFocus={() => {
@@ -181,16 +181,16 @@ const SearchBooksScreen = () => {
 
           {isConnected && isError && !isLoading && (
             <ErrorWithRetry
-              message={t("screens.searchBooks.messages.error.text")}
-              subMessage={t("screens.searchBooks.messages.error.subText")}
-              buttonText={t("screens.searchBooks.buttons.error.text")}
+              message={t("common.messages.errorWithRetry.title")}
+              subMessage={t("common.messages.errorWithRetry.subtitle")}
+              buttonText={t("common.buttons.errorWithRetry")}
               onRetry={() => loadSearchedBooks(true)}
             />
           )}
 
           {isConnected && isEmpty && !isError && !isLoading && (
             <Empty
-              message={t("screens.searchBooks.messages.empty.text")}
+              message={t("screens.searchBooks.messages.empty.title")}
               hideSubMessage
             />
           )}

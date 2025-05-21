@@ -49,13 +49,13 @@ const FavoritesScreen = () => {
 
   return (
     <ViewWrapper 
-      title= {t("screens.favorites.header.text")} 
+      title= {t("screens.favorites.header.title")} 
       onBackPress={() => router.back()}
     >
       {!isConnected && (
         <ErrorNetwork 
-          message={t("components.errorNetwork.title")}
-          subMessage={t("components.errorNetwork.subtitle")}
+          message={t("common.messages.errorNetwork.title")}
+          subMessage={t("common.messages.errorNetwork.subtitle")}
         />
       )}
       
@@ -65,15 +65,15 @@ const FavoritesScreen = () => {
 
       {isConnected && isError && !isLoading && (   
         <ErrorWithRetry 
-          message={t("screens.favorites.messages.error.text")}
-          subMessage={t("screens.favorites.messages.error.subText")}
+          message={t("common.messages.failedLoad.title")}
+          subMessage={t("common.messages.failedLoad.subtitle")}
           hideButton
         />
       )}
 
       {isConnected && isEmpty && !isError && !isLoading && (
         <Empty 
-          message={t("screens.favorites.messages.empty.text")} 
+          message={t("screens.favorites.messages.empty.title")} 
           hideSubMessage
         />
       )}
@@ -94,7 +94,7 @@ const FavoritesScreen = () => {
                 }}
                 onToggleFavorite={() => toggleFavorite(item.id)}
                 labels={{
-                  favorite: t("components.favoriteBookItem.labels.favorite"),
+                  favorite: t("components.favoriteBookItem.buttons.favorite"),
                 }}
               />
             </Animated.View>

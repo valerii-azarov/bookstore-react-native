@@ -11,7 +11,6 @@ import {
   selectResetBookOperationState,
 } from "@/selectors/bookSelectors";
 import { isbnRegex } from "@/constants/regex";
-import { colors } from "@/constants/theme";
 import { 
   genresKeys, 
   languageKeys,
@@ -19,6 +18,7 @@ import {
   bookTypeKeys,
   paperTypeKeys, 
 } from "@/constants/book";
+import { colors } from "@/constants/theme";
 import { converter } from "@/helpers/converter";
 import { BookField, BookFormValues, DirectionType } from "@/types";
 
@@ -45,7 +45,7 @@ const initialValues: BookFormValues = {
   discount: 0,
   coverImage: "",
   additionalImages: [],
-  backgroundColor: "",
+  backgroundColor: colors.white,
   description: "",
   genres: [],
   language: "",
@@ -86,98 +86,98 @@ const CreateBookModal = () => {
 
   const validateField = (field: BookField, value: any): string | null => {
     if (field !== "additionalImages" && (value === undefined || value === null || value === "")) {
-      return t(`validators.${field}Required`);
+      return t(`modals.createBook.validators.${field}.required`);
     }
 
     if (Array.isArray(value) && value.length === 0 && field !== "additionalImages") {
-      return t(`validators.${field}Required`);
+      return t(`modals.createBook.validators.${field}.required`);
     }
     
     if (field === "title" || field === "publisher" || field === "size" || field === "sku") {
       if (typeof value === "string" && value.length < 2) {
-        return t(`validators.${field}MinLength`);
+        return t(`modals.createBook.validators.${field}.minLength`);
       }
     }
     
     if (field === "authors") {
       if (value.length > 5) {
-        return t("validators.authorsMaxCount");
+        return t(`modals.createBook.validators.${field}.maxCount`);
       }
       if (value.some((author: string) => author.length < 2)) {
-        return t("validators.authorsInvalid");
+        return t(`modals.createBook.validators.${field}.invalid`);
       }
     }
   
     if (field === "genres") {
       if (value.length > 5) {
-        return t("validators.genresMaxCount");
+        return t(`modals.createBook.validators.${field}.maxCount`);
       }
     }
   
     if (field === "additionalImages" && value.length > 5) {
-      return t("validators.additionalImagesMaxCount");
+      return t(`modals.createBook.validators.${field}.maxCount`);
     }
 
     if (field === "price" || field === "originalPrice") {
       if (isNaN(value) || value < 0) {
-        return t(`validators.${field}Invalid`);
+        return t(`modals.createBook.validators.${field}.invalid`);
       }
       if (value > 10000) {
-        return t(`validators.${field}Max`);
+        return t(`modals.createBook.validators.${field}.max`);
       }
       if (field === "originalPrice" && value <= 0) {
-        return t("validators.originalPriceRequired");
+        return t(`modals.createBook.validators.${field}.required`);
       }
     }
   
     if (field === "discount") {
       if (isNaN(value) || value < 0 || value > 100) {
-        return t("validators.discountInvalid");
+        return t(`modals.createBook.validators.${field}.invalid`);
       }
     }
   
     if (field === "pageCount" || field === "weight") {
       if (isNaN(value) || value <= 0) {
-        return t(`validators.${field}Required`);
+        return t(`modals.createBook.validators.${field}.required`);
       }
       if (field === "pageCount" && value > 10000) {
-        return t("validators.pageCountMax");
+        return t(`modals.createBook.validators.${field}.max`);
       }
       if (field === "weight" && value > 10000) {
-        return t("validators.weightMax");
+        return t(`modals.createBook.validators.${field}.max`);
       }
     }
   
     if (field === "availableQuantity") {
       if (isNaN(value) || value < 0) {
-        return t("validators.availableQuantityInvalid");
+        return t(`modals.createBook.validators.${field}.invalid`);
       }
       if (value > 100) {
-        return t("validators.availableQuantityMax");
+        return t(`modals.createBook.validators.${field}.max`);
       }
     }
 
     if (field === "description" && typeof value === "string" && value.length < 500) {
-      return t("validators.descriptionMinLength");
+      return t(`modals.createBook.validators.${field}.minLength`);
     }
   
     if (field === "language" || field === "coverType" || field === "bookType" || field === "paperType") {
       if (!value) {
-        return t(`validators.${field}Invalid`);
+        return t(`modals.createBook.validators.${field}.invalid`);
       }
     }
   
     if (field === "publicationYear") {
       const currentYear = new Date().getFullYear();
       if (isNaN(value) || value < 1800 || value > currentYear) {
-        return t("validators.publicationYearInvalid");
+        return t(`modals.createBook.validators.${field}.invalid`);
       }
     }
   
     if (field === "isbn" && typeof value === "string" && !isbnRegex.test(value)) {
-      return t("validators.isbnInvalid");
+      return t(`modals.createBook.validators.${field}.invalid`);
     }
-  
+
     return null;
   };
     
@@ -191,19 +191,19 @@ const CreateBookModal = () => {
 
   const steps = [
     {
-      title: t("modals.createBook.titles.step1"),
+      title: t("modals.createBook.steps.step1.title"),
       component: (
         <View style={{ flexDirection: "column", gap: 15 }}>
           <View style={{ minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.createBook.labels.title")}
+              {t("modals.createBook.steps.step1.fields.title.label")}
             </Typography>
       
             <Field
               type="input"
               value={formValues.title}
               onChangeText={(value) => handleInputChange("title", value)}
-              placeholder={t("modals.createBook.placeholders.title")}
+              placeholder={t("modals.createBook.steps.step1.fields.title.placeholder")}
               error={errors.title}
               keyboardType="default"
             />
@@ -211,13 +211,13 @@ const CreateBookModal = () => {
 
           <View style={{ minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.createBook.labels.authors")}
+              {t("modals.createBook.steps.step1.fields.authors.label")}
             </Typography>
       
             <TagsField
               initialValue={formValues.authors}
               onChange={(value) => handleInputChange("authors", value)}
-              placeholder={t("modals.createBook.placeholders.authors")}
+              placeholder={t("modals.createBook.steps.step1.fields.authors.placeholder")}
               error={errors.authors}
             />
           </View>
@@ -233,19 +233,19 @@ const CreateBookModal = () => {
       scrollEnabled: true,
     },
     {
-      title: t("modals.createBook.titles.step2"),
+      title: t("modals.createBook.steps.step2.title"),
       component: (
         <View style={{ flexDirection: "column", gap: 15 }}>
           <View style={{ minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.createBook.labels.genres")}
+              {t("modals.createBook.steps.step2.fields.genres.label")}
             </Typography>
 
             <MultiDropdown 
-              options={genresKeys.map((key) => ({ label: t(`genres.${key}`), value: key }))}
+              options={genresKeys.map((key) => ({ label: t(`common.genres.${key}`), value: key }))}
               initialValues={formValues.genres}
               onChange={(value) => handleInputChange("genres", value)}
-              placeholder={t("modals.createBook.options.genres")}
+              placeholder={t("modals.createBook.steps.step2.fields.genres.option")}
               error={errors.genres}
               showTags
               shape="rounded"
@@ -256,19 +256,19 @@ const CreateBookModal = () => {
       validate: (form: BookFormValues) => form.genres.length > 0 && !errors.genres,
     },
     {
-      title: t("modals.createBook.titles.step3"),
+      title: t("modals.createBook.steps.step3.title"),
       component: (
         <View style={{ flexDirection: "column", gap: 15 }}>
           <View style={{ minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.createBook.labels.description")}
+              {t("modals.createBook.steps.step3.fields.description.label")}
             </Typography> 
 
             <Field
               type="textarea"
               value={formValues.description}
               onChangeText={(value) => handleInputChange("description", value)}
-              placeholder={t("modals.createBook.placeholders.description")}
+              placeholder={t("modals.createBook.steps.step3.fields.description.placeholder")}
               error={errors.description}
               minHeight={100}
               maxHeight={500}
@@ -281,19 +281,19 @@ const CreateBookModal = () => {
       scrollEnabled: true,
     },
     {
-      title: t("modals.createBook.titles.step4"),
+      title: t("modals.createBook.steps.step4.title"),
       component: (
         <View style={{ flexDirection: "column", gap: 15 }}>
           <View style={{ minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.createBook.labels.pageCount")}
+              {t("modals.createBook.steps.step4.fields.pageCount.label")}
             </Typography> 
 
             <Field
               type="input"
               value={formValues.pageCount === 0 ? "" : formValues.pageCount.toString()}
               onChangeText={(value) => handleInputChange("pageCount", converter.toNumericValue(value) ?? 0)}
-              placeholder={t("modals.createBook.placeholders.pageCount")}
+              placeholder={t("modals.createBook.steps.step4.fields.pageCount.placeholder")}
               error={errors.pageCount}
               isNumeric
               isInteger
@@ -304,19 +304,19 @@ const CreateBookModal = () => {
       validate: (form: BookFormValues) => !!form.pageCount && !errors.pageCount,
     },
     {
-      title: t("modals.createBook.titles.step5"),
+      title: t("modals.createBook.steps.step5.title"),
       component: (
         <View style={{ flexDirection: "column", gap: 15 }}>
           <View>
             <Typography fontSize={16} fontWeight="medium" color={colors.black} style={{ marginBottom: 10 }}>
-              {t("modals.createBook.labels.illustrations")}
+              {t("modals.createBook.steps.step5.fields.illustrations.checkboxLabel")}
             </Typography>
 
             <View style={{ alignItems: "flex-start" }}>
               <Checkbox
                 checked={formValues.illustrations}
                 onPress={() => handleInputChange("illustrations", !formValues.illustrations)}
-                label={t("modals.createBook.checkboxes.illustrations")}
+                label={t("modals.createBook.steps.step5.fields.illustrations.values.contains")}
                 labelSize={16}
               />
             </View>
@@ -325,19 +325,19 @@ const CreateBookModal = () => {
       ),
     },
     {
-      title: t("modals.createBook.titles.step6"),
+      title: t("modals.createBook.steps.step6.title"),
       component: (
         <View style={{ flexDirection: "column", gap: 15 }}>
           <View style={{ minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.createBook.labels.language")}
+              {t("modals.createBook.steps.step6.fields.language.label")}
             </Typography>
 
             <Dropdown 
-              options={languageKeys.map((key) => ({ label: t(`languages.${key}`), value: key }))}
+              options={languageKeys.map((key) => ({ label: t(`common.languages.${key}`), value: key }))}
               initialValue={formValues.language}
               onChange={(value) => handleInputChange("language", value)}
-              placeholder={t("modals.createBook.options.language")}
+              placeholder={t("modals.createBook.steps.step6.fields.language.option")}
               error={errors.language}
               shape="rounded"
             />
@@ -347,7 +347,7 @@ const CreateBookModal = () => {
       validate: (form: BookFormValues) => !!form.language,
     },
     {
-      title: t("modals.createBook.titles.step7"),
+      title: t("modals.createBook.steps.step7.title"),
       component: (
         <View style={{ flexDirection: "column", gap: 15 }}>
           <ImagesField 
@@ -364,17 +364,17 @@ const CreateBookModal = () => {
               additionalImages: errors.additionalImages ?? null,
             }}
             labels={{
-              coverImage: t("modals.createBook.labels.coverImage"),
-              additionalImages: t("modals.createBook.labels.additionalImages"),
+              coverImage: t("modals.createBook.steps.step7.fields.coverImage.label"),
+              additionalImages: t("modals.createBook.steps.step7.fields.additionalImages.label"),
             }}
             prompts={{
-              coverImage: t("modals.createBook.prompts.coverImage"),
-              additionalImages: t("modals.createBook.prompts.additionalImages"),
+              coverImage: t("modals.createBook.steps.step7.fields.coverImage.prompt"),
+              additionalImages: t("modals.createBook.steps.step7.fields.additionalImages.prompt"),
             }}
             messages={{
               denied: {
-                text: t("modals.createBook.messages.denied.text"),
-                subText: t("modals.createBook.messages.denied.subText"),
+                text: t("modals.createBook.steps.step7.fields.coverImage.alerts.denied.title"),
+                subText: t("modals.createBook.steps.step7.fields.alerts.coverImage.denied.subtitle"),
               }
             }}
           />
@@ -390,12 +390,12 @@ const CreateBookModal = () => {
       scrollEnabled: true,
     },
     {
-      title: t("modals.createBook.titles.step8"),
+      title: t("modals.createBook.steps.step8.title"),
       component: (
         <View style={{ flexDirection: "column", gap: 15 }}>
           <View>
             <Typography fontSize={16} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.createBook.labels.backgroundColor")}
+              {t("modals.createBook.steps.step8.fields.backgroundColor.label")}
             </Typography>
 
             <ColorPicker
@@ -407,33 +407,33 @@ const CreateBookModal = () => {
       ),
     },
     {
-      title: t("modals.createBook.titles.step9"),
+      title: t("modals.createBook.steps.step9.title"),
       component: (
         <View style={{ flexDirection: "column", gap: 15 }}>
           <View style={{ minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.createBook.labels.publisher")}
+              {t("modals.createBook.steps.step9.fields.publisher.label")}
             </Typography> 
 
             <Field
               type="input"
               value={formValues.publisher}
               onChangeText={(value) => handleInputChange("publisher", value)}
-              placeholder={t("modals.createBook.placeholders.publisher")}
+              placeholder={t("modals.createBook.steps.step9.fields.publisher.placeholder")}
               error={errors.publisher}
             />
           </View>
 
           <View style={{ minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.createBook.labels.publicationYear")}
+              {t("modals.createBook.steps.step9.fields.publicationYear.label")}
             </Typography> 
 
             <Field
               type="input"
               value={formValues.publicationYear === 0 ? "" : formValues.publicationYear.toString()}
               onChangeText={(value) => handleInputChange("publicationYear", converter.toNumericValue(value) ?? 0)}
-              placeholder={t("modals.createBook.placeholders.publicationYear")}
+              placeholder={t("modals.createBook.steps.step9.fields.publicationYear.placeholder")}
               error={errors.publicationYear}
               isNumeric
               isInteger
@@ -450,19 +450,19 @@ const CreateBookModal = () => {
       },
     },
     {
-      title: t("modals.createBook.titles.step10"),
+      title: t("modals.createBook.steps.step10.title"),
       component: (
         <View style={{ flexDirection: "column", gap: 15 }}>
           <View style={{ minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.createBook.labels.isbn")}
+              {t("modals.createBook.steps.step10.fields.isbn.label")}
             </Typography> 
 
             <Field
               type="input"
               value={formValues.isbn}
               onChangeText={(value) => handleInputChange("isbn", value)}
-              placeholder={t("modals.createBook.placeholders.isbn")}
+              placeholder={t("modals.createBook.steps.step10.fields.isbn.placeholder")}
               error={errors.isbn}
             />
           </View>
@@ -471,19 +471,19 @@ const CreateBookModal = () => {
       validate: (form: BookFormValues) => !!form.isbn && !errors.isbn,
     },
     {
-      title: t("modals.createBook.titles.step11"),
+      title: t("modals.createBook.steps.step11.title"),
       component: (
         <View style={{ flexDirection: "column", gap: 15 }}>
           <View style={{ minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.createBook.labels.coverType")}
+              {t("modals.createBook.steps.step11.fields.coverType.label")}
             </Typography>
 
             <Dropdown 
-              options={coverTypeKeys.map((key) => ({ label: t(`coverTypes.${key}`), value: key }))}
+              options={coverTypeKeys.map((key) => ({ label: t(`common.coverTypes.${key}`), value: key }))}
               initialValue={formValues.coverType}
               onChange={(value) => handleInputChange("coverType", value)}
-              placeholder={t("modals.createBook.options.coverType")}
+              placeholder={t("modals.createBook.steps.step11.fields.coverType.option")}
               error={errors.coverType}
               shape="rounded"
             />
@@ -491,14 +491,14 @@ const CreateBookModal = () => {
 
           <View style={{ minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.createBook.labels.bookType")}
+              {t("modals.createBook.steps.step11.fields.bookType.label")}
             </Typography>
 
             <Dropdown 
-              options={bookTypeKeys.map((key) => ({ label: t(`bookTypes.${key}`), value: key }))}
+              options={bookTypeKeys.map((key) => ({ label: t(`common.bookTypes.${key}`), value: key }))}
               initialValue={formValues.bookType}
               onChange={(value) => handleInputChange("bookType", value)}
-              placeholder={t("modals.createBook.options.bookType")}
+              placeholder={t("modals.createBook.steps.step11.fields.bookType.option")}
               error={errors.bookType}
               shape="rounded"
             />
@@ -506,14 +506,14 @@ const CreateBookModal = () => {
 
           <View style={{ minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.createBook.labels.paperType")}
+              {t("modals.createBook.steps.step11.fields.paperType.label")}
             </Typography>
 
             <Dropdown 
-              options={paperTypeKeys.map((key) => ({ label: t(`paperTypes.${key}`), value: key }))}
+              options={paperTypeKeys.map((key) => ({ label: t(`common.paperTypes.${key}`), value: key }))}
               initialValue={formValues.paperType}
               onChange={(value) => handleInputChange("paperType", value)}
-              placeholder={t("modals.createBook.options.paperType")}
+              placeholder={t("modals.createBook.steps.step11.fields.paperType.option")}
               error={errors.paperType}
               shape="rounded"
             />
@@ -523,33 +523,33 @@ const CreateBookModal = () => {
       validate: (form: BookFormValues) => !!form.coverType && !!form.bookType && !!form.paperType,
     },
     {
-      title: t("modals.createBook.titles.step12"),
+      title: t("modals.createBook.steps.step12.title"),
       component: (
         <View style={{ flexDirection: "column", gap: 15 }}>
           <View style={{ minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.createBook.labels.size")}
+              {t("modals.createBook.steps.step12.fields.size.label")}
             </Typography> 
 
             <Field
               type="input"
               value={formValues.size}
               onChangeText={(value) => handleInputChange("size", value)}
-              placeholder={t("modals.createBook.placeholders.size")}
+              placeholder={t("modals.createBook.steps.step12.fields.size.placeholder")}
               error={errors.size}
             />
           </View>
 
           <View style={{ minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.createBook.labels.weight")}
+              {t("modals.createBook.steps.step12.fields.weight.label")}
             </Typography> 
 
             <Field
               type="input"
               value={formValues.weight === 0 ? "" : formValues.weight.toString()}
               onChangeText={(value) => handleInputChange("weight", converter.toNumericValue(value) ?? 0)}
-              placeholder={t("modals.createBook.placeholders.weight")}
+              placeholder={t("modals.createBook.steps.step12.fields.weight.placeholder")}
               error={errors.weight}
               isNumeric
             />
@@ -565,7 +565,7 @@ const CreateBookModal = () => {
       },
     },
     {
-      title: t("modals.createBook.titles.step13"),
+      title: t("modals.createBook.steps.step13.title"),
       component: (
         <View style={{ flexDirection: "column", gap: 15 }}>
           <RateCalculator 
@@ -585,17 +585,17 @@ const CreateBookModal = () => {
               price: errors.price ?? null,
             }}
             labels={{
-              originalPrice: t("modals.createBook.labels.originalPrice"),
-              discount: t("modals.createBook.labels.discount"),
-              price: t("modals.createBook.labels.price"),
+              originalPrice: t("modals.createBook.steps.step13.fields.originalPrice.label"),
+              discount: t("modals.createBook.steps.step13.fields.discount.label"),
+              price: t("modals.createBook.steps.step13.fields.price.label"),
             }}
             placeholders={{
-              originalPrice: t("modals.createBook.placeholders.originalPrice"),
-              discount: t("modals.createBook.placeholders.discount"),
-              price: t("modals.createBook.placeholders.price"),
+              originalPrice: t("modals.createBook.steps.step13.fields.originalPrice.placeholder"),
+              discount: t("modals.createBook.steps.step13.fields.discount.placeholder"),
+              price: t("modals.createBook.steps.step13.fields.price.placeholder"),
             }}
             checkboxes={{
-              manual: t("modals.createBook.checkboxes.manual"),
+              manual: t("modals.createBook.steps.step13.fields.manual.checkboxLabel"),
             }}
           />
         </View>
@@ -610,19 +610,19 @@ const CreateBookModal = () => {
       },
     },
     {
-      title: t("modals.createBook.titles.step14"),
+      title: t("modals.createBook.steps.step14.title"),
       component: (
         <View style={{ flexDirection: "column", gap: 15 }}>
           <View style={{ minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.createBook.labels.availableQuantity")}
+              {t("modals.createBook.steps.step14.fields.availableQuantity.label")}
             </Typography> 
 
             <Field
               type="input"
               value={formValues.availableQuantity === 0 ? "" : formValues.availableQuantity.toString()}
               onChangeText={(value) => handleInputChange("availableQuantity", converter.toNumericValue(value) ?? 0)}
-              placeholder={t("modals.createBook.placeholders.availableQuantity")}
+              placeholder={t("modals.createBook.steps.step14.fields.availableQuantity.placeholder")}
               error={errors.availableQuantity}
               isNumeric
               isInteger
@@ -633,19 +633,19 @@ const CreateBookModal = () => {
       validate: (form: BookFormValues) => !!form.availableQuantity && !errors.availableQuantity,
     },
     {
-      title: t("modals.createBook.titles.step15"),
+      title: t("modals.createBook.steps.step15.title"),
       component: (
         <View style={{ flexDirection: "column", gap: 15 }}>
           <View style={{ minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.createBook.labels.sku")}
+              {t("modals.createBook.steps.step15.fields.sku.label")}
             </Typography> 
 
             <Field
               type="input"
               value={formValues.sku}
               onChangeText={(value) => handleInputChange("sku", value)}
-              placeholder={t("modals.createBook.placeholders.sku")}
+              placeholder={t("modals.createBook.steps.step15.fields.sku.placeholder")}
               error={errors.sku}
             />
           </View>
@@ -669,7 +669,7 @@ const CreateBookModal = () => {
           </Typography>
           
           <Typography fontSize={16} fontWeight="medium" color={colors.blackTint5} style={{ textAlign: "center" }}>
-            {t(`modals.createBook.messages.${status === "success" ? "success" : "error"}.text`) || message}
+            {t(`modals.createBook.messages.${status === "success" ? "success" : "error"}.subtitle`) || message}
           </Typography>
         </View>
       ),
@@ -711,7 +711,7 @@ const CreateBookModal = () => {
     <ModalWrapper>
       <KeyboardWrapper>
         <Header
-          title={t("modals.createBook.header.text")}
+          title={t("modals.createBook.header.title")}
           titleSize={18}
           iconLeft={<BackButton />}
           style={{
@@ -733,8 +733,8 @@ const CreateBookModal = () => {
           onPrevious={handlePrevious}
           form={formValues}
           buttonLabels={{
-            next: t(`modals.createBook.buttons.${status === "error" ? "return" : isLastStep ? "complete" : isSecondToLastStep ? "create" : "continue"}.text`),
-            previous: t("modals.createBook.buttons.back.text"),
+            next: t(`modals.createBook.buttons.${status === "error" ? "return" : isLastStep ? "complete" : isSecondToLastStep ? "create" : "continue"}`),
+            previous: t("modals.createBook.buttons.back"),
           }}
           buttonProps={{ 
             next: { 

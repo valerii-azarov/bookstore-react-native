@@ -14,69 +14,69 @@ const BookCharacteristicsModal = () => {
   const fields = [
     {
       key: "pageCount",
-      label: t("modals.bookCharacteristics.labels.pageCount"),
+      label: t("common.parameters.pageCount.label"),
       value: currentBook?.pageCount?.toString() || "-",
     },
     {
       key: "publisher",
-      label: t("modals.bookCharacteristics.labels.publisher"),
+      label: t("common.parameters.publisher.label"),
       value: currentBook?.publisher || "-",
     },
     {
       key: "coverType",
-      label: t("modals.bookCharacteristics.labels.coverType"),
-      value: currentBook?.coverType ? t(`coverTypes.${currentBook.coverType}`) : "-",
+      label: t("common.parameters.coverType.label"),
+      value: currentBook?.coverType ? t(`common.coverTypes.${currentBook.coverType}`) : "-",
     },
     {
       key: "publicationYear",
-      label: t("modals.bookCharacteristics.labels.publicationYear"),
+      label: t("common.parameters.publicationYear.label"),
       value: currentBook?.publicationYear?.toString() || "-",
     },
     {
       key: "language",
-      label: t("modals.bookCharacteristics.labels.language"),
-      value: currentBook?.language ? t(`languages.${currentBook.language}`) : "-",
+      label: t("common.parameters.language.label"),
+      value: currentBook?.language ? t(`common.languages.${currentBook.language}`) : "-",
     },
     {
       key: "size",
-      label: t("modals.bookCharacteristics.labels.size"),
+      label: t("common.parameters.size.label"),
       value: currentBook?.size || "-",
     },
     {
       key: "weight",
-      label: t("modals.bookCharacteristics.labels.weight"),
+      label: t("common.parameters.weight.label"),
       value: currentBook?.weight?.toString() || "-",
     },
     {
       key: "illustrations",
-      label: t("modals.bookCharacteristics.labels.illustrations"),
-      value: t(`modals.bookCharacteristics.values.illustrations.${currentBook?.illustrations ? "contains" : "notContains"}`),
+      label: t("common.parameters.illustrations.label"),
+      value: t(`common.parameters.illustrations.values.${currentBook?.illustrations ? "contains" : "notContains"}`),
     },
     {
       key: "bookType",
-      label: t("modals.bookCharacteristics.labels.bookType"),
-      value: currentBook?.bookType ? t(`bookTypes.${currentBook.bookType}`) : "-",
+      label: t("common.parameters.bookType.label"),
+      value: currentBook?.bookType ? t(`common.bookTypes.${currentBook.bookType}`) : "-",
     },
     {
       key: "paperType",
-      label: t("modals.bookCharacteristics.labels.paperType"),
-      value: currentBook?.paperType ? t(`paperTypes.${currentBook.paperType}`) : "-",
+      label: t("common.parameters.paperType.label"),
+      value: currentBook?.paperType ? t(`common.paperTypes.${currentBook.paperType}`) : "-",
     },
     {
       key: "isbn",
-      label: t("modals.bookCharacteristics.labels.isbn"),
+      label: t("common.parameters.isbn.label"),
       value: currentBook?.isbn || "-",
     },
     {
       key: "sku",
-      label: t("modals.bookCharacteristics.labels.sku"),
+      label: t("common.parameters.sku.label"),
       value: currentBook?.sku || "-",
     },     
   ];
   
   return (
     <ModalTitleWrapper
-      title={t("modals.bookCharacteristics.title")}
+      title={t("modals.bookCharacteristics.header.title")}
     >
       <View style={styles.section}>
         {fields.map((field, index) => (
@@ -118,11 +118,11 @@ const BookCharacteristicsModal = () => {
 
       <View style={[styles.notice, { marginTop: 15 }]}>
         <Typography fontSize={16} fontWeight="bold" color={colors.black} style={styles.noticeTitle}>
-          {t("modals.bookCharacteristics.messages.notice.title")}
+          {t("modals.bookCharacteristics.reportIssue.title")}
         </Typography>
 
         <Typography fontSize={14} fontWeight="medium" color={colors.blackTint1}>
-          {t("modals.bookCharacteristics.messages.notice.text")}{" "}
+          {t("modals.bookCharacteristics.reportIssue.subtitle")}{" "}
           <Typography
             fontSize={14}
             fontWeight="bold"

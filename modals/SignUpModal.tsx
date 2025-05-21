@@ -56,10 +56,8 @@ const SignUpModal = () => {
   const resetAuthOperationState = useAuthStore(selectResetAuthOperationState);
 
   const isRegistering = registerStatus === "registering";
-  const isSuccess = registerResponse?.status === "success";
-  const isError = registerResponse?.status === "error";
-
-  const message = registerResponse?.message;  
+  const status = registerResponse?.status;
+  const message = registerResponse?.message;
 
   const lastNameInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
@@ -88,25 +86,25 @@ const SignUpModal = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
 
   const validateField = (field: SignUpField, value: string): string | null => {
-    if (!value) return t(`validators.${field}Required`);
+    if (!value) return t(`modals.signUp.validators.${field}.required`);
 
     if (field === "email") {
-      return emailRegex.test(value) ? null : t(`validators.${field}Invalid`);
+      return emailRegex.test(value) ? null : t(`modals.signUp.validators.${field}.invalid`);
     }
     
     if (field === "firstName" || field === "lastName") {
-      return value.length < 2 ? t(`validators.${field}MinLength`) : null;
+      return value.length < 2 ? t(`modals.signUp.validators.${field}.minLength`) : null;
     }
     
     if (field === "password") {
       const isLengthValid = value.length >= 6;
       const hasUppercase = passwordRegex.test(value);
       
-      return isLengthValid && hasUppercase ? null : t(`validators.${field}Invalid`);
+      return isLengthValid && hasUppercase ? null : t(`modals.signUp.validators.${field}.invalid`);
     }
       
     if (field === "confirmPassword") {
-      return value === formValues.password && formValues.password !== "" ? null : t(`validators.${field}Match`);
+      return value === formValues.password && formValues.password !== "" ? null : t(`modals.signUp.validators.${field}.match`);
     }
 
     return null;
@@ -122,18 +120,18 @@ const SignUpModal = () => {
 
   const steps = [
     {
-      title: t("modals.signUp.titles.step1"),
+      title: t("modals.signUp.steps.step1.title"),
       component: (
         <View style={{ flexDirection: "column", gap: 15 }}>      
           <View style={{ minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.signUp.labels.firstName")}
+              {t("modals.signUp.steps.step1.fields.firstName.label")}
             </Typography>
       
             <Input
               value={formValues.firstName}
               onChangeText={(value) => handleInputChange("firstName", value)}
-              placeholder={t("modals.signUp.placeholders.firstName")}
+              placeholder={t("modals.signUp.steps.step1.fields.firstName.placeholder")}
               containerStyle={{
                 borderColor: errors.firstName ? colors.redTint1 : colors.gray,
               }}
@@ -157,14 +155,14 @@ const SignUpModal = () => {
 
           <View style={{ minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.signUp.labels.lastName")}
+              {t("modals.signUp.steps.step1.fields.lastName.label")}
             </Typography>
       
             <Input
               ref={lastNameInputRef}
               value={formValues.lastName}
               onChangeText={(value) => handleInputChange("lastName", value)}
-              placeholder={t("modals.signUp.placeholders.lastName")}
+              placeholder={t("modals.signUp.steps.step1.fields.lastName.placeholder")}
               containerStyle={{
                 borderColor: errors.lastName ? colors.redTint1 : colors.gray,
               }}
@@ -196,18 +194,18 @@ const SignUpModal = () => {
       },
     },
     {
-      title: t("modals.signUp.titles.step2"),
+      title: t("modals.signUp.steps.step2.title"),
       component: (
         <View style={{ flexDirection: "column", gap: 15 }}>
           <View style={{ minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.signUp.labels.email")}
+              {t("modals.signUp.steps.step2.fields.email.label")}
             </Typography>
       
             <Input
               value={formValues.email}
               onChangeText={(value) => handleInputChange("email", value)}
-              placeholder={t("modals.signUp.placeholders.email")}
+              placeholder={t("modals.signUp.steps.step2.fields.email.placeholder")}
               iconLeft={
                 <Icon
                   iconSet="Ionicons"
@@ -239,14 +237,14 @@ const SignUpModal = () => {
 
           <View style={{ minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.signUp.labels.password")}
+              {t("modals.signUp.steps.step2.fields.password.label")}
             </Typography>
       
             <Input
               ref={passwordInputRef}
               value={formValues.password}
               onChangeText={(value) => handleInputChange("password", value)}
-              placeholder={t("modals.signUp.placeholders.password")}
+              placeholder={t("modals.signUp.steps.step2.fields.password.placeholder")}
               iconLeft={
                 <Icon
                   iconSet="Ionicons"
@@ -298,14 +296,14 @@ const SignUpModal = () => {
 
           <View style={{ minHeight: 75 }}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t("modals.signUp.labels.confirmPassword")}
+              {t("modals.signUp.steps.step2.fields.confirmPassword.label")}
             </Typography>
       
             <Input
               ref={confirmPasswordInputRef}
               value={formValues.confirmPassword}
               onChangeText={(value) => handleInputChange("confirmPassword", value)}
-              placeholder={t("modals.signUp.placeholders.confirmPassword")}
+              placeholder={t("modals.signUp.steps.step2.fields.confirmPassword.placeholder")}
               iconLeft={
                 <Icon
                   iconSet="Ionicons"
@@ -395,11 +393,11 @@ const SignUpModal = () => {
           }}
         >
           <Typography fontSize={24} fontWeight="bold" style={{ marginBottom: 10, textAlign: "center" }}>
-            {t(`modals.checkout.messages.${isSuccess ? "success" : "error"}.title`)}
+            {t(`modals.signUp.messages.${status === "success" ? "success" : "error"}.title`)}
           </Typography>
           
           <Typography fontSize={16} fontWeight="medium" color={colors.blackTint5} style={{ textAlign: "center" }}>
-            {t(`modals.checkout.messages.${isSuccess ? "success" : "error"}.text`) || message}
+            {t(`modals.signUp.messages.${status === "success" ? "success" : "error"}.subtitle`) || message}
           </Typography>
         </View>
       ),
@@ -414,7 +412,7 @@ const SignUpModal = () => {
     setDirection("forward");
     if (isLastStep) {
       setIsRegisteringProgress(false);
-      return isError ? router.back() : router.replace("/(user)/(tabs)/books");
+      return status === "error" ? router.back() : router.replace("/(user)/(tabs)/books");
     }
     if (isSecondToLastStep && !isRegistering && isConnected) {
       setIsRegisteringProgress(true);
@@ -456,7 +454,7 @@ const SignUpModal = () => {
     <ModalWrapper>
       <KeyboardWrapper>
         <Header
-          title={t("modals.signUp.header.text")}
+          title={t("modals.signUp.header.title")}
           iconLeft={<BackButton />}
           style={{
             paddingHorizontal: 15,
@@ -477,8 +475,8 @@ const SignUpModal = () => {
           onPrevious={handlePrevious}
           form={formValues}
           buttonLabels={{
-            next: t(`modals.signUp.buttons.${isError ? "back" : isLastStep ? "finish" : isSecondToLastStep ? "register" : "continue"}.text`),
-            previous: t("modals.signUp.buttons.back.text"),
+            next: t(`modals.signUp.buttons.${status === "error" ? "back" : isLastStep ? "finish" : isSecondToLastStep ? "register" : "continue"}`),
+            previous: t("modals.signUp.buttons.back"),
           }}
           buttonProps={{ 
             next: { 

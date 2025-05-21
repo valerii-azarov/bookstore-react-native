@@ -46,7 +46,10 @@ const OrderDetailsScreen = () => {
 
   const copyOrderId = async (value: string) => {
     await Clipboard.setStringAsync(value);
-    Alert.alert(t("alerts.orderCopied.title"), t("alerts.orderCopied.message"));
+    Alert.alert(
+      t("screens.orderDetails.alerts.copied.title"),
+      t("screens.orderDetails.alerts.copied.message")
+    );
   };
 
   useEffect(() => {
@@ -59,14 +62,14 @@ const OrderDetailsScreen = () => {
 
   return (
     <ViewWrapper
-      title={t("screens.orderDetails.header.text")}
+      title={t("screens.orderDetails.header.title")}
       onBackPress={() => router.back()}
       hideFooter
     >
       {!isConnected && (
         <ErrorNetwork 
-          message={t("components.errorNetwork.title")}
-          subMessage={t("components.errorNetwork.subtitle")}
+          message={t("common.messages.errorNetwork.title")}
+          subMessage={t("common.messages.errorNetwork.subtitle")}
         />
       )}
       
@@ -76,8 +79,8 @@ const OrderDetailsScreen = () => {
 
       {isConnected && isError && !isLoading && (
         <ErrorWithRetry 
-          message={t("screens.orderDetails.messages.error.text")}
-          subMessage={t("screens.orderDetails.messages.error.subText")}
+          message={t("common.messages.failedLoad.title")}
+          subMessage={t("common.messages.failedLoad.subtitle")}
           hideButton 
         />
       )}
@@ -90,7 +93,7 @@ const OrderDetailsScreen = () => {
           <View style={styles.contentContainer}>
             <View style={styles.sectionContainer}>
               <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
-                {t("screens.orderDetails.titles.orderNumber")}
+                {t("screens.orderDetails.sections.orderNumber")}
               </Typography>
 
               <View style={styles.sectionWrapper}>
@@ -120,7 +123,7 @@ const OrderDetailsScreen = () => {
 
             <View style={styles.sectionContainer}>
               <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
-                {t("screens.orderDetails.titles.orderStatus")}
+                {t("screens.orderDetails.sections.orderStatus")}
               </Typography>
 
               <View style={styles.sectionWrapper}>
@@ -144,7 +147,7 @@ const OrderDetailsScreen = () => {
                   </View>
 
                   <RedirectButton
-                    title={t("screens.orderDetails.buttons.viewStatus.text")}
+                    title={t("screens.orderDetails.buttons.viewStatus")}
                     onPress={() => 
                       router.push({
                         pathname: "/order-status/[state]",
@@ -158,7 +161,7 @@ const OrderDetailsScreen = () => {
 
             <View style={styles.sectionContainer}>
               <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
-                {t("screens.orderDetails.titles.bookList")}
+                {t("screens.orderDetails.sections.bookList")}
               </Typography>
 
               <View style={styles.sectionWrapper}>
@@ -239,7 +242,7 @@ const OrderDetailsScreen = () => {
 
             <View style={styles.sectionContainer}>
               <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
-                {t("screens.orderDetails.titles.orderCost")}
+                {t("screens.orderDetails.sections.orderCost")}
               </Typography>
 
               <View style={styles.sectionWrapper}>
@@ -252,7 +255,7 @@ const OrderDetailsScreen = () => {
                   ]}
                 >
                   <Typography fontSize={14} fontWeight="medium" color={colors.gray}>
-                    {t("screens.orderDetails.labels.subtotal.text")}
+                    {t("screens.orderDetails.labels.subtotal")}
                   </Typography>
 
                   <Typography
@@ -269,7 +272,7 @@ const OrderDetailsScreen = () => {
                 {order.discountAmount > 0 && (
                   <View style={styles.costRow}>
                     <Typography fontSize={14} fontWeight="medium" color={colors.gray}>
-                      {t("screens.orderDetails.labels.discount.text")}
+                      {t("screens.orderDetails.labels.discount")}
                     </Typography>
 
                     <Typography
@@ -296,7 +299,7 @@ const OrderDetailsScreen = () => {
 
                 <View style={styles.costRow}>
                   <Typography fontSize={14} fontWeight="medium" color={colors.black}>
-                    {t("screens.orderDetails.labels.total.text")}
+                    {t("screens.orderDetails.labels.total")}
                   </Typography>
 
                   <Typography
@@ -314,7 +317,7 @@ const OrderDetailsScreen = () => {
 
             <View style={styles.sectionContainer}>
               <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
-                {t("screens.orderDetails.titles.payment")}
+                {t("screens.orderDetails.sections.payment")}
               </Typography>
 
               <View style={styles.sectionWrapper}>
@@ -326,7 +329,7 @@ const OrderDetailsScreen = () => {
                     numberOfLines={1}
                     style={{ marginBottom: 2.5 }}
                   >
-                    {t("screens.orderDetails.labels.paymentMethod.text")}
+                    {t("screens.orderDetails.fields.paymentMethod.label")}
                   </Typography>
 
                   <Typography
@@ -335,7 +338,7 @@ const OrderDetailsScreen = () => {
                     color={colors.black}
                     numberOfLines={2}
                   >
-                    {t(`screens.orderDetails.paymentMethods.${order.paymentMethod}.text`)}
+                    {t(`screens.orderDetails.fields.paymentMethod.${order.paymentMethod ? `values.${order.paymentMethod}` : "notSpecified"}`)}
                   </Typography>
                 </View>
 
@@ -359,16 +362,16 @@ const OrderDetailsScreen = () => {
                       numberOfLines={1}
                       style={{ marginBottom: 2.5 }}
                     >
-                      {t("screens.orderDetails.labels.paymentStatus.text")}
+                      {t("screens.orderDetails.fields.paymentStatus.label")}
                     </Typography>
 
                     <Typography
                       fontSize={16}
                       fontWeight="bold"
                       color={colors.black}
-                      numberOfLines={2}
+                      numberOfLines={1}
                     >
-                      {t(`screens.orderDetails.paymentStatuses.${order.isPaid ? "paid" : "unpaid"}.text`)}
+                      {t(`screens.orderDetails.fields.paymentStatus.values.${order.isPaid ? "paid" : "unpaid"}`)}
                     </Typography>
                   </View>
                 )}
@@ -377,7 +380,7 @@ const OrderDetailsScreen = () => {
 
             <View style={styles.sectionContainer}>
               <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
-                {t("screens.orderDetails.titles.contactDetails")}
+                {t("screens.orderDetails.sections.contactDetails")}
               </Typography>
 
               <View style={styles.sectionWrapper}>
@@ -389,7 +392,7 @@ const OrderDetailsScreen = () => {
                     numberOfLines={1}
                     style={{ marginBottom: 2.5 }}
                   >
-                    {t("screens.orderDetails.labels.deliveryAddress.text")}
+                    {t("screens.orderDetails.fields.deliveryAddress.label")}
                   </Typography>
 
                   <Typography
@@ -419,7 +422,7 @@ const OrderDetailsScreen = () => {
                     numberOfLines={1}
                     style={{ marginBottom: 2.5 }}
                   >
-                    {t("screens.orderDetails.labels.fullName.text")}
+                    {t("screens.orderDetails.fields.fullName.label")}
                   </Typography>
 
                   <Typography
@@ -449,7 +452,7 @@ const OrderDetailsScreen = () => {
                     numberOfLines={1}
                     style={{ marginBottom: 2.5 }}
                   >
-                    {t("screens.orderDetails.labels.phoneNumber.text")}
+                    {t("screens.orderDetails.fields.phoneNumber.label")}
                   </Typography>
 
                   <Typography
@@ -466,7 +469,7 @@ const OrderDetailsScreen = () => {
 
             <View style={styles.sectionContainer}>
               <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
-                {t("screens.orderDetails.titles.orderDetails")}
+                {t("screens.orderDetails.sections.orderDetails")}
               </Typography>
               
               <View style={styles.sectionWrapper}>
@@ -477,7 +480,7 @@ const OrderDetailsScreen = () => {
                     color={colors.gray}
                     style={{ marginBottom: 2.5 }}
                   >
-                    {t("screens.orderDetails.labels.createdAt.text")}
+                    {t("screens.orderDetails.fields.createdAt.label")}
                   </Typography>
 
                   <Typography
@@ -505,7 +508,7 @@ const OrderDetailsScreen = () => {
                     color={colors.gray}
                     style={{ marginBottom: 2.5 }}
                   >
-                    {t("screens.orderDetails.labels.updatedAt.text")}
+                    {t("screens.orderDetails.fields.updatedAt.label")}
                   </Typography>
 
                   <Typography
@@ -521,7 +524,7 @@ const OrderDetailsScreen = () => {
 
             <View style={styles.sectionContainer}>
               <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
-                {t("screens.orderDetails.titles.receipt")}
+                {t("screens.orderDetails.sections.receipt")}
               </Typography>
 
               <View style={styles.sectionWrapper}>
@@ -543,7 +546,7 @@ const OrderDetailsScreen = () => {
                       color={colors.black}
                       style={{ textDecorationLine: "underline" }}
                     >
-                      {t("screens.orderDetails.buttons.viewReceipt.text")}
+                      {t("screens.orderDetails.buttons.viewReceipt")}
                     </Typography>
                   </TouchableOpacity>
                 </View>

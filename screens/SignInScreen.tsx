@@ -52,16 +52,16 @@ const SignInScreen = () => {
   const message = loginResponse?.message;
 
   const validateField = (field: SignInField, value: string): string | null => {
-    if (!value) return t(`validators.${field}Required`);
+    if (!value) return t(`screens.signIn.validators.${field}.required`);
 
     if (field === "email") {
-      return emailRegex.test(value) ? null : t("validators.emailInvalid");
+      return emailRegex.test(value) ? null : t("screens.signIn.validators.email.invalid");
     }
-
+  
     if (field === "password") {
-      return value.length >= 6 ? null : t("validators.passwordTooShort");
+      return value.length >= 6 ? null : t("screens.signIn.validators.password.tooShort");
     }
-
+  
     return null;
   };
 
@@ -89,8 +89,8 @@ const SignInScreen = () => {
   useEffect(() => {
     if (isError && message) {
       Alert.alert(
-        t("alerts.static.error.title"),
-        message || t("alerts.login.error.message"),
+        t("screens.signIn.alerts.failedLogin.title"),
+        message || t("screens.signIn.alerts.failedLogin.message"),
         [
           {
             text: "OK",
@@ -111,11 +111,11 @@ const SignInScreen = () => {
           <View style={styles.logoContainer}>
             <View style={styles.title}>
               <Typography fontSize={32} fontWeight="bold" color={colors.orange}>
-                {t("screens.signIn.title.first")}
+                {t("screens.signIn.header.title.first")}
               </Typography>
 
               <Typography fontSize={32} fontWeight="bold" color={colors.black}>
-                {t("screens.signIn.title.remaining")}
+                {t("screens.signIn.header.title.remaining")}
               </Typography>
             </View>
 
@@ -125,20 +125,20 @@ const SignInScreen = () => {
               color={colors.gray}
               style={styles.subtitle}
             >
-              {t("screens.signIn.subtitle")}
+              {t("screens.signIn.header.subtitle")}
             </Typography>
           </View>
 
           <View style={styles.formContainer}>
             <View style={styles.field}>
               <Typography fontSize={14} fontWeight="medium" color={colors.black} style={styles.label}>
-                {t("screens.signIn.labels.email")}
+                {t("screens.signIn.fields.email.label")}
               </Typography>
 
               <Input
                 value={form.email}
                 onChangeText={(value) => handleInputChange("email", value)}
-                placeholder={t("screens.signIn.placeholders.email")}
+                placeholder={t("screens.signIn.fields.email.placeholder")}
                 iconLeft={
                   <Icon
                     iconSet="Ionicons"
@@ -169,14 +169,14 @@ const SignInScreen = () => {
 
             <View style={styles.field}>
               <Typography fontSize={14} fontWeight="medium" color={colors.black} style={styles.label}>
-                {t("screens.signIn.labels.password")}
+                {t("screens.signIn.fields.password.label")}
               </Typography>
 
               <Input
                 ref={passwordInputRef}
                 value={form.password}
                 onChangeText={(value) => handleInputChange("password", value)}
-                placeholder={t("screens.signIn.placeholders.password")}
+                placeholder={t("screens.signIn.fields.password.placeholder")}
                 iconLeft={
                   <Icon
                     iconSet="Ionicons"
@@ -247,7 +247,7 @@ const SignInScreen = () => {
                     fontWeight="bold"
                     color={isConnected ? colors.orange : colors.grayTint7}
                   >
-                    {t("screens.signIn.links.registerLink")}
+                    {t("screens.signIn.links.register")}
                   </Typography>
                 </TouchableOpacity>
               </Link>
@@ -275,7 +275,7 @@ const SignInScreen = () => {
                 color={colors.orange}
                 style={{ textTransform: "uppercase" }}
               >
-                {t("screens.signIn.links.troubleLink")}
+                {t("screens.signIn.links.trouble")}
               </Typography>
             </TouchableOpacity>
           </View>

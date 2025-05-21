@@ -46,7 +46,7 @@ const MenuScreen = () => {
     // uncomment this in the future
     
     // {
-    //   title: t("screens.menu.titles.balance"),
+    //   title: t("screens.menu.sections.balance"),
     //   items: [
     //     {
     //       key: "bonuses",
@@ -112,7 +112,7 @@ const MenuScreen = () => {
       ],
     },
     {
-      title: t("screens.menu.titles.settings"),
+      title: t("screens.menu.sections.settings"),
       items: [
         {
           key: "language",
@@ -156,22 +156,22 @@ const MenuScreen = () => {
               return;
             }
             Alert.alert(
-              t("alerts.confirmLogout.title"),
-              t("alerts.confirmLogout.message"),
+              t("screens.menu.alerts.confirmLogout.title"),
+              t("screens.menu.alerts.confirmLogout.message"),
               [
                 {
-                  text: t("alerts.static.cancel"),
+                  text: t("screens.menu.alerts.confirmLogout.buttons.cancel"),
                   style: "cancel",
                 },
                 {
-                  text: t("alerts.static.confirm"),
+                  text: t("screens.menu.alerts.confirmLogout.buttons.confirm"),
                   style: "destructive",
                   onPress: async () => {
                     logout()
                       .then(() =>
                         Alert.alert(
-                          t("alerts.static.success.title"),
-                          t("alerts.confirmLogout.success.message"),
+                          t("screens.menu.alerts.confirmLogout.responses.success.title"),
+                          t("screens.menu.alerts.confirmLogout.responses.success.message"),
                           [
                             { 
                               text: "OK", 
@@ -182,8 +182,8 @@ const MenuScreen = () => {
                       )
                       .catch((error) => 
                         Alert.alert(
-                          t("alerts.static.error.title"),
-                          error.message || t("alerts.confirmLogout.error.message"),
+                          t("screens.menu.alerts.confirmLogout.responses.error.title"),
+                          error.message || t("screens.menu.alerts.confirmLogout.responses.error.message"),
                         )
                       );
                   },
@@ -318,7 +318,7 @@ const MenuScreen = () => {
           ]}
         >
           <Typography fontSize={14} fontWeight="medium" color={colors.gray}>
-            {`${t("screens.menu.version.text")} ${Constants.expoConfig?.version}`}
+            {`${t("screens.menu.labels.version")} ${Constants.expoConfig?.version}`}
           </Typography>
         </View>
       </ScrollView>

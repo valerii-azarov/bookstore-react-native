@@ -53,7 +53,7 @@ const OrderReceiptModal = () => {
   return (
     <ModalWrapper>
       <Header
-        title={t("modals.orderReceipt.header")}
+        title={t("modals.orderReceipt.header.title")}
         titleSize={18}
         iconLeft={<BackButton />}
         style={[
@@ -67,8 +67,8 @@ const OrderReceiptModal = () => {
       <View style={[styles.content, styles.padded]}>
         {!isConnected && (
           <ErrorNetwork 
-            message={t("components.errorNetwork.title")}
-            subMessage={t("components.errorNetwork.subtitle")}
+            message={t("common.messages.errorNetwork.title")}
+            subMessage={t("common.messages.errorNetwork.subtitle")}
           />
         )}
         
@@ -79,9 +79,9 @@ const OrderReceiptModal = () => {
         {isConnected && isError && !isLoading && (
           <View style={[styles.overlayContainer, styles.padded]}>
             <ErrorWithRetry
-              message={t("modals.orderReceipt.messages.error.text")}
-              subMessage={t("modals.orderReceipt.messages.error.subText")}
-              buttonText={t("modals.orderReceipt.buttons.error.text")}
+              message={t("common.messages.errorWithRetry.title")}
+              subMessage={t("common.messages.errorWithRetry.subtitle")}
+              buttonText={t("common.buttons.errorWithRetry")}
               onRetry={() => loadReceiptById()}
             />
           </View>
@@ -396,11 +396,11 @@ const OrderReceiptModal = () => {
 
             <View style={[styles.noticeContainer, { marginTop: 25 }]}>
               <Typography fontSize={16} fontWeight="bold" style={{ marginBottom: 5 }}>
-                {t("modals.orderReceipt.messages.languageNotice.title")}
+                {t("modals.orderReceipt.notice.title")}
               </Typography>
 
               <Typography fontSize={14} fontWeight="medium" color={colors.gray}>
-                {t("modals.orderReceipt.messages.languageNotice.text")}
+                {t("modals.orderReceipt.notice.subtitle")}
               </Typography>
             </View>
           </ScrollView>

@@ -56,11 +56,11 @@ const BooksUserScreen = () => {
     <View key={index} style={{ marginTop: 15 }}>
       <View style={styles.categoryHeader}>
         <Typography fontSize={18} fontWeight="bold" color={colors.black}>
-          {t(`genres.${category}`)}
+          {t(`common.genres.${category}`)}
         </Typography>
 
         <RedirectButton
-          title={t("screens.books.buttons.showAll.text")}
+          title={t("screens.books.buttons.showAll")}
           onPress={() =>
             router.push({
               pathname: "/category-books/[category]",
@@ -80,7 +80,7 @@ const BooksUserScreen = () => {
             onAddToFavorites={(bookId) => toggleFavorite(bookId)}
             onAddToCart={(item) => toggleCart(item)}
             labels={{
-              details: t("components.bookItem.details")
+              details: t("components.bookItem.buttons.details"),
             }}
           />
         )}
@@ -105,7 +105,7 @@ const BooksUserScreen = () => {
   return (
     <ScreenWrapper hideStatusBarBorder>
       <Header
-        title={t("screens.books.headers.titleUser")}
+        title={t("screens.books.header.title.user")}
         titleSize={18}
         iconRight={
           <IconBadge
@@ -137,8 +137,8 @@ const BooksUserScreen = () => {
       >
         {!isConnected && (
           <ErrorNetwork 
-            message={t("components.errorNetwork.title")}
-            subMessage={t("components.errorNetwork.subtitle")}
+            message={t("common.messages.errorNetwork.title")}
+            subMessage={t("common.messages.errorNetwork.subtitle")}
           />
         )}
         
@@ -146,17 +146,17 @@ const BooksUserScreen = () => {
 
         {isConnected && isError && !isLoading && (
           <ErrorWithRetry 
-            message={t("screens.books.messages.error.text")}
-            subMessage={t("screens.books.messages.error.subText")}
-            buttonText={t("screens.books.buttons.error.text")}
+            message={t("common.messages.errorWithRetry.title")}
+            subMessage={t("common.messages.errorWithRetry.subtitle")}
+            buttonText={t("common.buttons.errorWithRetry")}
             onRetry={() => loadCategories()}
           />
         )}
 
         {isConnected && isEmpty && !isError && !isLoading && (
           <Empty 
-            message={t("screens.books.messages.empty.text")}
-            subMessage={t("screens.books.messages.empty.subText")}
+            message={t("screens.books.messages.empty.title")}
+            subMessage={t("screens.books.messages.empty.subtitle")} 
           />
         )}
 

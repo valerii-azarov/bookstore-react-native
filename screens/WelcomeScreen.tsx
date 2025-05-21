@@ -123,16 +123,16 @@ const WelcomeScreen = () => {
       <View style={styles.footer}>
         <View style={{ flexDirection: "row" }}>
           <Typography fontSize={32} fontWeight="bold" color={colors.orange}>
-            {t("screens.welcome.title.first")}
+            {t("screens.welcome.header.title.first")}
           </Typography>
 
           <Typography fontSize={32} fontWeight="bold" color={colors.black}>
-            {t("screens.welcome.title.remaining")}
+            {t("screens.welcome.header.title.remaining")}
           </Typography>
         </View>
 
         <Typography fontSize={14} fontWeight="regular" color={colors.gray} style={styles.subtitle}>
-          {t("screens.welcome.subtitle")}
+          {t("screens.welcome.header.subtitle")}
         </Typography>
         
         <Link href="/sign-in" asChild>

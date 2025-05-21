@@ -58,7 +58,7 @@ const OrderHistoryScreen = () => {
     const diffDays = differenceInCalendarDays(new Date(), new Date(date));
     const dateKey = [0, 1, 2].includes(diffDays) ? ["today", "yesterday", "dayBeforeYesterday"][diffDays] : "";
     
-    return dateKey ? t(`date.${dateKey}`) : format(new Date(date), "d MMMM yyyy", { 
+    return dateKey ? t(`common.date.${dateKey}`) : format(new Date(date), "d MMMM yyyy", { 
       locale: language === "en" ? enUS : uk 
     });
   };
@@ -124,7 +124,7 @@ const OrderHistoryScreen = () => {
   return (
     <ScreenWrapper hideStatusBarBorder>
       <Header
-        title={t("screens.orderHistory.header.text")}
+        title={t("screens.orderHistory.header.title")}
         titleSize={18}
         style={[
           styles.header, 
@@ -137,24 +137,24 @@ const OrderHistoryScreen = () => {
       <View style={styles.content}>
         {!isConnected && (
           <ErrorNetwork 
-            message={t("components.errorNetwork.title")}
-            subMessage={t("components.errorNetwork.subtitle")}
+            message={t("common.messages.errorNetwork.title")}
+            subMessage={t("common.messages.errorNetwork.subtitle")}
           />
         )}
 
         {isConnected && isError && !isLoading && (
           <ErrorWithRetry
-            message={t("screens.orderHistory.messages.error.text")}
-            subMessage={t("screens.orderHistory.messages.error.subText")}
-            buttonText={t("screens.orderHistory.buttons.error.text")}
+            message={t("common.messages.errorWithRetry.title")}
+            subMessage={t("common.messages.errorWithRetry.subtitle")}
+            buttonText={t("common.buttons.errorWithRetry")}
             onRetry={() => loadOrderHistory(true)}
           />
         )}
 
         {isConnected && isEmpty && !isError && !isLoading && (
           <Empty
-            message={t("screens.orderHistory.messages.empty.text")}
-            subMessage={t("screens.orderHistory.messages.empty.subText")}
+            message={t("screens.orderHistory.messages.empty.title")}
+            subMessage={t("screens.orderHistory.messages.empty.subtitle")}
           />
         )}
 

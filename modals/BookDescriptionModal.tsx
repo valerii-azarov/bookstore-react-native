@@ -13,7 +13,7 @@ const BookDescriptionModal = () => {
 
   return (
     <ModalTitleWrapper
-      title={t("modals.bookDescription.title")}
+      title={t("modals.bookDescription.header.title")}
     >
       <View style={styles.section}>
         <Typography fontSize={16} fontWeight="medium" color={colors.black}>
@@ -23,11 +23,11 @@ const BookDescriptionModal = () => {
 
       <View style={[styles.notice, { marginTop: 15 }]}>
         <Typography fontSize={16} fontWeight="bold" color={colors.black} style={styles.noticeTitle}>
-          {t("modals.bookDescription.messages.notice.title")}
+          {t("modals.bookDescription.reportIssue.title")}
         </Typography>
 
         <Typography fontSize={14} fontWeight="medium" color={colors.blackTint1}>
-          {t("modals.bookDescription.messages.notice.text")}{" "}
+          {t("modals.bookDescription.reportIssue.subtitle")}{" "}
           <Typography
             fontSize={14}
             fontWeight="bold"

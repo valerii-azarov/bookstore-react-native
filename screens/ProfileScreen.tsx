@@ -20,19 +20,19 @@ const ProfileScreen = () => {
   const fields = [
     {
       key: "firstName",
-      label: t("screens.profile.fields.firstName"),
+      label: t("screens.profile.fields.firstName.label"),
       value: user?.firstName || "-",
       isEditable: true,
     },
     {
       key: "lastName",
-      label: t("screens.profile.fields.lastName"),
+      label: t("screens.profile.fields.lastName.label"),
       value: user?.lastName || "-",
       isEditable: true,
     },
     {
       key: "email",
-      label: t("screens.profile.fields.email"),
+      label: t("screens.profile.fields.email.label"),
       value: user?.email || "-",
       isEditable: false,
     },
@@ -40,7 +40,7 @@ const ProfileScreen = () => {
 
   return (
     <ViewWrapper 
-      title={t("screens.profile.header")} 
+      title={t("screens.profile.header.title")} 
       onBackPress={() => router.back()}
       hideFooter
     >
@@ -97,7 +97,7 @@ const ProfileScreen = () => {
                         textDecorationLine: "underline",
                       }}
                     >
-                      {t("screens.profile.button")}
+                      {t("screens.profile.buttons.edit")}
                     </Typography>
                   </TouchableOpacity>
                 )}

@@ -22,6 +22,7 @@ import {
   paperTypeKeys, 
 } from "@/constants/book";
 import { colors } from "@/constants/theme";
+import { converter } from "@/helpers/converter";
 import { EditableBookField, EditableBookValue } from "@/types";
 
 import ModalWrapper from "@/components/ModalWrapper";
@@ -80,8 +81,8 @@ const EditBookModal = () => {
   useEffect(() => {
     if (status === "error" && message) {
       Alert.alert(
-        t("alerts.static.error.title"),
-        message || t("alerts.editBook.error.message")
+        t("modals.editBook.alerts.updateBook.responses.error.title"),
+        message || t("modals.editBook.alerts.updateBook.responses.error.message")
       );
     }
     return () => resetBookOperationState("update");
@@ -90,8 +91,8 @@ const EditBookModal = () => {
   useEffect(() => {
     if (status === "success") {
       Alert.alert(
-        t("alerts.static.success.title"),
-        t("alerts.editBook.success.message"),
+        t("modals.editBook.alerts.updateBook.responses.success.title"),
+        t("modals.editBook.alerts.updateBook.responses.success.message"),
         [{ text: "OK", onPress: () => setTimeout(() => router.back(), 500) }]
       );
     }
@@ -108,7 +109,7 @@ const EditBookModal = () => {
     <ModalWrapper>
       <KeyboardWrapper>
         <Header
-          title={t(`modals.editBook.header.${field}`)}
+          title={t(`modals.editBook.header.title.${field}`)}
           titleSize={18}
           iconLeft={<BackButton />}
           style={{
@@ -133,7 +134,11 @@ const EditBookModal = () => {
                       marginBottom: typedField === "illustrations" ? 10 : 5,
                     }}
                   >
-                    {t(`modals.editBook.labels.${typedField}`)}
+                    {t(
+                      typedField === "illustrations"
+                        ? "common.parameters.illustrations.checkboxLabel"
+                        : `common.parameters.${typedField}.editedLabel`
+                    )}
                   </Typography>
                 )}
 
@@ -141,25 +146,25 @@ const EditBookModal = () => {
                   <Input 
                     value={newValue}
                     onChangeText={(text) => setNewValue(text)}
-                    placeholder={t(`modals.editBook.placeholders.${typedField}`)}
+                    placeholder={t(`common.parameters.${typedField}.editedPlaceholder`)}
                   />
                 )}
 
-                {numericFields.includes(typedField) && typeof newValue === "number" && (
+                {numericFields.includes(typedField) && (newValue === "" || typeof newValue === "number") && (
                   <Input
                     value={newValue.toString()}
-                    onChangeText={(text) => setNewValue(text)}
-                    placeholder={t(`modals.editBook.placeholders.${typedField}`)}
+                    onChangeText={(value) => setNewValue(converter.preserveEmptyOrNumber(value))}              
+                    placeholder={t(`common.parameters.${typedField}.editedPlaceholder`)}
                     isNumeric
                     isInteger
                   />
                 )}
                 
-                {numericNonIntegerFields.includes(typedField) && typeof newValue === "number" && (
+                {numericNonIntegerFields.includes(typedField) && (newValue === "" || typeof newValue === "number") && (
                   <Input
                     value={newValue.toString()}
-                    onChangeText={(text) => setNewValue(text)}
-                    placeholder={t(`modals.editBook.placeholders.${typedField}`)}
+                    onChangeText={(value) => setNewValue(converter.preserveEmptyOrNumber(value))}
+                    placeholder={t(`common.parameters.${typedField}.editedPlaceholder`)}
                     isNumeric
                   />
                 )}
@@ -168,7 +173,7 @@ const EditBookModal = () => {
                   <Textarea 
                     value={newValue}
                     onChangeText={(text) => setNewValue(text)}
-                    placeholder={t("modals.editBook.placeholders.description")}
+                    placeholder={t("common.parameters.description.editedPlaceholder")}
                     minHeight={100}
                     maxHeight={500}
                     shape="rounded"
@@ -180,7 +185,7 @@ const EditBookModal = () => {
                     <Checkbox
                       checked={newValue}
                       onPress={() => setNewValue(!newValue)}
-                      label={t("modals.editBook.checkboxes.illustrations")}
+                      label={t("common.parameters.illustrations.values.contains")}
                       labelSize={16}
                     />
                   </View>
@@ -190,56 +195,56 @@ const EditBookModal = () => {
                   <TagsField
                     initialValue={newValue}
                     onChange={(value) => setNewValue(value)}
-                    placeholder={t("modals.editBook.placeholders.authors")}
+                    placeholder={t("common.parameters.authors.editedPlaceholder")}
                   />
                 )}
 
                 {typedField === "language" && typeof newValue === "string" && (
                   <Dropdown
-                    options={languageKeys.map((key) => ({ label: t(`languages.${key}`), value: key }))}
+                    options={languageKeys.map((key) => ({ label: t(`common.languages.${key}`), value: key }))}
                     initialValue={newValue}
                     onChange={(value) => setNewValue(value)}
-                    placeholder={t("modals.editBook.options.language")}
+                    placeholder={t("common.parameters.language.editedOption")}
                     shape="rounded"
                   />
                 )}
 
                 {typedField === "coverType" && typeof newValue === "string" && (
                   <Dropdown
-                    options={coverTypeKeys.map((key) => ({ label: t(`coverTypes.${key}`), value: key }))}
+                    options={coverTypeKeys.map((key) => ({ label: t(`common.coverTypes.${key}`), value: key }))}
                     initialValue={newValue}
                     onChange={(value) => setNewValue(value)}
-                    placeholder={t("modals.editBook.options.coverType")}
+                    placeholder={t("common.parameters.coverType.editedOption")}
                     shape="rounded"
                   />
                 )}
                 
                 {typedField === "bookType" && typeof newValue === "string" && (
                   <Dropdown
-                    options={bookTypeKeys.map((key) => ({ label: t(`bookTypes.${key}`), value: key }))}
+                    options={bookTypeKeys.map((key) => ({ label: t(`common.bookTypes.${key}`), value: key }))}
                     initialValue={newValue}
                     onChange={(value) => setNewValue(value)}
-                    placeholder={t("modals.editBook.options.bookType")}
+                    placeholder={t("common.parameters.bookType.editedOption")}
                     shape="rounded"
                   />
                 )}
                 
                 {typedField === "paperType" && typeof newValue === "string" && (
                   <Dropdown
-                    options={paperTypeKeys.map((key) => ({ label: t(`paperTypes.${key}`), value: key }))}
+                    options={paperTypeKeys.map((key) => ({ label: t(`common.paperTypes.${key}`), value: key }))}
                     initialValue={newValue}
                     onChange={(value) => setNewValue(value)}
-                    placeholder={t("modals.editBook.options.paperType")}
+                    placeholder={t("common.parameters.paperType.editedOption")}
                     shape="rounded"
                   />
                 )}
                 
                 {typedField === "genres" && Array.isArray(newValue) && (
                   <MultiDropdown 
-                    options={genresKeys.map((key) => ({ label: t(`genres.${key}`), value: key }))}
+                    options={genresKeys.map((key) => ({ label: t(`common.genres.${key}`), value: key }))}
                     initialValues={newValue}
                     onChange={(value) => setNewValue(value)}
-                    placeholder={t("modals.editBook.options.genres")}
+                    placeholder={t("common.parameters.genres.editedOption")}
                     showTags
                     shape="rounded"
                   />
@@ -257,17 +262,17 @@ const EditBookModal = () => {
                     initialRates={newValue}
                     onRatesChange={(rates) => setNewValue(rates)}
                     labels={{
-                      originalPrice: t("modals.editBook.labels.rates.originalPrice"),
-                      discount: t("modals.editBook.labels.rates.discount"),
-                      price: t("modals.editBook.labels.rates.price"),
+                      originalPrice: t("common.parameters.originalPrice.editedLabel"),
+                      discount: t("common.parameters.discount.editedLabel"),
+                      price: t("common.parameters.price.editedLabel"),
                     }}
                     placeholders={{
-                      originalPrice: t("modals.editBook.placeholders.rates.originalPrice"),
-                      discount: t("modals.editBook.placeholders.rates.discount"),
-                      price: t("modals.editBook.placeholders.rates.price"),
+                      originalPrice: t("common.parameters.originalPrice.editedPlaceholder"),
+                      discount: t("common.parameters.discount.editedPlaceholder"),
+                      price: t("common.parameters.price.editedPlaceholder"),
                     }}
                     checkboxes={{
-                      manual: t("modals.editBook.checkboxes.manual"),
+                      manual: t("common.parameters.manual.checkboxLabel"),
                     }}
                   />
                 )}
@@ -277,17 +282,17 @@ const EditBookModal = () => {
                     initialImages={newValue}
                     onImagesChange={(images) => setNewValue(images)}
                     labels={{
-                      coverImage: t("modals.editBook.labels.images.coverImage"),
-                      additionalImages: t("modals.editBook.labels.images.additionalImages"),
+                      coverImage: t("common.parameters.coverImage.editedLabel"),
+                      additionalImages: t("common.parameters.additionalImages.editedLabel"),
                     }}
                     prompts={{
-                      coverImage: t("modals.editBook.prompts.coverImage"),
-                      additionalImages: t("modals.editBook.prompts.additionalImages"),
+                      coverImage: t("common.parameters.coverImage.prompt"),
+                      additionalImages: t("common.parameters.additionalImages.prompt"),
                     }}
                     messages={{
                       denied: {
-                        text: t("modals.editBook.messages.denied.text"),
-                        subText: t("modals.editBook.messages.denied.subText"),
+                        text: t("common.parameters.coverImage.alerts.denied.title"),
+                        subText: t("common.parameters.coverImage.alerts.denied.subtitle"),
                       }
                     }}
                   />
@@ -304,7 +309,7 @@ const EditBookModal = () => {
             disabled={isUpdating || !isValueChanged || !isConnected}
           >
             <Typography fontSize={16} fontWeight="bold" color={colors.white}>
-              {t("modals.editBook.buttons.save.text")}
+              {t("modals.editBook.buttons.save")}
             </Typography>
           </Button>
         </View> 

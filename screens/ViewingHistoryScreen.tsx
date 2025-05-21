@@ -46,7 +46,7 @@ const ViewingHistoryScreen = () => {
     const diffDays = differenceInCalendarDays(new Date(), new Date(date));
     const dateKey = [0, 1, 2].includes(diffDays) ? ["today", "yesterday", "dayBeforeYesterday"][diffDays] : "";
     
-    return dateKey ? t(`date.${dateKey}`) : format(new Date(date), "d MMMM yyyy", { 
+    return dateKey ? t(`common.date.${dateKey}`) : format(new Date(date), "d MMMM yyyy", { 
       locale: language === "en" ? enUS : uk 
     });
   };
@@ -60,13 +60,13 @@ const ViewingHistoryScreen = () => {
 
   return (
     <ViewWrapper 
-      title= {t("screens.viewingHistory.header.text")} 
+      title= {t("screens.viewingHistory.header.title")} 
       onBackPress={() => router.back()}
     >      
       {!isConnected && (
         <ErrorNetwork 
-          message={t("components.errorNetwork.title")}
-          subMessage={t("components.errorNetwork.subtitle")}
+          message={t("common.messages.errorNetwork.title")}
+          subMessage={t("common.messages.errorNetwork.subtitle")}
         />
       )}
       
@@ -76,15 +76,15 @@ const ViewingHistoryScreen = () => {
       
       {isConnected && isError && !isLoading && (
         <ErrorWithRetry 
-          message={t("screens.viewingHistory.messages.error.text")}
-          subMessage={t("screens.viewingHistory.messages.error.subText")}
+          message={t("common.messages.failedLoad.title")}
+          subMessage={t("common.messages.failedLoad.subtitle")}
           hideButton
         />
       )}
 
       {isConnected && isEmpty && !isError && !isLoading && (
         <Empty 
-          message={t("screens.viewingHistory.messages.empty.text")} 
+          message={t("screens.viewingHistory.messages.empty.title")} 
           hideSubMessage
         />
       )}

@@ -16,7 +16,7 @@ export const messageHandler = {
     const matchedKey = Object.keys(messageMap).find((key) => rawKey.includes(key));
     if (!matchedKey) return fallbackMessage;
 
-    const translationPath = `${translationRoot}.${messageMap[matchedKey]}`.split(".");
+    const translationPath = `common.${translationRoot}.${messageMap[matchedKey]}`.split(".");
     const value = languageHandler.getTranslation(translationPath, translations);
 
     return typeof value === "object" ? value[language] || value["en"] || fallbackMessage : value || fallbackMessage;

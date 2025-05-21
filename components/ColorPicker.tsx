@@ -1,31 +1,43 @@
-import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
+import { useSharedValue, runOnJS } from "react-native-reanimated";
 import ColorPickerComponent, {
   Panel1,
   Preview,
   HueSlider,
   Swatches,
 } from "reanimated-color-picker";
+import type { ColorFormatsObject } from "reanimated-color-picker";
 import { colors } from "@/constants/theme";
 
 import "@/reanimatedConfig";
 
 type ColorPickerProps = {
-  initialColor: string;
-  onColorChange?: (hex: string) => void;
+  initialColor?: string;
+  onColorChange: (color: string) => void;
 };
 
-const ColorPicker = ({ initialColor, onColorChange }: ColorPickerProps) => {
-  const [selectedColor, setSelectedColor] = useState<string>(initialColor || colors.white);
+const ColorPicker = ({ 
+  initialColor = colors.white, 
+  onColorChange, 
+}: ColorPickerProps) => {
+  const selectedColor = useSharedValue(initialColor);
 
-  const handleColorChange = ({ hex }: { hex: string }) => {
-    setSelectedColor(hex);
-    onColorChange?.(hex);
+  const onColorSelect = (color: ColorFormatsObject) => {
+    "worklet";
+    selectedColor.value = color.hex;
+    runOnJS(onColorChange)(color.hex);
   };
 
   return (
     <View style={styles.container}>
-      <ColorPickerComponent value={selectedColor} onComplete={handleColorChange}>
+      <ColorPickerComponent
+        value={selectedColor.value}
+        sliderThickness={25}
+        thumbSize={24}
+        thumbShape="circle"
+        onComplete={onColorSelect}
+        boundedThumb
+      >
         <Preview
           style={styles.preview}
           textStyle={{
@@ -37,7 +49,7 @@ const ColorPicker = ({ initialColor, onColorChange }: ColorPickerProps) => {
         <Panel1 style={styles.panel} />
 
         <HueSlider style={styles.slider} />
-        
+
         <Swatches
           colors={[
             "#FF0000",
@@ -61,9 +73,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     paddingVertical: 20,
     paddingHorizontal: 15,
-  },
-  title: {
-    marginBottom: 15,
   },
   preview: {
     height: 35,

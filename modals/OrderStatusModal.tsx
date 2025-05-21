@@ -18,7 +18,7 @@ const OrderStatusModal = () => {
   return (
     <ModalWrapper>
       <Header 
-        title={t("modals.orderStatus.header")}
+        title={t("modals.orderStatus.header.title")}
         titleSize={18}
         iconLeft={<BackButton />} 
         style={[

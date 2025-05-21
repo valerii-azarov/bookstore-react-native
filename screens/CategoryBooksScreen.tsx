@@ -62,7 +62,7 @@ const CategoryBooksScreen = () => {
         onAddToFavorites={(bookId) => toggleFavorite(bookId)}
         onAddToCart={(item) => toggleCart(item)}
         labels={{
-          details: t("components.bookItem.details")
+          details: t("components.bookItem.buttons.details"),
         }}
       />
     );
@@ -85,13 +85,13 @@ const CategoryBooksScreen = () => {
 
   return (
     <ViewWrapper 
-      title= {t(`genres.${category}`)} 
+      title= {t(`common.genres.${category}`)} 
       onBackPress={() => router.back()}
     >
       {!isConnected && (
         <ErrorNetwork 
-          message={t("components.errorNetwork.title")}
-          subMessage={t("components.errorNetwork.subtitle")}
+          message={t("common.messages.errorNetwork.title")}
+          subMessage={t("common.messages.errorNetwork.subtitle")}
         />
       )}
       
@@ -101,16 +101,16 @@ const CategoryBooksScreen = () => {
 
       {isConnected && isError && !isLoading && (
         <ErrorWithRetry 
-          message={t("screens.categoryBooks.messages.error.text")}
-          subMessage={t("screens.categoryBooks.messages.error.subText")}
+          message={t("common.messages.failedLoad.title")}
+          subMessage={t("common.messages.failedLoad.subtitle")}
           hideButton
         />
       )}
 
       {isConnected && isEmpty && !isError && !isLoading && (
         <Empty 
-          message={t("screens.categoryBooks.messages.empty.text")}
-          subMessage={t("screens.categoryBooks.messages.empty.subText")} 
+          message={t("screens.categoryBooks.messages.empty.title")}
+          subMessage={t("screens.categoryBooks.messages.empty.subtitle")} 
         />
       )}
 

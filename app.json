@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "app-firebase-test",
-    "slug": "app-firebase-test",
+    "name": "bookstore-react-native",
+    "slug": "bookstore-react-native",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "appfirebasetest",
+    "scheme": "appbookstore",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {

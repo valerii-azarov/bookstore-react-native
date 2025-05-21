@@ -23,7 +23,7 @@ const SearchScreen = () => {
           color={colors.black} 
           style={{ marginBottom: 5 }}
         >
-          {t("screens.search.header.text")}
+          {t("screens.search.header.title")}
         </Typography>
 
         <TouchableOpacity
@@ -52,7 +52,7 @@ const SearchScreen = () => {
             color={colors.grayTint3}
             style={{ marginLeft: 10 }}
           >
-            {t(`screens.search.placeholders.title.text`)}
+            {t(`screens.search.searchInput.title`)}
           </Typography>
         </TouchableOpacity>
       </View>
@@ -64,7 +64,7 @@ const SearchScreen = () => {
           color={colors.black}
           style={{ marginBottom: 10, textAlign: "center" }}
         >
-          {t(`screens.search.messages.startSearch.text`)}
+          {t(`screens.search.startPrompt.title`)}
         </Typography>
 
         <Typography
@@ -73,7 +73,7 @@ const SearchScreen = () => {
           color={colors.blackTint5}
           style={{ textAlign: "center" }}
         >
-          {t(`screens.search.messages.startSearch.subText`)}
+          {t(`screens.search.startPrompt.subtitle`)}
         </Typography>
       </View>
     </ScreenWrapper>

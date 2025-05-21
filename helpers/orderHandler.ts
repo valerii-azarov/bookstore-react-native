@@ -23,19 +23,19 @@ export const orderHandler = {
   getOrderStatusStyle: (status: OrderStatusType, t: (key: string) => string): OrderStatusStyle => {
     const statusMap: Record<OrderStatusType, OrderStatusStyle> = {
       processing: {
-        label: t("orderStatuses.titles.processing"),
+        label: t("common.orderStatus.processing.title"),
         backgroundColor: "#FFB300",
       },
       shipped: {
-        label: t("orderStatuses.titles.shipped"),
+        label: t("common.orderStatus.shipped.title"),
         backgroundColor: "#FF5722",
       },
       delivered: {
-        label: t("orderStatuses.titles.delivered"),
+        label: t("common.orderStatus.delivered.title"),
         backgroundColor: "#0288D1",
       },
       received: {
-        label: t("orderStatuses.titles.received"),
+        label: t("common.orderStatus.received.title"),
         backgroundColor: "#388E3C",
       },
     };
@@ -46,26 +46,26 @@ export const orderHandler = {
   getOrderTimelineSteps: <T extends OrderStatusType>(currentState: T, t: (key: string) => string): TimelineStep<T>[] => {
     const statusMap: Record<OrderStatusType, TimelineType> = {
       processing: {
-        title: t("orderStatuses.titles.processing"),
-        subtitle: t("orderStatuses.subtitles.processing"),
+        title: t("common.orderStatus.processing.title"),
+        subtitle: t("common.orderStatus.processing.subtitle"),
         iconSet: "Feather",
         iconName: "box",
       },
       shipped: {
-        title: t("orderStatuses.titles.shipped"),
-        subtitle: t("orderStatuses.subtitles.shipped"),
+        title: t("common.orderStatus.shipped.title"),
+        subtitle: t("common.orderStatus.shipped.subtitle"),
         iconSet: "MaterialIcons",
         iconName: "local-shipping",
       },
       delivered: {
-        title: t("orderStatuses.titles.delivered"),
-        subtitle: t("orderStatuses.subtitles.delivered"),
+        title: t("common.orderStatus.delivered.title"),
+        subtitle: t("common.orderStatus.delivered.subtitle"),
         iconSet: "Feather",
         iconName: "package",
       },
       received: {
-        title: t("orderStatuses.titles.received"),
-        subtitle: t("orderStatuses.subtitles.received"),
+        title: t("common.orderStatus.received.title"),
+        subtitle: t("common.orderStatus.received.subtitle"),
         iconSet: "Ionicons",
         iconName: "checkmark-circle-outline",
       },

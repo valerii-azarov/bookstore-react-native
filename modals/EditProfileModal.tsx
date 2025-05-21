@@ -42,8 +42,7 @@ const EditProfileModal = () => {
   const [newValue, setNewValue] = useState<string>(initialValue);
 
   const isUpdating = profileStatus === "updating";
-  const isError = profileResponse?.status === "error";
-  const isSuccess = profileResponse?.status === "success";
+  const status = profileResponse?.status;
   const message = profileResponse?.message;
 
   const handleUpdate = () => {
@@ -53,31 +52,31 @@ const EditProfileModal = () => {
   };
 
   useEffect(() => {
-    if (isError && message) {
+    if (status === "error" && message) {
       Alert.alert(
-        t("alerts.static.error.title"),
-        message || t("alerts.profileUpdate.error.message")
+        t("modals.editProfile.alerts.profileUpdate.responses.error.title"),
+        message || t("modals.editProfile.alerts.profileUpdate.responses.error.message")
       );
     }
     return () => resetProfile();
-  }, [isError]);
+  }, [status]);
   
   useEffect(() => {
-    if (isSuccess) {
+    if (status === "success") {
       Alert.alert(
-        t("alerts.static.success.title"),
-        t("alerts.profileUpdate.success.message"),
+        t("modals.editProfile.alerts.profileUpdate.responses.success.title"),
+        t("modals.editProfile.alerts.profileUpdate.responses.success.message"),
         [{ text: "OK", onPress: () => setTimeout(() => router.back(), 500) }]
       );
     }
     return () => resetProfile();
-  }, [isSuccess, router]);
+  }, [status, router]);
   
   return (
     <ModalWrapper>
       <KeyboardWrapper>
         <Header
-          title={t(`modals.editProfile.header.${field}`)}
+          title={t(`modals.editProfile.header.title.${field}`)}
           titleSize={18}
           iconLeft={<BackButton />}
           style={{
@@ -89,13 +88,13 @@ const EditProfileModal = () => {
         <View style={[styles.content, styles.padded]}>
           <View style={styles.field}>
             <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-              {t(`modals.editProfile.labels.${field}.text`)}
+              {t(`modals.editProfile.fields.${field}.label`)}
             </Typography>
       
             <Input 
               value={newValue}
               onChangeText={setNewValue}
-              placeholder={t(`modals.editProfile.placeholders.${field}.text`)}
+              placeholder={t(`modals.editProfile.fields.${field}.placeholder`)}
               keyboardType="default"
               editable={!isUpdating}
             />
@@ -109,7 +108,7 @@ const EditProfileModal = () => {
             disabled={isUpdating || newValue === initialValue || !isConnected}
           >
             <Typography fontSize={16} fontWeight="bold" color={colors.white}>
-              {t("modals.editProfile.buttons.save.text")}
+              {t("modals.editProfile.buttons.save")}
             </Typography>
           </Button>
         </View> 

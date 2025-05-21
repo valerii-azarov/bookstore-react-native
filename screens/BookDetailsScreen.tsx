@@ -117,26 +117,26 @@ const BookDetailsScreen = () => {
   const sections = [
     {
       type: "attribute",
-      title: t("screens.bookDetails.titles.details"),
+      title: t("screens.bookDetails.sections.details"),
       items: [
         {
           key: "sku",
-          label: t("screens.bookDetails.labels.sku"),
+          label: t("common.parameters.sku.label"),
           value: currentBook?.sku || "-",
         },
         {
           key: "quantity",
-          label: t("screens.bookDetails.labels.quantity"),
+          label: t("common.parameters.availableQuantity.label"),
           value: currentBook?.availableQuantity?.toString() || "-",
         },
         {
           key: "createdAt",
-          label: t("screens.bookDetails.labels.createdAt"),
+          label: t("common.parameters.createdAt.label"),
           value: currentBook?.createdAt ? format(new Date(currentBook.createdAt), "dd.MM.yyyy HH:mm") : "-",
         },
         {
           key: "updatedAt",
-          label: t("screens.bookDetails.labels.updatedAt"),
+          label: t("common.parameters.updatedAt.label"),
           value: currentBook?.updatedAt ? format(new Date(currentBook.updatedAt), "dd.MM.yyyy HH:mm") : "-",
         },
       ],
@@ -144,42 +144,42 @@ const BookDetailsScreen = () => {
     },
     {
       type: "attribute",
-      title: t("screens.bookDetails.titles.characteristics"),
+      title: t("screens.bookDetails.sections.characteristics"),
       items: [
         {
           key: "pageCount",
-          label: t("screens.bookDetails.labels.pageCount"),
+          label: t("common.parameters.pageCount.label"),
           value: currentBook?.pageCount?.toString() || "-",
         },
         {
           key: "publisher",
-          label: t("screens.bookDetails.labels.publisher"),
+          label: t("common.parameters.publisher.label"),
           value: currentBook?.publisher || "-",
         },
         {
           key: "coverType",
-          label: t("screens.bookDetails.labels.coverType"),
-          value: currentBook?.coverType ? t(`coverTypes.${currentBook.coverType}`) : "-",
+          label: t("common.parameters.coverType.label"),
+          value: currentBook?.coverType ? t(`common.coverTypes.${currentBook.coverType}`) : "-",
         },
         {
           key: "publicationYear",
-          label: t("screens.bookDetails.labels.publicationYear"),
+          label: t("common.parameters.publicationYear.label"),
           value: currentBook?.publicationYear?.toString() || "-",
         },
         {
           key: "language",
-          label: t("screens.bookDetails.labels.language"),
-          value: currentBook?.language ? t(`languages.${currentBook.language}`) : "-",
+          label: t("common.parameters.language.label"),
+          value: currentBook?.language ? t(`common.languages.${currentBook.language}`) : "-",
         },
       ],
       button: {
-        label: t("screens.bookDetails.buttons.viewAllCharacteristics.text"),
+        label: t("screens.bookDetails.buttons.viewAllCharacteristics"),
         onPress: () => router.push("/book-characteristics"),
       },
     },
     {
       type: "text",
-      title: t("screens.bookDetails.titles.description"),
+      title: t("screens.bookDetails.sections.description"),
       items: [
         {
           key: "description",
@@ -188,7 +188,7 @@ const BookDetailsScreen = () => {
         },
       ],
       button: {
-        label: t("screens.bookDetails.buttons.viewFullDescription.text"),
+        label: t("screens.bookDetails.buttons.viewFullDescription"),
         onPress: () => router.push("/book-description"),
       },
     },
@@ -204,14 +204,14 @@ const BookDetailsScreen = () => {
 
   return (
     <ViewWrapper
-      title={t("screens.bookDetails.header.text")}
+      title={t("screens.bookDetails.header.title")}
       onBackPress={() => router.back()}
       hideFooter
     >
       {!isConnected && (
         <ErrorNetwork 
-          message={t("components.errorNetwork.title")}
-          subMessage={t("components.errorNetwork.subtitle")}
+          message={t("common.messages.errorNetwork.title")}
+          subMessage={t("common.messages.errorNetwork.subtitle")}
         />
       )}
       
@@ -221,8 +221,8 @@ const BookDetailsScreen = () => {
 
       {isConnected && isError && !isLoading && (
         <ErrorWithRetry 
-          message={t("screens.bookDetails.messages.error.text")}
-          subMessage={t("screens.bookDetails.messages.error.subText")}
+          message={t("common.messages.failedLoad.title")}
+          subMessage={t("common.messages.failedLoad.subtitle")}
           hideButton 
         />
       )}
@@ -327,7 +327,7 @@ const BookDetailsScreen = () => {
                   <View style={styles.priceColumn}>
                     {currentBook.availableQuantity === 0 && (
                       <Typography fontSize={16} fontWeight="bold" color={colors.black}>
-                        Немає в наявності
+                        {t("screens.bookDetails.labels.outOfStock")}
                       </Typography>
                     )}
 
@@ -376,7 +376,7 @@ const BookDetailsScreen = () => {
                         >
                           <Animated.View style={buyAnimatedStyle}>
                             <Typography fontSize={16} fontWeight="bold" color={colors.black}>
-                              {t("screens.bookDetails.buttons.buy.text")}
+                              {t("screens.bookDetails.buttons.buy")}
                             </Typography>
                           </Animated.View>
                         </TouchableOpacity>
