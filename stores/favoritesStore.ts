@@ -6,28 +6,35 @@ import { Favorite, FavoriteStatusType, StatusType, ResponseType } from "@/types"
 
 import { useAuthStore } from "./authStore";
 
+type FavoritesOperation = "fetch" | "toggle";
+
+type FavoritesOperationState = {
+  status: StatusType | FavoriteStatusType;
+  response: ResponseType | null;
+};
+
 interface FavoritesStore {
   favoriteIds: string[];
   favoriteBooks: Favorite[];
-  favoriteStatus: StatusType;
-  favoriteResponse: ResponseType | null;
-  toggleFavoriteStatus: FavoriteStatusType;
-  toggleFavoriteResponse: ResponseType | null;
   favoritesDataLoaded: boolean;
+  favoritesOperations: Record<FavoritesOperation, FavoritesOperationState>;
   initializeFavorites: () => Promise<void>;
   loadFavoriteBooks: () => Promise<void>;
   toggleFavorite: (bookId: string) => Promise<void>;
+  setFavoritesOperationState: (op: FavoritesOperation, state: Partial<FavoritesOperationState>) => void;
+  resetFavoritesOperationState: (op: FavoritesOperation) => void;
   resetFavorites: () => void;
+  resetAll: () => void;
 }
 
 export const useFavoritesStore = create<FavoritesStore>((set, get) => ({
   favoriteIds: [],
   favoriteBooks: [],
-  favoriteStatus: "idle",
-  favoriteResponse: null,
-  toggleFavoriteStatus: "idle",
-  toggleFavoriteResponse: null,
   favoritesDataLoaded: false,
+  favoritesOperations: {
+    fetch: { status: "idle", response: null },
+    toggle: { status: "idle", response: null },
+  },
 
   initializeFavorites: async () => {
     if (get().favoritesDataLoaded) return;
@@ -56,7 +63,12 @@ export const useFavoritesStore = create<FavoritesStore>((set, get) => ({
     const userId = useAuthStore.getState().user?.uid;
     if (!userId) return;
 
-    set({ favoriteStatus: "loading", favoriteResponse: null });
+    set((state) => ({
+      favoritesOperations: {
+        ...state.favoritesOperations,
+        fetch: { status: "loading", response: null },
+      },
+    }));
 
     const favoriteIds = get().favoriteIds;
 
@@ -64,17 +76,27 @@ export const useFavoritesStore = create<FavoritesStore>((set, get) => ({
       .then((favoriteBooks) => {
         const booksWithFavorite = bookHandler.addIsFavoriteFlag(favoriteBooks, favoriteIds);
 
-        set({
+        set((state) => ({
           favoriteBooks: booksWithFavorite.length > 0 ? booksWithFavorite : [],
-          favoriteResponse: { status: "success" },
-          favoriteStatus: "idle",
-        });
+          favoritesOperations: {
+            ...state.favoritesOperations,
+            fetch: {
+              status: "idle",
+              response: { status: "success" },
+            },
+          },
+        }));
       })
       .catch((error) =>
-        set({
-          favoriteResponse: { status: "error", message: error.message },
-          favoriteStatus: "idle",
-        })
+        set((state) => ({
+          favoritesOperations: {
+            ...state.favoritesOperations,
+            fetch: {
+              status: "idle",
+              response: { status: "error", message: error.message },
+            },
+          },
+        }))
       );
   },
 
@@ -82,7 +104,12 @@ export const useFavoritesStore = create<FavoritesStore>((set, get) => ({
     const userId = useAuthStore.getState().user?.uid;
     if (!userId) return;
 
-    set({ toggleFavoriteStatus: "toggling", toggleFavoriteResponse: null });
+    set((state) => ({
+      favoritesOperations: {
+        ...state.favoritesOperations,
+        toggle: { status: "toggling", response: null },
+      },
+    }));
 
     const { favoriteIds } = get();
     const isFavorite = favoriteIds.includes(bookId);
@@ -96,35 +123,93 @@ export const useFavoritesStore = create<FavoritesStore>((set, get) => ({
 
     fetchMethod
       .then(() => {
-        set({
-          toggleFavoriteResponse: {
-            status: "success",
-            message: messageHandler.getSuccessMessage(
-              isFavorite ? "removed" : "added", 
-              {
-                "added": "favorites.bookAddedToFavorites",
-                "removed": "favorites.bookRemovedFromFavorites",
-              }
-            ),
+        set((state) => ({
+          favoritesOperations: {
+            ...state.favoritesOperations,
+            toggle: { 
+              status: "idle", 
+              response: {
+                status: "success",
+                message: messageHandler.getSuccessMessage(
+                  isFavorite ? "removed" : "added", 
+                  {
+                    "added": "favorites.bookAddedToFavorites",
+                    "removed": "favorites.bookRemovedFromFavorites",
+                  }
+                ),
+              },
+            },
           },
-          toggleFavoriteStatus: "idle",
-        });
-        setTimeout(() => set({ toggleFavoriteResponse: null }), 3000);
+        }));
+
+        setTimeout(() => {
+          set((state) => ({
+            favoritesOperations: {
+              ...state.favoritesOperations,
+              toggle: { status: "idle", response: null },
+            },
+          }));
+        }, 3000);
       })
       .catch((error) => {
-        set({
-          toggleFavoriteResponse: { status: "error", message: error.message },
-          toggleFavoriteStatus: "idle",
-        });
-        setTimeout(() => set({ toggleFavoriteResponse: null }), 3000);
+        set((state) => ({
+          favoritesOperations: {
+            ...state.favoritesOperations,
+            toggle: {
+              status: "idle",
+              response: { status: "error", message: error.message },
+            },
+          },
+        }));
+
+        setTimeout(() => {
+          set((state) => ({
+            favoritesOperations: {
+              ...state.favoritesOperations,
+              toggle: { status: "idle", response: null },
+            },
+          }));
+        }, 3000);
       });
   },
 
+  setFavoritesOperationState: (op, stateUpdate) => {
+    set((state) => ({
+      favoritesOperations: {
+        ...state.favoritesOperations,
+        [op]: { ...state.favoritesOperations[op], ...stateUpdate },
+      },
+    }));
+  },
+  
+  resetFavoritesOperationState: (op) => {
+    set((state) => ({
+      favoritesOperations: {
+        ...state.favoritesOperations,
+        [op]: { status: "idle", response: null },
+      },
+    }));
+  },
+
   resetFavorites: () => {
-    set({
+    set((state) => ({
       favoriteBooks: [],
-      favoriteStatus: "idle",
-      favoriteResponse: null,
+      favoritesOperations: {
+        ...state.favoritesOperations,
+        fetch: { status: "idle", response: null },
+      },
+    }));
+  },
+
+  resetAll: () => {
+    set({
+      favoriteIds: [],
+      favoriteBooks: [],
+      favoritesDataLoaded: false,
+      favoritesOperations: {
+        fetch: { status: "idle", response: null },
+        toggle: { status: "idle", response: null },
+      },
     });
   },
 

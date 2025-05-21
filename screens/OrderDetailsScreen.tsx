@@ -8,12 +8,12 @@ import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
 import { useOrderStore } from "@/stores/orderStore";
 import {
-  selectOrder,
-  selectOrderStatus,
-  selectOrderResponse,
+  selectCurrentOrder,
+  selectFetchOrderStatus,
+  selectFetchOrderResponse,
   selectSetOrderById,
   selectLoadOrderById,
-  selectResetOrder,
+  selectResetCurrentOrder,
 } from "@/selectors/orderSelectors";
 import { colors } from "@/constants/theme";
 
@@ -33,16 +33,16 @@ const OrderDetailsScreen = () => {
   const t = useTranslation();
   const isConnected = useIsConnected();
 
-  const order = useOrderStore(selectOrder);
-  const orderStatus = useOrderStore(selectOrderStatus);
-  const orderResponse = useOrderStore(selectOrderResponse);
+  const currentOrder = useOrderStore(selectCurrentOrder);
+  const fetchOrderStatus = useOrderStore(selectFetchOrderStatus);
+  const fetchOrderResponse = useOrderStore(selectFetchOrderResponse);
 
   const setOrderById = useOrderStore(selectSetOrderById);
   const loadOrderById = useOrderStore(selectLoadOrderById);
-  const resetOrder = useOrderStore(selectResetOrder);
+  const resetCurrentOrder = useOrderStore(selectResetCurrentOrder);
 
-  const isLoading = orderStatus === "loading";
-  const isError = !isLoading && orderResponse?.status === "error";
+  const isLoading = fetchOrderStatus === "loading";
+  const isError = !isLoading && fetchOrderResponse?.status === "error";
 
   const copyOrderId = async (value: string) => {
     await Clipboard.setStringAsync(value);
@@ -57,7 +57,7 @@ const OrderDetailsScreen = () => {
       setOrderById(orderId);
       loadOrderById();
     }
-    return () => resetOrder();
+    return () => resetCurrentOrder();
   }, [orderId, isConnected]);  
 
   return (
@@ -85,7 +85,7 @@ const OrderDetailsScreen = () => {
         />
       )}
 
-      {isConnected && !isLoading && !isError && order && (
+      {isConnected && !isLoading && !isError && currentOrder && (
         <ScrollView 
           contentContainerStyle={styles.scrollViewContainer}
           showsVerticalScrollIndicator={false}
@@ -108,11 +108,11 @@ const OrderDetailsScreen = () => {
                       marginRight: 10,
                     }}
                   >
-                    {order.id}
+                    {currentOrder.id}
                   </Typography>
 
                   <IconButton 
-                    onPress={() => copyOrderId(order.id)}
+                    onPress={() => copyOrderId(currentOrder.id)}
                     buttonIconSet="Ionicons"
                     buttonIconName="copy"
                     animated 
@@ -132,7 +132,7 @@ const OrderDetailsScreen = () => {
                     style={[
                       styles.statusBadge,
                       {
-                        backgroundColor: orderHandler.getOrderStatusStyle(order.status, t).backgroundColor,
+                        backgroundColor: orderHandler.getOrderStatusStyle(currentOrder.status, t).backgroundColor,
                       },
                     ]}
                   >
@@ -142,7 +142,7 @@ const OrderDetailsScreen = () => {
                       color={colors.white}
                       numberOfLines={1}
                     >
-                      {orderHandler.getOrderStatusStyle(order.status, t).label}
+                      {orderHandler.getOrderStatusStyle(currentOrder.status, t).label}
                     </Typography>
                   </View>
 
@@ -151,7 +151,7 @@ const OrderDetailsScreen = () => {
                     onPress={() => 
                       router.push({
                         pathname: "/order-status/[state]",
-                        params: { state: order.status },
+                        params: { state: currentOrder.status },
                       })
                     }
                   />
@@ -165,7 +165,7 @@ const OrderDetailsScreen = () => {
               </Typography>
 
               <View style={styles.sectionWrapper}>
-                {order.books.map((book, index) => (
+                {currentOrder.books.map((book, index) => (
                   <View key={book.bookId}>
                     <View style={styles.bookRow}>
                       <View style={styles.imageWrapper}>
@@ -225,7 +225,7 @@ const OrderDetailsScreen = () => {
                       </View>
                     </View>
 
-                    {index < order.books.length - 1 && (
+                    {index < currentOrder.books.length - 1 && (
                       <View
                         style={[
                           styles.divider,
@@ -250,7 +250,7 @@ const OrderDetailsScreen = () => {
                   style={[
                     styles.costRow,
                     {
-                      marginBottom: order.discountAmount > 0 ? 15 : 0,
+                      marginBottom: currentOrder.discountAmount > 0 ? 15 : 0,
                     },
                   ]}
                 >
@@ -265,11 +265,11 @@ const OrderDetailsScreen = () => {
                     numberOfLines={1}
                     style={{ maxWidth: 200 }}
                   >
-                    {order.subtotal.toFixed(2)}₴
+                    {currentOrder.subtotal.toFixed(2)}₴
                   </Typography>
                 </View>
 
-                {order.discountAmount > 0 && (
+                {currentOrder.discountAmount > 0 && (
                   <View style={styles.costRow}>
                     <Typography fontSize={14} fontWeight="medium" color={colors.gray}>
                       {t("screens.orderDetails.labels.discount")}
@@ -282,7 +282,7 @@ const OrderDetailsScreen = () => {
                       numberOfLines={1}
                       style={{ maxWidth: 200 }}
                     >
-                      –{order.discountAmount.toFixed(2)}₴
+                      –{currentOrder.discountAmount.toFixed(2)}₴
                     </Typography>
                   </View>
                 )}
@@ -309,7 +309,7 @@ const OrderDetailsScreen = () => {
                     numberOfLines={1}
                     style={{ maxWidth: 200 }}
                   >
-                    {order.total.toFixed(2)}₴
+                    {currentOrder.total.toFixed(2)}₴
                   </Typography>
                 </View>
               </View>
@@ -338,11 +338,11 @@ const OrderDetailsScreen = () => {
                     color={colors.black}
                     numberOfLines={2}
                   >
-                    {t(`screens.orderDetails.fields.paymentMethod.${order.paymentMethod ? `values.${order.paymentMethod}` : "notSpecified"}`)}
+                    {t(`screens.orderDetails.fields.paymentMethod.${currentOrder.paymentMethod ? `values.${currentOrder.paymentMethod}` : "notSpecified"}`)}
                   </Typography>
                 </View>
 
-                {order.paymentMethod !== "cod" && (
+                {currentOrder.paymentMethod !== "cod" && (
                   <View
                     style={[
                       styles.divider,
@@ -353,7 +353,7 @@ const OrderDetailsScreen = () => {
                   />
                 )}
 
-                {order.paymentMethod !== "cod" && (
+                {currentOrder.paymentMethod !== "cod" && (
                   <View style={styles.dataColumn}>
                     <Typography
                       fontSize={14}
@@ -371,7 +371,7 @@ const OrderDetailsScreen = () => {
                       color={colors.black}
                       numberOfLines={1}
                     >
-                      {t(`screens.orderDetails.fields.paymentStatus.values.${order.isPaid ? "paid" : "unpaid"}`)}
+                      {t(`screens.orderDetails.fields.paymentStatus.values.${currentOrder.isPaid ? "paid" : "unpaid"}`)}
                     </Typography>
                   </View>
                 )}
@@ -401,7 +401,7 @@ const OrderDetailsScreen = () => {
                     color={colors.black}
                     numberOfLines={2}
                   >
-                    {order.delivery.city}, {order.delivery.warehouse}
+                    {currentOrder.delivery.city}, {currentOrder.delivery.warehouse}
                   </Typography>
                 </View>
 
@@ -431,7 +431,7 @@ const OrderDetailsScreen = () => {
                     color={colors.black}
                     numberOfLines={1}
                   >
-                    {order.customer.lastName} {order.customer.firstName} {order.customer.middleName}
+                    {currentOrder.customer.lastName} {currentOrder.customer.firstName} {currentOrder.customer.middleName}
                   </Typography>
                 </View>
 
@@ -461,7 +461,7 @@ const OrderDetailsScreen = () => {
                     color={colors.black}
                     numberOfLines={1}
                   >
-                    {order.customer.phoneNumber}
+                    {currentOrder.customer.phoneNumber}
                   </Typography>
                 </View>
               </View>
@@ -488,7 +488,7 @@ const OrderDetailsScreen = () => {
                     fontWeight="bold"
                     color={colors.black}
                   >
-                    {format(new Date(order.createdAt), "dd.MM.yyyy HH:mm")}
+                    {format(new Date(currentOrder.createdAt), "dd.MM.yyyy HH:mm")}
                   </Typography>
                 </View>
 
@@ -516,7 +516,7 @@ const OrderDetailsScreen = () => {
                     fontWeight="bold"
                     color={colors.black}
                   >
-                    {format(new Date(order.updatedAt), "dd.MM.yyyy HH:mm")}
+                    {format(new Date(currentOrder.updatedAt), "dd.MM.yyyy HH:mm")}
                   </Typography>
                 </View>
               </View>
@@ -534,7 +534,7 @@ const OrderDetailsScreen = () => {
                       router.push({
                         pathname: "/order-receipt/[receiptId]",
                         params: {
-                          receiptId: order.receiptId || "defaultReceiptId",
+                          receiptId: currentOrder.receiptId || "defaultReceiptId",
                         },
                       })
                     }

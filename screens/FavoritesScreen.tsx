@@ -7,8 +7,8 @@ import { useTranslation } from "@/contexts/translateContext";
 import { useFavoritesStore } from "@/stores/favoritesStore";
 import { 
   selectFavoriteBooks, 
-  selectFavoriteStatus, 
-  selectFavoriteResponse,
+  selectFetchFavoritesStatus, 
+  selectFetchFavoritesResponse,
   selectLoadFavoriteBooks,
   selectToggleFavorite,
   selectResetFavorites,
@@ -29,16 +29,16 @@ const FavoritesScreen = () => {
   const isConnected = useIsConnected();
 
   const favoriteBooks = useFavoritesStore(selectFavoriteBooks);
-  const favoriteStatus = useFavoritesStore(selectFavoriteStatus);
-  const favoriteResponse = useFavoritesStore(selectFavoriteResponse);
+  const fetchFavoritesStatus = useFavoritesStore(selectFetchFavoritesStatus);
+  const fetchFavoritesResponse = useFavoritesStore(selectFetchFavoritesResponse);
 
   const loadFavoriteBooks = useFavoritesStore(selectLoadFavoriteBooks);
   const toggleFavorite = useFavoritesStore(selectToggleFavorite);
   const resetFavorites = useFavoritesStore(selectResetFavorites);
 
-  const isLoading = favoriteStatus === "loading";
+  const isLoading = fetchFavoritesStatus === "loading";
   const isEmpty = !isLoading && favoriteBooks.length === 0;
-  const isError = !isLoading && favoriteResponse?.status === "error";
+  const isError = !isLoading && fetchFavoritesResponse?.status === "error";
 
   useEffect(() => {
     if (isConnected) {

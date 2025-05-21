@@ -10,20 +10,20 @@ import { selectGetTotal } from "@/selectors/cartSelectors";
 import {
   selectCities,
   selectWarehouses,
-  selectCitiesStatus,
-  selectCitiesResponse,
-  selectWarehousesStatus,
-  selectWarehousesResponse,
+  selectFetchCitiesStatus,
+  selectFetchCitiesResponse,
+  selectFetchWarehousesStatus,
+  selectFetchWarehousesResponse,
   selectSearchCities,
   selectSearchWarehouses,
   selectResetCities,
   selectResetWarehouses,
 } from "@/selectors/novaPostSelectors";
 import { 
-  selectOrderStatus,
-  selectOrderResponse,
+  selectCreateOrderStatus,
+  selectCreateOrderResponse,
   selectCreateOrder,
-  selectResetOrder,
+  selectResetOrderOperationState,
 } from "@/selectors/orderSelectors";
 import { colors } from "@/constants/theme";
 import { OrderFormValues, Option, DirectionType } from "@/types";
@@ -57,35 +57,35 @@ const CheckoutModal = () => {
   const total = useCartStore(selectGetTotal)();
 
   const cities = useNovaPostStore(selectCities);
-  const citiesStatus = useNovaPostStore(selectCitiesStatus);
-  const citiesResponse = useNovaPostStore(selectCitiesResponse);
+  const fetchCitiesStatus = useNovaPostStore(selectFetchCitiesStatus);
+  const fetchCitiesResponse = useNovaPostStore(selectFetchCitiesResponse);
   
   const warehouses = useNovaPostStore(selectWarehouses);
-  const warehousesStatus = useNovaPostStore(selectWarehousesStatus);
-  const warehousesResponse = useNovaPostStore(selectWarehousesResponse);
+  const fetchWarehousesStatus = useNovaPostStore(selectFetchWarehousesStatus);
+  const fetchWarehousesResponse = useNovaPostStore(selectFetchWarehousesResponse);
   
   const searchCities = useNovaPostStore(selectSearchCities);
   const searchWarehouses = useNovaPostStore(selectSearchWarehouses);
   const resetCities = useNovaPostStore(selectResetCities);
   const resetWarehouses = useNovaPostStore(selectResetWarehouses);
 
-  const orderStatus = useOrderStore(selectOrderStatus);
-  const orderResponse = useOrderStore(selectOrderResponse);
+  const createOrderStatus = useOrderStore(selectCreateOrderStatus);
+  const createOrderResponse = useOrderStore(selectCreateOrderResponse);
 
   const createOrder = useOrderStore(selectCreateOrder);
-  const resetOrder = useOrderStore(selectResetOrder);
+  const resetOrderOperationState = useOrderStore(selectResetOrderOperationState);
 
-  const isLoadingCities = citiesStatus === "loading";
+  const isLoadingCities = fetchCitiesStatus === "loading";
   const isEmptyCities = !isLoadingCities && cities.length === 0;
-  const isErrorCities = !isLoadingCities && citiesResponse?.status === "error";
+  const isErrorCities = !isLoadingCities && fetchCitiesResponse?.status === "error";
 
-  const isLoadingWarehouses = warehousesStatus === "loading";
+  const isLoadingWarehouses = fetchWarehousesStatus === "loading";
   const isEmptyWarehouses = !isLoadingWarehouses && warehouses.length === 0;
-  const isErrorWarehouses = !isLoadingWarehouses && warehousesResponse?.status === "error";
+  const isErrorWarehouses = !isLoadingWarehouses && fetchWarehousesResponse?.status === "error";
 
-  const isCreating = orderStatus === "creating";
-  const status = orderResponse?.status;
-  const message = orderResponse?.message;
+  const isCreating = createOrderStatus === "creating";
+  const status = createOrderResponse?.status;
+  const message = createOrderResponse?.message;
 
   const cityOptions: Option<string>[] = cities.map((city: any) => ({
     label: city.description,
@@ -441,16 +441,16 @@ const CheckoutModal = () => {
   };
 
   useEffect(() => {
-    if (isSecondToLastStep && !isCreating && orderResponse) {
+    if (isSecondToLastStep && !isCreating && createOrderResponse) {
       setCurrentStep((prev) => prev + 1);
     }
-  }, [isCreating, isSecondToLastStep, orderResponse]);
+  }, [isCreating, isSecondToLastStep, createOrderResponse]);
 
   useEffect(() => {
     return () => {
-      resetOrder();
       resetCities();
       resetWarehouses();
+      resetOrderOperationState("create")
     };
   }, []);
 
