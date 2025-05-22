@@ -405,6 +405,10 @@ const translations: Translations = {
         },
       },
       labels: {
+        quantity: {
+          en: "Number of books",
+          uk: "Кількість книг",
+        },
         subtotal: {
           en: "Subtotal",
           uk: "Підсумок",
@@ -419,6 +423,12 @@ const translations: Translations = {
         },
       },
       fields: {
+        totalAmount: {
+          label: {
+            en: "Total amount",
+            uk: "Загальна сума",
+          },
+        },
         paymentMethod: {
           label: {
             en: "Payment method",
@@ -1489,11 +1499,11 @@ const translations: Translations = {
         availableQuantity: {
           required: {
             en: "Available quantity is required",
-            uk: "Доступна кількість обов'язкова",
+            uk: "Кількість обов'язкова",
           },
           invalid: {
             en: "Available quantity must be a non-negative number",
-            uk: "Доступна кількість має бути невід'ємним числом",
+            uk: "Кількість має бути невід'ємним числом",
           },
           max: {
             en: "Available quantity cannot exceed 100",
