@@ -134,7 +134,7 @@ const OrdersScreen = () => {
                     opacity: !isConnected ? 0.6 : 1,
                   },
                 ]}
-                disabled={!isConnected}
+                disabled={!isConnected || isRefreshing}
               >
                 <Typography
                   fontSize={16}

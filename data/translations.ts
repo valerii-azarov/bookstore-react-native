@@ -2116,6 +2116,59 @@ const translations: Translations = {
         }
       },  
     },
+
+    editOrder: {
+      header: {
+        title: {
+          en: "Change Status",
+          uk: "Зміна статусу",
+        },
+      },
+      fields: {
+        status: {
+          label: {
+            en: "New status",
+            uk: "Новий статус",
+          },
+          option: {
+            en: "Select new status",
+            uk: "Виберіть новий статус",
+          },
+        },
+      },
+      buttons: {
+        save: {
+          en: "Save",
+          uk: "Зберегти",
+        },
+      },
+      alerts: {
+        statusUpdate: {
+          responses: {
+            success: {
+              title: {
+                en: "Success",
+                uk: "Успішно",
+              },
+              message: {
+                en: "Status has been updated",
+                uk: "Статус оновлено",
+              },
+            },
+            error: {
+              title: {
+                en: "Error",
+                uk: "Помилка",
+              },
+              message: {
+                en: "Failed to update the status",
+                uk: "Не вдалося оновити статус",
+              },
+            },
+          },
+        },
+      },
+    },
   },
 
   tabs: {
@@ -3010,6 +3063,10 @@ const translations: Translations = {
         createdOrderNotFound: {
           en: "Order not found after creation",
           uk: "Замовлення не знайдено після створення",
+        },
+        orderNotFoundAfterUpdate: {
+          en: "Order not found after update",
+          uk: "Замовлення не знайдено після оновлення"
         },
       },
     },

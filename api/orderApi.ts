@@ -1,6 +1,6 @@
 import { doc, getDoc, updateDoc, collection, writeBatch, arrayUnion } from "@firebase/firestore";
 import { db } from "./firebase";
-import { Order, OrderCreation, OrderReceiptCreation } from "@/types";
+import { Order, OrderStatusType, OrderCreation, OrderReceiptCreation } from "@/types";
 
 export const orderApi = {
   fetchOrderById: async (orderId: string): Promise<Order | null> => {
@@ -54,4 +54,20 @@ export const orderApi = {
     return { id: createdOrderDoc.id, ...createdOrderDoc.data() } as Order;
   },
 
+  updateOrderStatus: async (orderId: string, newStatus: OrderStatusType): Promise<Order> => {
+    const orderRef = doc(db, "orders", orderId);
+    const updatedAt = new Date().toISOString();
+
+    await updateDoc(orderRef, {
+      status: newStatus,
+      updatedAt: updatedAt,
+    });
+
+    const updatedOrderDoc = await getDoc(orderRef);
+    if (!updatedOrderDoc.exists()) {
+      throw new Error("OrderError: Order not found after update (orders/order-not-found-after-update)");
+    }
+              
+    return { id: updatedOrderDoc.id, ...updatedOrderDoc.data() } as Order;
+  },
 };

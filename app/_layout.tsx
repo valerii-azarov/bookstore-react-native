@@ -149,8 +149,13 @@ const InitialLayout = () => {
       <Stack.Screen
         name="(admin)/(modals)/edit-order/[orderId]"
         options={{
-          headerShown: true,
-          title: "Edit Order",
+          headerShown: false,
+          ...(Platform.OS === "ios"
+            ? { 
+                animation: "slide_from_bottom", 
+                animationDuration: 250,
+              }
+            : {}),
         }}
       />
 

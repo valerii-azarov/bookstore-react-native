@@ -2,13 +2,13 @@ import { create } from "zustand";
 import { orderApi } from "@/api/orderApi";
 import { cartHandler } from "@/helpers/cartHandler";
 import { messageHandler } from "@/helpers/messageHandler";
-import { Order, OrderCreation, OrderReceiptCreation, OrderFormValues, StatusType, ResponseType } from "@/types";
+import { Order, OrderStatusType, OrderCreation, OrderReceiptCreation, OrderFormValues, StatusType, ResponseType } from "@/types";
 
 import { useAuthStore } from "./authStore";
 import { useCartStore } from "./cartStore";
-// import { useOrdersStore } from "./ordersUserStore";
+import { useOrdersStore } from "./ordersStore";
 
-type OrderOperation = "fetch" | "create";
+type OrderOperation = "fetch" | "create" | "updateStatus";
 
 type OrderOperationState = {
   status: StatusType;
@@ -22,6 +22,7 @@ interface OrderStore {
   setOrderById: (id: string) => void;
   loadOrderById: () => Promise<void>;
   createOrder: (formValues: OrderFormValues) => Promise<void>;
+  updateStatus: (orderId: string, status: OrderStatusType) => Promise<void>;
   setOrderOperationState: (op: OrderOperation, state: Partial<OrderOperationState>) => void;
   resetOrderOperationState: (op: OrderOperation) => void;
   resetCurrentOrder: () => void;
@@ -34,6 +35,7 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
   orderOperations: {
     fetch: { status: "idle", response: null },
     create: { status: "idle", response: null },
+    updateStatus: { status: "idle", response: null },
   },
 
   setOrderById: (id: string) => {
@@ -173,6 +175,56 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
       );
   },
 
+  updateStatus: async (orderId: string, newStatus: OrderStatusType) => {
+    if (get().currentOrder?.status === newStatus) return;
+    
+    set((state) => ({
+      orderOperations: {
+        ...state.orderOperations,
+        updateStatus: { status: "updating", response: null },
+      },
+    }));
+
+    orderApi
+      .updateOrderStatus(orderId, newStatus)
+      .then((updatedOrder) => {
+        set((state) => ({
+          currentOrder: updatedOrder,
+          orderOperations: {
+            ...state.orderOperations,
+            updateStatus: {
+              status: "idle",
+              response: { status: "success" },
+            },
+          },
+        }));
+        useOrdersStore.setState((state) => ({
+          orders: state.orders.map((order) =>
+            order.id === updatedOrder.id ? updatedOrder : order
+          ),
+        }));
+      })
+      .catch((error) =>
+        set((state) => ({
+          orderOperations: {
+            ...state.orderOperations,
+            updateStatus: {
+              status: "idle",
+              response: { 
+                status: "error", 
+                message: messageHandler.getErrorMessage(
+                  error.message, 
+                  {
+                    "orders/order-not-found-after-update": "orders.orderNotFoundAfterUpdate",
+                  }
+                ),
+              },
+            },
+          },
+        }))
+      );
+  },
+
   setOrderOperationState: (op, stateUpdate) => {
     set((state) => ({
       orderOperations: {
@@ -209,6 +261,7 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
       orderOperations: {
         fetch: { status: "idle", response: null },
         create: { status: "idle", response: null },
+        updateStatus: { status: "idle", response: null },
       },
     });
   },
