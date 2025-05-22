@@ -80,4 +80,15 @@ export const orderHandler = {
       state: state as T,
     }));
   },
+
+  getAllowedStatusesForUpdate: (currentStatus: OrderStatusType): OrderStatusType[] => {
+    const statusFlow: Record<OrderStatusType, OrderStatusType[]> = {
+      processing: ["processing", "shipped"],
+      shipped: ["shipped", "delivered"],
+      delivered: ["delivered", "received"],
+      received: [],
+    };
+    
+    return statusFlow[currentStatus] ?? ["processing"];
+  },
 };

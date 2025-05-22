@@ -2135,6 +2135,28 @@ const translations: Translations = {
             uk: "Виберіть новий статус",
           },
         },
+        trackingNumber: {
+          label: {
+            en: "Tracking Number",
+            uk: "Номер ТТН",
+          },
+          placeholder: {
+            en: "Enter tracking number",
+            uk: "Введіть номер ТТН",
+          },
+        },
+      },
+      validators: {
+        trackingNumber: {
+          required: {
+            en: "Tracking number is required",
+            uk: "Номер ТТН обов'язковий",
+          },
+          invalid: {
+            en: "Tracking Number must be 14 digits",
+            uk: "Номер ТТН має містити 14 цифр",
+          },
+        },
       },
       buttons: {
         save: {

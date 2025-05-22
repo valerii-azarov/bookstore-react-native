@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Alert, StyleSheet } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
+import { orderHandler } from "@/helpers/orderHandler";
 import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
 import { useOrderStore } from "@/stores/orderStore";
@@ -15,7 +16,7 @@ import {
   selectUpdateStatus,
   selectResetOrderOperationState,
 } from "@/selectors/orderSelectors";
-import { orderStatusKeys } from "@/constants/order";
+import { trackingNumberRegex } from "@/constants/regex";
 import { colors } from "@/constants/theme";
 import { OrderStatusType } from "@/types";
 
@@ -26,6 +27,7 @@ import BackButton from "@/components/BackButton";
 import Header from "@/components/Header";
 import Loading from "@/components/Loading";
 import Dropdown from "@/components/Dropdown";
+import Field from "@/components/Field";
 import ErrorNetwork from "@/components/ErrorNetwork";
 import ErrorWithRetry from "@/components/ErrorWithRetry";
 import Typography from "@/components/Typography";
@@ -55,18 +57,40 @@ const EditOrderModal = () => {
   const message = updateStatusResponse?.message;
 
   const [newStatus, setNewStatus] = useState<OrderStatusType>("processing");
-  
+  const [trackingNumber, setTrackingNumber] = useState<string>("");
+  const [trackingNumberError, setTrackingNumberError] = useState<string | null>(null);
+
+  const validateTrackingNumber = (value: string): string | null => {
+    if (!value) {
+      return t("modals.editOrder.validators.trackingNumber.required");
+    }
+
+    if (!trackingNumberRegex.test(value)) {
+      return t("modals.editOrder.validators.trackingNumber.invalid");
+    }
+
+    return null;
+  };
+
+  const handleTrackingNumberChange = (value: string) => {
+    setTrackingNumber(value);
+
+    const error = validateTrackingNumber(value);
+    setTrackingNumberError(error);
+  };
+
   const handleUpdate = () => {
     if (orderId && currentOrder?.status !== newStatus && isConnected) {
-      updateStatus(orderId, newStatus);
+      updateStatus(orderId, newStatus, trackingNumber);
     }
   };
 
   useEffect(() => {
     if (currentOrder?.status) {
       setNewStatus(currentOrder.status);
+      setTrackingNumber(currentOrder.trackingNumber || "");
     }
-  }, [currentOrder?.status]);
+  }, [currentOrder?.status, currentOrder?.trackingNumber]);
 
   useEffect(() => {
     if (orderId && isConnected) {
@@ -94,6 +118,12 @@ const EditOrderModal = () => {
 
     return () => resetOrderOperationState("updateStatus");
   }, [status, message, router]);
+
+  const isShipped = newStatus === "shipped";
+  const isUpdating = updateStatusStatus === "updating";
+  const isSaveDisabled = isUpdating || currentOrder?.status === newStatus || (isShipped && (!!trackingNumberError || !trackingNumber));
+
+  const allowedStatuses = orderHandler.getAllowedStatusesForUpdate(currentOrder?.status ?? "processing");
 
   return (
     <ModalWrapper>
@@ -130,27 +160,54 @@ const EditOrderModal = () => {
         {isConnected && !isLoading && !isError && currentOrder && (
           <>
             <View style={[styles.content, styles.padded]}>
-              <View style={styles.field}>
-                <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
-                  {t("modals.editOrder.fields.status.label")}
-                </Typography>
+              <View style={{ flexDirection: "column", gap: 15 }}>
+                {currentOrder?.status !== "received" && (
+                  <View style={{ minHeight: 75 }}>
+                    <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
+                      {t("modals.editOrder.fields.status.label")}
+                    </Typography>
 
-                <Dropdown
-                  options={orderStatusKeys.map((key) => ({ label: t(`common.orderStatus.${key}.title`), value: key as OrderStatusType }))}
-                  initialValue={newStatus}
-                  onChange={(value) => setNewStatus(value)}
-                  placeholder={t("modals.editOrder.fields.status.option")}
-                  shape="rounded"
-                />
-              </View>
+                    <Dropdown
+                      options={allowedStatuses.map((key) => ({ label: t(`common.orderStatus.${key}.title`), value: key as OrderStatusType }))}
+                      initialValue={newStatus}
+                      onChange={(value) => setNewStatus(value)}
+                      placeholder={t("modals.editOrder.fields.status.option")}
+                      shape="rounded"
+                    />
+                  </View>
+                )}
+
+                {["shipped", "delivered", "received"].includes(newStatus) && (
+                  <View style={{ minHeight: 75 }}>
+                    <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
+                      {t("modals.editOrder.fields.trackingNumber.label")}
+                    </Typography>
+
+                    <Field
+                      type="input" 
+                      value={trackingNumber}
+                      onChangeText={(text) => handleTrackingNumberChange(text)}
+                      placeholder={t("modals.editOrder.fields.trackingNumber.placeholder")}
+                      error={trackingNumberError}
+                      editable={
+                        newStatus === "shipped" && !currentOrder?.trackingNumber
+                      }
+                      containerStyle={{
+                        backgroundColor:
+                          isShipped && !currentOrder?.trackingNumber
+                            ? colors.white
+                            : colors.grayTint7,
+                        borderColor: trackingNumberError ? colors.redTint1 : colors.gray,
+                        borderWidth: 1,
+                      }}
+                    />
+                  </View>
+                )}
+              </View>  
             </View> 
 
             <View style={styles.buttonContainer}>
-              <Button 
-                onPress={handleUpdate}
-                loading={updateStatusStatus === "updating"} 
-                disabled={updateStatusStatus === "updating" || currentOrder?.status === newStatus}
-              >
+              <Button onPress={handleUpdate} loading={isUpdating} disabled={isSaveDisabled}>
                 <Typography fontSize={16} fontWeight="bold" color={colors.white}>
                   {t("modals.editOrder.buttons.save")}
                 </Typography>
@@ -169,10 +226,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-  },
-  field: {
-    flex: 1, 
-    minHeight: 75,
   },
   buttonContainer: {
     backgroundColor: colors.grayTint9,

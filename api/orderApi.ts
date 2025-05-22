@@ -54,14 +54,20 @@ export const orderApi = {
     return { id: createdOrderDoc.id, ...createdOrderDoc.data() } as Order;
   },
 
-  updateOrderStatus: async (orderId: string, newStatus: OrderStatusType): Promise<Order> => {
+  updateOrderStatus: async (orderId: string, newStatus: OrderStatusType, trackingNumber?: string): Promise<Order> => {
     const orderRef = doc(db, "orders", orderId);
     const updatedAt = new Date().toISOString();
 
-    await updateDoc(orderRef, {
+    const updateData: Record<string, string> = {
       status: newStatus,
-      updatedAt: updatedAt,
-    });
+      updatedAt,
+    };
+
+    if (newStatus === "shipped" && trackingNumber) {
+      updateData.trackingNumber = trackingNumber.trim();
+    }
+
+    await updateDoc(orderRef, updateData);
 
     const updatedOrderDoc = await getDoc(orderRef);
     if (!updatedOrderDoc.exists()) {

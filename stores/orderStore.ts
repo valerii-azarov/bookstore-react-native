@@ -22,7 +22,7 @@ interface OrderStore {
   setOrderById: (id: string) => void;
   loadOrderById: () => Promise<void>;
   createOrder: (formValues: OrderFormValues) => Promise<void>;
-  updateStatus: (orderId: string, status: OrderStatusType) => Promise<void>;
+  updateStatus: (orderId: string, status: OrderStatusType, trackingNumber?: string) => Promise<void>;
   setOrderOperationState: (op: OrderOperation, state: Partial<OrderOperationState>) => void;
   resetOrderOperationState: (op: OrderOperation) => void;
   resetCurrentOrder: () => void;
@@ -175,7 +175,7 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
       );
   },
 
-  updateStatus: async (orderId: string, newStatus: OrderStatusType) => {
+  updateStatus: async (orderId: string, newStatus: OrderStatusType, trackingNumber?: string) => {
     if (get().currentOrder?.status === newStatus) return;
     
     set((state) => ({
@@ -186,7 +186,7 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
     }));
 
     orderApi
-      .updateOrderStatus(orderId, newStatus)
+      .updateOrderStatus(orderId, newStatus, trackingNumber)
       .then((updatedOrder) => {
         set((state) => ({
           currentOrder: updatedOrder,

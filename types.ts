@@ -245,6 +245,7 @@ export interface Order {
   discountAmount: number;
   total: number;
   receiptId?: string;
+  trackingNumber?: string;
   createdAt: Date;
   updatedAt: Date;
 }

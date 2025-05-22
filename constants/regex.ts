@@ -8,3 +8,5 @@ export const decimalInputRegex = /[^0-9.,]/g;
 export const multipleDotRegex = /\./g;
 export const multipleCommaRegex = /,/g;
 export const extraDotAfterDecimalRegex = /(\..*)\./g;
+
+export const trackingNumberRegex = /^\d{14}$/;
