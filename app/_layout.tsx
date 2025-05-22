@@ -118,10 +118,7 @@ const InitialLayout = () => {
       />
       <Stack.Screen
         name="(admin)/order/[orderId]"
-        options={{
-          headerShown: true,
-          title: "Order Details",
-        }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="(admin)/(modals)/create-book"
