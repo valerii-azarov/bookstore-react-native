@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { QueryDocumentSnapshot, DocumentData } from "@firebase/firestore";
 import { orderHistoryApi } from "@/api/orderHistoryApi";
 import { orderHandler } from "@/helpers/orderHandler";
-import { USER_ORDER_HISTORY_PAGE_SIZE } from "@/constants/settings";
+import { DEFAULT_ORDERS_LIMIT } from "@/constants/settings";
 import { OrderHistoryByDate, StatusType, ResponseType } from "@/types";
 
 import { useAuthStore } from "./authStore";
@@ -46,13 +46,13 @@ export const useOrderHistoryStore = create<OrderHistoryStore>((set, get) => ({
       .fetchOrderHistory(
         userId,
         reset ? null : get().orderHistoryLastDoc,
-        USER_ORDER_HISTORY_PAGE_SIZE
+        DEFAULT_ORDERS_LIMIT
       )
       .then(({ orders: newOrders, lastDoc: newLastDoc }) => 
         set((state) => ({
           orderHistory: orderHandler.groupOrdersByDate(reset ? [] : state.orderHistory, newOrders),
           orderHistoryLastDoc: newLastDoc,
-          orderHistoryHasMore: newOrders.length === USER_ORDER_HISTORY_PAGE_SIZE,
+          orderHistoryHasMore: newOrders.length === DEFAULT_ORDERS_LIMIT,
           orderHistoryResponse: { status: "success" },
           orderHistoryStatus: "idle",
         }))

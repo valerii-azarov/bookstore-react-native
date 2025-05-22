@@ -510,7 +510,26 @@ const translations: Translations = {
       },
     },
 
-    // orders: { },
+    orders: { 
+      header: {
+        title: {
+          en: "Orders",
+          uk: "Замовлення",
+        },
+      },
+      messages: {
+        empty: {
+          title: {
+            en: "No orders available",
+            uk: "Немає замовлень",
+          },
+          subtitle: {
+            en: "No orders available yet, or they might show up later",
+            uk: "Поки що замовлень немає, або вони з’являться пізніше",
+          },
+        },
+      },
+    },
 
     menu: {
       header: {
@@ -2167,6 +2186,29 @@ const translations: Translations = {
         favorite: {
           en: "Favorite",
           uk: "Обране",
+        },
+      },
+    },
+
+    orderItem: {
+      labels: {
+        quantity: {
+          en: "Number of books",
+          uk: "Кількість книг",
+        },
+        cost: {
+          en: "Cost",
+          uk: "Вартість",
+        },
+        date: {
+          en: "Creation date",
+          uk: "Дата створення",
+        },
+      },
+      actions: {
+        edit: {
+          en: "Edit",
+          uk: "Змінити",
         },
       },
     },

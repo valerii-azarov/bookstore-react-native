@@ -1,24 +1,11 @@
-import { doc, getDoc, getDocs, updateDoc, collection, writeBatch, arrayUnion, query, where, limit, startAfter, QueryDocumentSnapshot, DocumentData } from "@firebase/firestore";
+import { doc, getDoc, updateDoc, collection, writeBatch, arrayUnion } from "@firebase/firestore";
 import { db } from "./firebase";
-import { Order, OrderStatusType, OrdersResponse, OrderCreation, OrderReceiptCreation } from "@/types";
+import { Order, OrderCreation, OrderReceiptCreation } from "@/types";
 
 export const orderApi = {
   fetchOrderById: async (orderId: string): Promise<Order | null> => {
     const orderDoc = await getDoc(doc(db, "orders", orderId));   
     return orderDoc.exists() ? ({ id: orderDoc.id, ...orderDoc.data() } as Order) : null;
-  },
-
-  fetchOrdersByStatuses: async (statuses: OrderStatusType[], lastDoc?: QueryDocumentSnapshot<DocumentData> | null, pageSize: number = 5): Promise<OrdersResponse> => {
-    if (!statuses.length) return { orders: [], lastDoc: null };
-
-    const snapshot = await getDocs(
-      query(collection(db, "orders"), where("status", "in", statuses), limit(pageSize), ...(lastDoc ? [startAfter(lastDoc)] : []))
-    );
-
-    return {
-      orders: snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order)),
-      lastDoc: snapshot.docs[snapshot.docs.length - 1] || null,
-    };
   },
 
   createOrder: async (userId: string, orderData: OrderCreation, receiptData: OrderReceiptCreation): Promise<Order> => {

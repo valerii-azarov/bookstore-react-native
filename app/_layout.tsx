@@ -117,7 +117,7 @@ const InitialLayout = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="(admin)/order/[id]"
+        name="(admin)/order/[orderId]"
         options={{
           headerShown: true,
           title: "Order Details",
@@ -147,10 +147,10 @@ const InitialLayout = () => {
         }}
       />
       <Stack.Screen
-        name="(admin)/(modals)/edit-order"
+        name="(admin)/(modals)/edit-order/[orderId]"
         options={{
-          headerShown: false,
-          presentation: "modal",
+          headerShown: true,
+          title: "Edit Order",
         }}
       />
 
