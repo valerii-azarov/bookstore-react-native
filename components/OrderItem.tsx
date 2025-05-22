@@ -198,7 +198,7 @@ const OrderItem = forwardRef<SwipeableRef, OrderItemProps>(
               </Typography> 
               
               <Typography fontSize={14} fontWeight="bold" color={colors.black}>
-                {item.books.length}
+                {item.books.reduce((sum, book) => sum + (book.quantity || 0), 0)}
               </Typography>
             </View>
 

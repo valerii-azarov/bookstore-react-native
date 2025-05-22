@@ -1,4 +1,4 @@
-import { getDocs, collection, query, where, limit, startAfter, QueryDocumentSnapshot, DocumentData } from "@firebase/firestore";
+import { getDocs, collection, query, where, orderBy, limit, startAfter, QueryDocumentSnapshot, DocumentData } from "@firebase/firestore";
 import { db } from "./firebase";
 import { Order, OrderStatusType, OrdersResponse } from "@/types";
 
@@ -7,7 +7,7 @@ export const ordersApi = {
     if (!statuses.length) return { orders: [], lastDoc: null };
 
     const snapshot = await getDocs(
-      query(collection(db, "orders"), where("status", "in", statuses), limit(pageSize), ...(lastDoc ? [startAfter(lastDoc)] : []))
+      query(collection(db, "orders"), where("status", "in", statuses), orderBy("createdAt", "desc"), limit(pageSize), ...(lastDoc ? [startAfter(lastDoc)] : []))
     );
 
     return {
