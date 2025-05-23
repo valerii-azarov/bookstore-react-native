@@ -63,9 +63,7 @@ const Input = forwardRef<TextInput, InputProps>(
     const adjustedHeight = inputSize[inputHeight];
 
     useEffect(() => {
-      if (value) {
-        setInputValue(value);
-      }
+      setInputValue(value ?? "");
     }, [value]);
     
     return (
