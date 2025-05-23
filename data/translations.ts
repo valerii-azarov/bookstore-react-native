@@ -1652,6 +1652,208 @@ const translations: Translations = {
           },
         },
       },
+      validators: {
+        title: {
+          required: {
+            en: "New title is required",
+            uk: "Нова назва обов’язкова",
+          },
+          minLength: {
+            en: "New title must be at least 2 characters",
+            uk: "Нова назва має бути не менше 2 символів",
+          },
+        },
+        authors: {
+          required: {
+            en: "At least one author is required",
+            uk: "Потрібен хоча б один автор",
+          },
+          invalid: {
+            en: "Each author name must be at least 2 characters",
+            uk: "Кожне ім'я автора має бути не менше 2 символів",
+          },
+          maxCount: {
+            en: "Maximum 5 authors allowed",
+            uk: "Дозволено максимум 5 авторів",
+          },
+        },
+        description: {
+          required: {
+            en: "New description is required",
+            uk: "Новий опис обов’язковий",
+          },
+          minLength: {
+            en: "New description must be at least 500 characters",
+            uk: "Новий опис має бути не менше 500 символів",
+          },
+        },
+        genres: {
+          required: {
+            en: "At least one genre is required",
+            uk: "Потрібен хоча б один жанр",
+          },
+          maxCount: {
+            en: "Maximum 5 genres allowed",
+            uk: "Дозволено максимум 5 жанрів",
+          },
+        },
+        language: {
+          required: {
+            en: "New language is required",
+            uk: "Нова мова обов’язкова",
+          },
+        },
+        publisher: {
+          required: {
+            en: "New publisher is required",
+            uk: "Новий видавець обов’язковий",
+          },
+          minLength: {
+            en: "New publisher must be at least 2 characters",
+            uk: "Новий видавець має бути не менше 2 символів",
+          },
+        },
+        publicationYear: {
+          required: {
+            en: "New publication year is required",
+            uk: "Новий рік видання обов’язковий",
+          },
+          invalid: {
+            en: "New publication year must be between 1800 and the current year",
+            uk: "Новий рік видання має бути між 1800 і поточним роком",
+          },
+        },
+        isbn: {
+          required: {
+            en: "New ISBN is required",
+            uk: "Новий ISBN обов’язковий",
+          },
+          invalid: {
+            en: "New ISBN must be 10 or 13 digits",
+            uk: "Новий ISBN має містити 10 або 13 цифр",
+          },
+        },
+        pageCount: {
+          required: {
+            en: "New page count must be greater than 0",
+            uk: "Нова кількість сторінок має бути більшою за 0",
+          },
+          max: {
+            en: "New page count cannot exceed 10.000",
+            uk: "Нова кількість сторінок не може перевищувати 10.000",
+          },
+        },
+        coverType: {
+          required: {
+            en: "New cover type is required",
+            uk: "Новий тип обкладинки обов’язковий",
+          },
+        },
+        bookType: {
+          required: {
+            en: "New book type is required",
+            uk: "Новий тип книги обов’язковий",
+          },
+        },
+        paperType: {
+          required: {
+            en: "New paper type is required",
+            uk: "Новий тип паперу обов’язковий",
+          },
+        },
+        size: {
+          required: {
+            en: "New size is required",
+            uk: "Новий розмір обов’язковий",
+          },
+          minLength: {
+            en: "New size must be at least 2 characters",
+            uk: "Новий розмір має бути не менше 2 символів",
+          },
+        },
+        weight: {
+          required: {
+            en: "New weight must be greater than 0",
+            uk: "Нова вага має бути більшою за 0",
+          },
+          max: {
+            en: "New weight cannot exceed 10.000 grams",
+            uk: "Нова вага не може перевищувати 10.000 грамів",
+          },
+        },
+        illustrations: {
+          required: {
+            en: "New illustrations status is required",
+            uk: "Новий статус ілюстрацій обов’язковий",
+          },
+        },
+        availableQuantity: {
+          required: {
+            en: "New available quantity is required",
+            uk: "Нова кількість обов’язкова",
+          },
+          invalid: {
+            en: "New available quantity must be a non-negative number",
+            uk: "Нова кількість має бути невід’ємним числом",
+          },
+          max: {
+            en: "New available quantity cannot exceed 100",
+            uk: "Нова кількість не може перевищувати 100",
+          },
+        },
+        sku: {
+          required: {
+            en: "New article is required",
+            uk: "Новий артикул обов’язковий",
+          },
+          minLength: {
+            en: "New article must be at least 2 characters",
+            uk: "Новий артикул має бути не менше 2 символів",
+          },
+        },
+        images: {
+          coverImage: {
+            required: {
+              en: "New cover image is required",
+              uk: "Нова обкладинка обов’язкова",
+            },
+          },
+          additionalImages: {
+            maxCount: {
+              en: "New maximum 5 additional images allowed",
+              uk: "Дозволено максимум 5 нових додаткових зображень",
+            },
+          },
+        },
+        rates: {
+          originalPrice: {
+            required: {
+              en: "New original price must be greater than 0",
+              uk: "Нова початкова ціна має бути більшою за 0",
+            },
+            max: {
+              en: "New original price cannot exceed 10.000",
+              uk: "Нова початкова ціна не може перевищувати 10.000",
+            },
+          },
+          discount: {
+            invalid: {
+              en: "New discount must be between 0 and 100",
+              uk: "Нові відсотки мають бути від 0 до 100",
+            },
+          },
+          price: {
+            invalid: {
+              en: "New price must be a non-negative number",
+              uk: "Нова ціна має бути невід’ємним числом",
+            },
+            max: {
+              en: "New price cannot exceed 10.000",
+              uk: "Нова ціна не може перевищувати 10.000",
+            },
+          },
+        },
+      },
       buttons: {
         save: {
           en: "Save",
@@ -1984,6 +2186,48 @@ const translations: Translations = {
           },
         },
       },
+      validators: {
+        firstName: {
+          required: {
+            en: "First name is required",
+            uk: "Ім'я обов’язкове",
+          },
+          minLength: {
+            en: "First name must be at least 2 characters",
+            uk: "Ім'я має бути не менше 2 символів",
+          },
+        },
+        lastName: {
+          required: {
+            en: "Last name is required",
+            uk: "Прізвище обов’язкове",
+          },
+          minLength: {
+            en: "Last name must be at least 2 characters",
+            uk: "Прізвище має бути не менше 2 символів",
+          },
+        },
+        middleName: {
+          required: {
+            en: "Middle name is required",
+            uk: "По батькові обов’язкове",
+          },
+          minLength: {
+            en: "Middle name must be at least 2 characters",
+            uk: "По батькові має бути не менше 2 символів",
+          },
+        },
+        phoneNumber: {
+          required: {
+            en: "Phone number is required",
+            uk: "Номер телефону обов’язковий"
+          },
+          invalid: {
+            en: "Phone number must be in format +380XXXXXXXXX",
+            uk: "Номер телефону має бути у форматі +380XXXXXXXXX"
+          }
+        }
+      },
       buttons: {
         back: {
           en: "Back",
@@ -2062,6 +2306,28 @@ const translations: Translations = {
           placeholder: {
             en: "Enter your last name",
             uk: "Введіть нове прізвище",
+          },
+        },
+      },
+      validators: {
+        firstName: {
+          required: {
+            en: "New first name is required",
+            uk: "Нове ім'я обов'язково",
+          },
+          minLength: {
+            en: "New first name must be at least 2 characters",
+            uk: "Нове ім'я має бути не менше 2 символів",
+          },
+        },
+        lastName: {
+          required: {
+            en: "New last name is required",
+            uk: "Нове прізвище обов'язково",
+          },
+          minLength: {
+            en: "New last name must be at least 2 characters",
+            uk: "Нове прізвище має бути не менше 2 символів",
           },
         },
       },

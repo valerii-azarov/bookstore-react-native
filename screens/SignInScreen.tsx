@@ -38,13 +38,8 @@ const SignInScreen = () => {
 
   const passwordInputRef = useRef<TextInput>(null);
 
-  const [form, setForm] = useState<SignInFormValues>(initialValues);
-  const [errors, setErrors] = useState<{
-    [K in SignInField]: string | null;
-  }>({
-    email: null,
-    password: null,
-  });
+  const [formValues, setFormValues] = useState<SignInFormValues>(initialValues);
+  const [errors, setErrors] = useState<Partial<Record<keyof SignInFormValues, string | null>>>({});
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
   const isAuthenticating = loginStatus === "authenticating";
@@ -67,13 +62,13 @@ const SignInScreen = () => {
 
   const validateForm = () => {
     return (
-      Object.values(form).some((value) => !value) ||
+      Object.values(formValues).some((value) => !value) ||
       Object.values(errors).some((error) => !!error)
     );
   };
 
-  const handleInputChange = (field: SignInField, value: string) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
+  const handleInputChange = <K extends keyof SignInFormValues>(field: K, value: SignInFormValues[K]) => {
+    setFormValues((prev) => ({ ...prev, [field]: value }));
     setErrors((prevErrors) => ({
       ...prevErrors,
       [field]: validateField(field, value),
@@ -83,7 +78,7 @@ const SignInScreen = () => {
   const handleLogin = async () => {
     if (!isConnected || isAuthenticating || validateForm()) return;
 
-    await login(form.email, form.password);
+    await login(formValues);
   };
 
   useEffect(() => {
@@ -136,7 +131,7 @@ const SignInScreen = () => {
               </Typography>
 
               <Input
-                value={form.email}
+                value={formValues.email}
                 onChangeText={(value) => handleInputChange("email", value)}
                 placeholder={t("screens.signIn.fields.email.placeholder")}
                 iconLeft={
@@ -174,7 +169,7 @@ const SignInScreen = () => {
 
               <Input
                 ref={passwordInputRef}
-                value={form.password}
+                value={formValues.password}
                 onChangeText={(value) => handleInputChange("password", value)}
                 placeholder={t("screens.signIn.fields.password.placeholder")}
                 iconLeft={

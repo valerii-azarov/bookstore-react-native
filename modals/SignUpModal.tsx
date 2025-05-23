@@ -64,15 +64,7 @@ const SignUpModal = () => {
   const confirmPasswordInputRef = useRef<TextInput>(null);
 
   const [formValues, setFormValues] = useState<SignUpFormValues>(initialValues);
-  const [errors, setErrors] = useState<{
-    [K in SignUpField]: string | null;
-  }>({
-    firstName: null,
-    lastName: null,
-    email: null,
-    password: null,
-    confirmPassword: null,
-  });
+  const [errors, setErrors] = useState<Partial<Record<keyof SignUpFormValues, string | null>>>({});
   const [visibility, setVisibility] = useState<PasswordVisibility>({
     password: false,
     confirmPassword: false,
@@ -110,7 +102,7 @@ const SignUpModal = () => {
     return null;
   };
 
-  const handleInputChange = (field: SignUpField, value: string) => {
+  const handleInputChange = <K extends keyof SignUpFormValues>(field: K, value: SignUpFormValues[K]) => {
     setFormValues((prev) => ({ ...prev, [field]: value }));
     setErrors((prevErrors) => ({
       ...prevErrors,

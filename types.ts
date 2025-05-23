@@ -101,6 +101,7 @@ export interface SignUpCreation extends Omit<AuthFields, "confirmPassword"> {}
 export type SignInField = keyof Omit<AuthFields, "firstName" | "lastName" | "confirmPassword">;
 
 export interface SignInFormValues extends Pick<AuthFields, "email" | "password"> {}
+export interface SignInCredentials extends SignInFormValues {}
 
 export interface PasswordVisibility {
   password: boolean;

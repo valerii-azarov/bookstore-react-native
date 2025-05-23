@@ -10,6 +10,7 @@ import {
   Role,
   SignUpCreation,
   SignUpFormValues,
+  SignInCredentials,
   AuthStatusType,
   ResponseType,
 } from "@/types";
@@ -31,7 +32,7 @@ interface AuthStore {
   authOperations: Record<AuthOperation, OperationState>;
   unsubscribeAuth?: Unsubscribe;
   initializeAuth: () => void;
-  login: (email: string, password: string) => Promise<void>;
+  login: (formValues: SignInCredentials) => Promise<void>;
   logout: () => Promise<void>;
   register: (formValues: SignUpFormValues) => Promise<void>;
   setUser: (user: BaseUser | null) => void;
@@ -147,7 +148,7 @@ export const useAuthStore = create<AuthStore>()(
           set({ unsubscribeAuth: unsubscribe, authListenerActive: true });
         },
 
-        login: async (email: string, password: string) => {
+        login: async (formValues: SignInCredentials) => {
           set((state) => ({
             authOperations: {
               ...state.authOperations,
@@ -156,7 +157,7 @@ export const useAuthStore = create<AuthStore>()(
           }));
 
           await authApi
-            .signIn(email, password)
+            .signIn(formValues)
             .then((userData) => {
               set((state) => ({
                 user: userData,

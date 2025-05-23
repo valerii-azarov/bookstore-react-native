@@ -1,11 +1,11 @@
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { doc, setDoc, getDoc } from "@firebase/firestore";
 import { db, auth } from "./firebase";
-import { BaseUser, SignUpCreation } from "@/types";
+import { BaseUser, SignUpCreation, SignInCredentials } from "@/types";
 
 export const authApi = {
-  signIn: async (email: string, password: string): Promise<BaseUser> => {
-    const response = await signInWithEmailAndPassword(auth, email, password);
+  signIn: async (formData: SignInCredentials): Promise<BaseUser> => {
+    const response = await signInWithEmailAndPassword(auth, formData.email, formData.password);
   
     const userDoc = await getDoc(doc(db, "users", response.user.uid));
     if (!userDoc.exists()) {

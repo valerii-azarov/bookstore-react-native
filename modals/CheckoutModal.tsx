@@ -19,6 +19,7 @@ import {
   selectResetCities,
   selectResetWarehouses,
 } from "@/selectors/novaPostSelectors";
+import { phoneRegex } from "@/constants/regex";
 import { 
   selectCreateOrderStatus,
   selectCreateOrderResponse,
@@ -32,9 +33,9 @@ import ModalWrapper from "@/components/ModalWrapper";
 import KeyboardWrapper from "@/components/KeyboardWrapper";
 import BackButton from "@/components/BackButton";
 import Header from "@/components/Header";
-import Input from "@/components/Input";
 import Checkbox from "@/components/Checkbox";
 import FormStepper from "@/components/FormStepper";
+import Field from "@/components/Field";
 import SearchDropdown from "@/components/SearchDropdown";
 import Typography from "@/components/Typography";
 
@@ -98,11 +99,36 @@ const CheckoutModal = () => {
   }));
   
   const [formValues, setFormValues] = useState<OrderFormValues>(initialValues);
+  const [errors, setErrors] = useState<Partial<Record<keyof OrderFormValues, string | null>>>({});
   const [direction, setDirection] = useState<DirectionType>("forward");
   const [currentStep, setCurrentStep] = useState<number>(0);
 
   const [selectedCity, setSelectedCity] = useState<Option<string> | null>(null);
   const [selectedWarehouse, setSelectedWarehouse] = useState<Option<string> | null>(null);
+
+  const validateField = (field: keyof OrderFormValues, value: any): string | null => {
+    if (!value || value.trim() === "") {
+      return t(`modals.checkout.validators.${field}.required`);
+    }
+  
+    if (field !== "phoneNumber" && value.trim().length < 2) {
+      return t(`modals.checkout.validators.${field}.minLength`);
+    }
+
+    if (field === "phoneNumber" && typeof value === "string" && !phoneRegex.test(value)) {
+      return t(`modals.checkout.validators.${field}.invalid`);
+    }
+  
+    return null;
+  };
+      
+  const handleInputChange = <K extends keyof OrderFormValues>(field: K, value: OrderFormValues[K]) => {
+    setFormValues((prev) => ({ ...prev, [field]: value }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [field]: validateField(field, value),
+    }));
+  };
 
   const handleCitySearch = (text: string) => {
     text.trim() ? searchCities(text) : resetCities();
@@ -203,10 +229,12 @@ const CheckoutModal = () => {
               {t("modals.checkout.steps.step2.fields.lastName.label")}
             </Typography>
       
-            <Input
+            <Field
+              type="input"
               value={formValues.lastName}
-              onChangeText={(text) => setFormValues((prev) => ({ ...prev, lastName: text }))}
+              onChangeText={(value) => handleInputChange("lastName", value)}
               placeholder={t("modals.checkout.steps.step2.fields.lastName.placeholder")}
+              error={errors.lastName}
               keyboardType="default"
             />
           </View>
@@ -216,10 +244,12 @@ const CheckoutModal = () => {
               {t("modals.checkout.steps.step2.fields.firstName.label")}
             </Typography>
       
-            <Input 
+            <Field 
+              type="input"
               value={formValues.firstName}
-              onChangeText={(text) => setFormValues((prev) => ({ ...prev, firstName: text }))}
+              onChangeText={(value) => handleInputChange("firstName", value)}
               placeholder={t("modals.checkout.steps.step2.fields.firstName.placeholder")}
+              error={errors.firstName}
               keyboardType="default"
             />
           </View>  
@@ -229,10 +259,12 @@ const CheckoutModal = () => {
               {t("modals.checkout.steps.step2.fields.middleName.label")}
             </Typography>
       
-            <Input 
+            <Field 
+              type="input"
               value={formValues.middleName}
-              onChangeText={(text) => setFormValues((prev) => ({ ...prev, middleName: text }))}
+              onChangeText={(value) => handleInputChange("middleName", value)}
               placeholder={t("modals.checkout.steps.step2.fields.middleName.placeholder")}
+              error={errors.middleName}
               keyboardType="default"
             />
           </View>
@@ -242,16 +274,25 @@ const CheckoutModal = () => {
               {t("modals.checkout.steps.step2.fields.phoneNumber.label")}
             </Typography>
       
-            <Input 
+            <Field 
+              type="input"
               value={formValues.phoneNumber}
-              onChangeText={(text) => setFormValues((prev) => ({ ...prev, phoneNumber: text }))}
+              onChangeText={(value) => handleInputChange("phoneNumber", value)}
               placeholder="+380XXXXXXXXX"
+              error={errors.phoneNumber}
               keyboardType="phone-pad"
             />
           </View>
         </View>
-      ),      
-      validate: (form: OrderFormValues) => !!form.lastName && !!form.firstName && !!form.phoneNumber,
+      ),
+      validate: (form: OrderFormValues) => {
+        const errors = {
+          lastName: validateField("lastName", form.lastName),
+          firstName: validateField("firstName", form.firstName),
+          phoneNumber: validateField("phoneNumber", form.phoneNumber),
+        };
+        return !errors.lastName && !errors.firstName && !errors.phoneNumber;
+      },
       scrollEnabled: true,
     },
     {
