@@ -342,8 +342,9 @@ export interface TimelineStep<T> extends TimelineType {
   state: T;
 }
 
-export interface TabType {
+export type TabType = {
   name: string;
   label: string;
-  icon: React.ReactElement;
-}
+  iconSet: keyof typeof IconSets;
+  iconName: string;
+};

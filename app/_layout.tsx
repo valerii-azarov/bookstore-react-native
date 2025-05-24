@@ -302,7 +302,7 @@ const RootLayout = () => {
         <NetworkProvider>
           <TranslateProvider>
             <InitialLayout />
-            <StatusBar style={Platform.OS === "ios" ? "dark" : "light"} />
+            <StatusBar style="dark" />
           </TranslateProvider>
         </NetworkProvider>
       </SafeAreaProvider>

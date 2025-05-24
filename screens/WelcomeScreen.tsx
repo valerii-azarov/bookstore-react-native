@@ -67,6 +67,7 @@ const WelcomeScreen = () => {
       containerStyle={{ backgroundColor: colors.white }}
       hideStatusBarBackground
       hideStatusBarBorder
+      enableFooter
     >
       <View style={styles.langContainer}>
         <TouchableOpacity 
@@ -178,7 +179,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   footer: {
-    paddingBottom: Platform.OS === "ios" ? 45 : 25,
     flexDirection: "column",
     alignItems: "center",
   },

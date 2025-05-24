@@ -14,6 +14,8 @@ type ScreenWrapperProps = {
   statusBarBackgroundColor?: string;
   hideStatusBarBackground?: boolean;
   hideStatusBarBorder?: boolean;
+  enableFooter?: boolean;
+  footerStyle?: StyleProp<ViewStyle>;
 };
 
 const ScreenWrapper = ({
@@ -22,6 +24,8 @@ const ScreenWrapper = ({
   statusBarBackgroundColor = colors.white,
   hideStatusBarBackground = false,
   hideStatusBarBorder = false,
+  enableFooter = false,
+  footerStyle,
 }: ScreenWrapperProps) => {
   const insets = useSafeAreaInsets();
 
@@ -48,6 +52,17 @@ const ScreenWrapper = ({
       <View style={styles.content}>
         {children}
       </View>
+
+      {enableFooter && (
+        <View 
+          style={[
+            {
+              paddingBottom: insets.bottom,
+            },
+            footerStyle
+          ]}
+        />
+      )}  
     </View>
   );
 };

@@ -1,5 +1,4 @@
 import { Tabs } from "expo-router";
-import { Ionicons as Icon } from "@expo/vector-icons";
 import { useTranslation } from "@/contexts/translateContext";
 import { TabType } from "@/types";
 
@@ -12,17 +11,20 @@ const AdminTabsLayout = () => {
     {
       name: "books",
       label: t("tabs.books"),
-      icon: <Icon name="book-outline" />,
+      iconSet: "Ionicons",
+      iconName: "book-outline",
     },
     {
       name: "orders",
       label: t("tabs.orders"),
-      icon: <Icon name="folder-outline" />,
+      iconSet: "Ionicons",
+      iconName: "folder-outline",
     },
     {
       name: "menu",
       label: t("tabs.menu"),
-      icon: <Icon name="menu-outline" />,
+      iconSet: "Ionicons",
+      iconName: "menu-outline",
     },
   ];
 

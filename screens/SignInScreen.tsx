@@ -100,6 +100,7 @@ const SignInScreen = () => {
     <ScreenWrapper 
       hideStatusBarBackground
       hideStatusBarBorder
+      enableFooter
     >
       <KeyboardWrapper>
         <View style={[styles.content, styles.padded]}>

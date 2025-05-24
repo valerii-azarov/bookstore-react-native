@@ -1,5 +1,4 @@
 import { Tabs } from "expo-router";
-import { Ionicons as Icon } from "@expo/vector-icons";
 import { useTranslation } from "@/contexts/translateContext";
 import { TabType } from "@/types";
 
@@ -12,22 +11,26 @@ const UserTabsLayout = () => {
     {
       name: "books",
       label: t("tabs.books"),
-      icon: <Icon name="book-outline" />,
+      iconSet: "Ionicons",
+      iconName: "book-outline",
     },
     {
       name: "search",
       label: t("tabs.search"),
-      icon: <Icon name="search-outline" />,
+      iconSet: "Ionicons",
+      iconName: "search-outline",
     },
     {
       name: "order-history",
       label: t("tabs.orderHistory"),
-      icon: <Icon name="bag-outline" />,
+      iconSet: "Ionicons",
+      iconName: "bag-outline",
     },
     {
       name: "menu",
       label: t("tabs.menu"),
-      icon: <Icon name="menu-outline" />,
+      iconSet: "Ionicons",
+      iconName: "menu-outline",
     },
   ];
 
