@@ -1,7 +1,7 @@
-import { useEffect, useCallback } from "react";
+import React, { useEffect } from "react";
 import { format, differenceInCalendarDays } from "date-fns";
 import { enUS, uk } from "date-fns/locale";
-import { View, FlatList, StyleSheet } from "react-native";
+import { View, FlatList } from "react-native";
 import { useRouter } from "expo-router";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { orderHandler } from "@/helpers/orderHandler";
@@ -39,20 +39,20 @@ const OrderHistoryScreen = () => {
   const isConnected = useIsConnected();
   
   const orderHistory = useOrderHistoryStore(selectOrderHistory);
-  const orderHistoryStatus = useOrderHistoryStore(selectOrderHistoryStatus);
-  const orderHistoryResponse = useOrderHistoryStore(selectOrderHistoryResponse);
-  const orderHistoryHasMore = useOrderHistoryStore(selectOrderHistoryHasMore);
+  const status = useOrderHistoryStore(selectOrderHistoryStatus);
+  const response = useOrderHistoryStore(selectOrderHistoryResponse);
+  const hasMore = useOrderHistoryStore(selectOrderHistoryHasMore);
   
-  const loadOrderHistory = useOrderHistoryStore(selectLoadOrderHistory);
-  const loadMoreOrderHistory = useOrderHistoryStore(selectLoadMoreOrderHistory);
-  const refreshOrderHistory = useOrderHistoryStore(selectRefreshOrderHistory);
-  const resetOrderHistory = useOrderHistoryStore(selectResetOrderHistory);
+  const fetchData = useOrderHistoryStore(selectLoadOrderHistory);
+  const loadMore = useOrderHistoryStore(selectLoadMoreOrderHistory);
+  const refresh = useOrderHistoryStore(selectRefreshOrderHistory);
+  const reset = useOrderHistoryStore(selectResetOrderHistory);
 
-  const isLoading = orderHistoryStatus === "loading";
-  const isFetching = orderHistoryStatus === "fetching";
-  const isRefreshing = orderHistoryStatus === "refreshing";
+  const isLoading = status === "loading";
+  const isFetching = status === "fetching";
+  const isRefreshing = status === "refreshing";
   const isEmpty = !isLoading && orderHistory.length === 0;
-  const isError = orderHistoryResponse?.status === "error";
+  const isError = response?.status === "error";
 
   const transformToDateString = (date: string) => {
     const diffDays = differenceInCalendarDays(new Date(), new Date(date));
@@ -63,78 +63,32 @@ const OrderHistoryScreen = () => {
     });
   };
 
-  const renderItem = useCallback(({ item, index }: { item: OrderHistoryByDate; index: number }) => {
-    if (isLoading || !item) {
-      return <SkeletonOrderHistoryList />;
-    }
-  
-    return (
-      <Animated.View
-        entering={FadeInDown.delay(index * 100)}  
-        style={{
-          marginBottom: index === orderHistory.length - 1 ? 0 : 15
-        }}
-      >
-        <Typography fontSize={16} fontWeight="bold" style={{ marginBottom: 5 }}>
-          {transformToDateString(item.date)}
-        </Typography>
-  
-        <View style={styles.historyList}>
-          {item.orders.map((order, i) => (
-            <Animated.View
-              key={order.id}
-              entering={FadeInDown.delay(index * 100 + i * 75)}
-            >
-              <OrderHistoryItem
-                item={order}
-                onViewDetails={() =>
-                  router.push({
-                    pathname: "/order/[orderId]",
-                    params: { orderId: order.id },
-                  })
-                }
-                statusLabel={
-                  orderHandler.getOrderStatusStyle(order.status, t).label
-                }
-                statusBackgroundColor={
-                  orderHandler.getOrderStatusStyle(order.status, t).backgroundColor
-                }
-              />
-            </Animated.View>
-          ))}
-        </View>
-      </Animated.View>
-    );
-  }, [isLoading, orderHistory.length]);
-  
-  const renderFooter = useCallback(() => {
-    if (isFetching && !isLoading) {
-      return <ListLoader />;
-    }
-    return null;
-  }, [isFetching, isLoading]);
-
   useEffect(() => {
     if (isConnected) {
-      loadOrderHistory(true);
+      fetchData(true);
     }
-    return () => resetOrderHistory();
-  }, [isConnected]);  
+
+    return () => reset();
+  }, [isConnected]);
+
+  const sectionDelayStep = 150;
+  const itemDelayStep = 75;
 
   return (
     <ScreenWrapper hideStatusBarBorder>
       <Header
         title={t("screens.orderHistory.header.title")}
         titleSize={18}
-        style={[
-          styles.header, 
-          { 
-            minHeight: 40,
-          }
-        ]}
+        style={{ 
+          minHeight: 40,
+          backgroundColor: colors.white,
+          borderBottomColor: colors.grayTint7,
+          borderBottomWidth: 1,
+          paddingHorizontal: 15,
+        }}
       />
       
-      <View style={styles.content}>
+      <View style={{ flex: 1 }}>
         {!isConnected && (
           <ErrorNetwork 
             message={t("common.messages.errorNetwork.title")}
@@ -147,7 +101,7 @@ const OrderHistoryScreen = () => {
             message={t("common.messages.errorWithRetry.title")}
             subMessage={t("common.messages.errorWithRetry.subtitle")}
             buttonText={t("common.buttons.errorWithRetry")}
-            onRetry={() => loadOrderHistory(true)}
+            onRetry={() => fetchData(true)}
           />
         )}
 
@@ -161,7 +115,52 @@ const OrderHistoryScreen = () => {
         {isConnected && !isEmpty && !isError && (
           <FlatList
             data={isLoading ? Array(1) : orderHistory}
-            renderItem={renderItem}
+            renderItem={({ item, index }: { item: OrderHistoryByDate; index: number }) => {
+              if (isLoading || !item) {
+                return <SkeletonOrderHistoryList />;
+              }
+              
+              const sectionDelay = index * (sectionDelayStep + item.orders.length * itemDelayStep);
+
+              return (
+                <Animated.View
+                  key={`section-${item.date}`}
+                  entering={FadeInDown.delay(sectionDelay)}
+                  style={{
+                    marginBottom: index === orderHistory.length - 1 ? 0 : 15
+                  }}
+                >
+                  <Typography fontSize={16} fontWeight="bold" style={{ marginBottom: 5 }}>
+                    {transformToDateString(item.date)}
+                  </Typography>
+
+                  <View style={{ flexDirection: "column", gap: 10 }}>
+                    {item.orders.map((order, i) => (
+                      <Animated.View
+                        key={`order-${order.id}`}
+                        entering={FadeInDown.delay(sectionDelay + i * itemDelayStep)}
+                      >
+                        <OrderHistoryItem
+                          item={order}
+                          onViewDetails={() =>
+                            router.push({
+                              pathname: "/order/[orderId]",
+                              params: { orderId: order.id },
+                            })
+                          }
+                          statusLabel={
+                            orderHandler.getOrderStatusStyle(order.status, t).label
+                          }
+                          statusBackgroundColor={
+                            orderHandler.getOrderStatusStyle(order.status, t).backgroundColor
+                          }
+                        />
+                      </Animated.View>
+                    ))}
+                  </View>
+                </Animated.View>
+              );
+            }}
             keyExtractor={(item, index) =>
               isLoading ? `skeleton-${index}` : (item?.date || `item-${index}`)
             }
@@ -170,12 +169,10 @@ const OrderHistoryScreen = () => {
               gap: 10,
             }}
             refreshing={isRefreshing}
-            onRefresh={refreshOrderHistory}
-            onEndReached={
-              orderHistoryHasMore ? loadMoreOrderHistory : undefined
-            }
+            onRefresh={refresh}
+            onEndReached={hasMore ? loadMore : undefined}
             onEndReachedThreshold={0.1}
-            ListFooterComponent={renderFooter}
+            ListFooterComponent={isFetching ? <ListLoader /> : null}
             scrollEnabled={isConnected}
           />
         )}
@@ -183,20 +180,5 @@ const OrderHistoryScreen = () => {
     </ScreenWrapper>
   );
 };
-
-const styles = StyleSheet.create({
-  header: {
-    backgroundColor: colors.white,
-    borderBottomColor: colors.grayTint7,
-    borderBottomWidth: 1,
-    paddingHorizontal: 15,
-  },
-  content: {
-    flex: 1,
-  },
-  historyList: {
-    gap: 10,
-  },
-});
 
 export default OrderHistoryScreen;

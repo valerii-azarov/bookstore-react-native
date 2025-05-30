@@ -1,6 +1,6 @@
 import { View, FlatList, StyleProp, ViewStyle, StyleSheet } from "react-native";
 import { colors } from "@/constants/theme";
-import { TimelineStep } from "@/types"
+import { TimelineStep } from "@/types";
 
 import Icon from "./Icon";
 import Typography from "./Typography";
@@ -8,6 +8,7 @@ import Typography from "./Typography";
 type TimelineProps<T> = {
   steps: TimelineStep<T>[];
   hiddenSteps?: string[];
+  scrollEnabled?: boolean;
   color?: string;
   style?: StyleProp<ViewStyle>;
 };
@@ -15,6 +16,7 @@ type TimelineProps<T> = {
 const Timeline = <T extends string>({
   steps,
   hiddenSteps = [],
+  scrollEnabled = true,
   color = colors.orange,
   style,
 }: TimelineProps<T>) => {
@@ -32,21 +34,21 @@ const Timeline = <T extends string>({
                   backgroundColor: item.completed ? color : "transparent",
                   borderWidth: item.completed ? 0 : 2,
                   borderColor: item.completed ? "transparent" : colors.gray,
-                }
+                },
               ]}
             >
               <Icon
                 iconSet={item.completed ? "Ionicons" : item.iconSet}
                 iconName={item.completed ? "checkmark-circle-outline" : item.iconName}
-                iconSize={28}
+                iconSize={22}
                 iconColor={item.completed ? colors.white : colors.gray}
               />
             </View>
           </View>
 
-          <View style={styles.titleWrapper}>
+          <View>
             <Typography
-              fontSize={16}
+              fontSize={14.5}
               fontWeight="bold"
               color={colors.black}
               numberOfLines={1}
@@ -56,7 +58,7 @@ const Timeline = <T extends string>({
             </Typography>
 
             <Typography
-              fontSize={14}
+              fontSize={12.5}
               fontWeight="medium"
               color={colors.gray}
               numberOfLines={1}
@@ -87,6 +89,7 @@ const Timeline = <T extends string>({
         renderItem={renderStep}
         keyExtractor={(item, index) => `${item.state}-${index}`}
         showsVerticalScrollIndicator={false}
+        scrollEnabled={scrollEnabled}
       />
     </View>
   );
@@ -99,25 +102,23 @@ const styles = StyleSheet.create({
   stepContainer: {
     flexDirection: "row",
     alignItems: "center",
+    paddingVertical: 5,
   },
   iconWrapper: {
-    marginRight: 15,
+    marginRight: 10,
   },
   iconCircle: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
   },
-  titleWrapper: {
-    flex: 1,
-  },
   line: {
     width: 2,
-    height: 25,
-    marginLeft: 24,
-    marginVertical: 5,
+    height: 20,
+    marginLeft: 19,
+    marginVertical: 4,
   },
 });
 

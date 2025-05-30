@@ -1,6 +1,7 @@
-import { View, Alert, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
+import { View, Alert, TouchableOpacity, ScrollView } from "react-native";
 import { Link } from "expo-router";
 import Constants from "expo-constants";
+import * as IconSets from "@expo/vector-icons";
 import { useIsConnected } from "@/contexts/networkContext";
 import {
   useLanguage,
@@ -8,14 +9,14 @@ import {
   useTranslation,
 } from "@/contexts/translateContext";
 import { useAuthStore } from "@/stores/authStore";
-import { 
-  selectUser, 
+import {
+  selectUser,
   selectIsAdmin,
   selectLogout,
-  selectResetAuthOperationState, 
+  selectResetAuthOperationState,
 } from "@/selectors/authSelectors";
 import { colors } from "@/constants/theme";
-import { Option, LanguageType, MenuSection } from "@/types";
+import { AppRoute, Option, LanguageType } from "@/types";
 
 import ScreenWrapper from "@/components/ScreenWrapper";
 import Header from "@/components/Header";
@@ -23,6 +24,26 @@ import Icon from "@/components/Icon";
 // import IconBadge from "@/components/IconBadge";
 import Switcher from "@/components/Switcher";
 import Typography from "@/components/Typography";
+
+interface MenuItem {
+  key: string;
+  label: string;
+  iconSet: keyof typeof IconSets;
+  iconName: string;
+  iconSize?: number;
+  iconColor?: string;
+  textColor?: string;
+  route?: AppRoute;
+  onPress?: () => void;
+  component?: React.ReactNode;
+  hideChevron?: boolean;
+  isVisible?: boolean;
+}
+
+interface MenuSection {
+  title: string;
+  items: MenuItem[];
+}
 
 const MenuScreen = () => {
   const t = useTranslation();
@@ -35,7 +56,7 @@ const MenuScreen = () => {
   const isAdmin = useAuthStore(selectIsAdmin);
 
   const logout = useAuthStore(selectLogout);
-  const resetAuthOperationState = useAuthStore(selectResetAuthOperationState);
+  const resetState = useAuthStore(selectResetAuthOperationState);
 
   const languageOptions: Option<LanguageType>[] = [
     { label: "Укр", value: "uk" },
@@ -107,7 +128,6 @@ const MenuScreen = () => {
           iconSize: 28,
           iconColor: colors.black,
           route: "/viewing-history",
-          isVisible: !isAdmin,
         },
       ],
     },
@@ -174,7 +194,7 @@ const MenuScreen = () => {
                           [
                             { 
                               text: "OK", 
-                              onPress: () => setTimeout(() => resetAuthOperationState("logout"), 500), 
+                              onPress: () => setTimeout(() => resetState("logout"), 500), 
                             },
                           ]
                         )
@@ -212,19 +232,20 @@ const MenuScreen = () => {
         //   />
         // }
 
-        style={[
-          styles.header, 
-          { 
-            minHeight: 40,
-          }
-        ]}
+        style={{ 
+          minHeight: 40,
+          backgroundColor: colors.white,
+          borderBottomColor: colors.grayTint7,
+          borderBottomWidth: 1,
+          paddingHorizontal: 15,
+        }}
       />
 
       <ScrollView
-        contentContainerStyle={styles.scrollViewContainer}
+        contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
       >
-        <View style={[styles.content, styles.padded]}>
+        <View style={{ flex: 1, padding: 15 }}>
           {menuItems
             .map((section, sectionIndex) => {
               const visibleItems = section.items.filter((item) => item.isVisible !== false);
@@ -232,28 +253,43 @@ const MenuScreen = () => {
               if (visibleItems.length === 0) return null;
 
               return (
-                <View key={`section-${sectionIndex}`} style={styles.sectionContainer}>
+                <View key={`section-${sectionIndex}`} style={{ marginBottom: 25 }}>
                   {section.title && (
                     <Typography
                       fontSize={16}
                       fontWeight="medium"
                       color={colors.black}
-                      style={styles.sectionTitle}
+                      style={{ marginBottom: 5 }}
                     >
                       {section.title}
                     </Typography>
                   )}
 
-                  <View style={styles.sectionWrapper}>
+                  <View 
+                    style={{
+                      backgroundColor: colors.white,
+                      borderRadius: 10,
+                      padding: 15,
+                    }}
+                  >
                     {visibleItems.map((item, itemIndex, filteredItems) => {
                       const content = (
                         <TouchableOpacity
-                          style={styles.menuItem}
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
                           onPress={item.onPress}
                           activeOpacity={0.7}
                           disabled={!!item.component}
                         >
-                          <View style={styles.menuItemLeft}>
+                          <View 
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                            }}
+                          >
                             <Icon
                               iconSet={item.iconSet}
                               iconName={item.iconName}
@@ -271,7 +307,12 @@ const MenuScreen = () => {
                             </Typography>
                           </View>
 
-                          <View style={styles.menuItemRight}>
+                          <View 
+                            style={{
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
                             {item.component || (!item.hideChevron && (
                               <Icon
                                 iconSet="Ionicons"
@@ -290,12 +331,12 @@ const MenuScreen = () => {
 
                           {itemIndex < filteredItems.length - 1 && (
                             <View
-                              style={[
-                                styles.divider,
-                                {
-                                  marginVertical: 15,
-                                },
-                              ]}
+                              style={{
+                                height: 1.5,
+                                backgroundColor: colors.grayTint5,
+                                marginVertical: 15,
+                                opacity: 0.3,
+                              }}
                             />
                           )}
                         </View>
@@ -304,17 +345,14 @@ const MenuScreen = () => {
                   </View>
                 </View>
               );
-            })
-            .filter(Boolean)}
+            })}
         </View>
 
         <View 
-          style={[
-            styles.padded,
-            { 
-              alignItems: "center",
-            }
-          ]}
+          style={{ 
+            alignItems: "center",
+            padding: 15,
+          }}
         >
           <Typography fontSize={14} fontWeight="medium" color={colors.gray}>
             {`${t("screens.menu.labels.version")} ${Constants.expoConfig?.version}`}
@@ -324,52 +362,5 @@ const MenuScreen = () => {
     </ScreenWrapper>
   );
 };
-
-const styles = StyleSheet.create({
-  header: {
-    backgroundColor: colors.white,
-    borderBottomColor: colors.grayTint7,
-    borderBottomWidth: 1,
-    paddingHorizontal: 15,
-  },
-  scrollViewContainer: {
-    flexGrow: 1,
-  },
-  content: {
-    flex: 1,
-  },
-  sectionContainer: {
-    marginBottom: 25,
-  },
-  sectionWrapper: {
-    backgroundColor: colors.white,
-    borderRadius: 10,
-    padding: 15,
-  },
-  sectionTitle: {
-    marginBottom: 5,
-  },
-  menuItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  menuItemLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  menuItemRight: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  divider: {
-    height: 1.5,
-    backgroundColor: colors.grayTint5,
-    opacity: 0.3,
-  },
-  padded: {
-    padding: 15,
-  },
-});
 
 export default MenuScreen;

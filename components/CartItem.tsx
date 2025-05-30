@@ -18,7 +18,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 type CartItemProps = Partial<SwipeableProps> & {
   item: Cart;
-  onViewDetails: () => void;
+  onView: (bookId: string) => void;
   onRemoveFromCart: (bookId: string) => void;
   onUpdateQuantity: (bookId: string, quantity: number) => void;
   alerts?: {
@@ -37,7 +37,7 @@ const CartItem = forwardRef<SwipeableRef, CartItemProps>(
   (
     { 
       item,
-      onViewDetails, 
+      onView, 
       onRemoveFromCart, 
       onUpdateQuantity,
       alerts = {
@@ -91,7 +91,7 @@ const CartItem = forwardRef<SwipeableRef, CartItemProps>(
 
     const handlePress = () => {
       startAnimation();
-      setTimeout(onViewDetails, 500);
+      setTimeout(() => onView(item.id), 500);
     };
 
     const handlePressIn = () => {

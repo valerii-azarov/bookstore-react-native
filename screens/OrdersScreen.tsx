@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import { View, FlatList, TouchableOpacity, StyleSheet } from "react-native";
+import { View, FlatList, TouchableOpacity } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import { useIsConnected } from "@/contexts/networkContext";
@@ -37,33 +37,30 @@ const OrdersScreen = () => {
   const t = useTranslation();
   const isConnected = useIsConnected();
 
-  const orders = useOrdersStore(selectOrders);
-  const ordersStatus = useOrdersStore(selectOrdersStatus);
-  const ordersResponse = useOrdersStore(selectOrdersResponse);
-  const ordersHasMore = useOrdersStore(selectOrdersHasMore);
   const selectedStatuses = useOrdersStore(selectSelectedStatuses);
+  const orders = useOrdersStore(selectOrders);
+  const status = useOrdersStore(selectOrdersStatus);
+  const response = useOrdersStore(selectOrdersResponse);
+  const hasMore = useOrdersStore(selectOrdersHasMore);
 
   const setSelectedStatuses = useOrdersStore(selectSetSelectedStatuses);
-  const loadOrdersByStatuses = useOrdersStore(selectLoadOrdersByStatuses);
+  const fetchData = useOrdersStore(selectLoadOrdersByStatuses);
   const loadMore = useOrdersStore(selectLoadMore);
   const refresh = useOrdersStore(selectRefresh);
-  const resetAll = useOrdersStore(selectResetAll);
+  const reset = useOrdersStore(selectResetAll);
 
-  const isLoading = ordersStatus === "loading";
-  const isFetching = ordersStatus === "fetching";
-  const isRefreshing = ordersStatus === "refreshing";
+  const isLoading = status === "loading";
+  const isFetching = status === "fetching";
+  const isRefreshing = status === "refreshing";
   const isEmpty = !isLoading && orders.length === 0;
-  const isError = ordersResponse?.status === "error";
+  const isError = response?.status === "error";
 
   const swipeableRefs = useRef<Array<SwipeableRef | null>>([]);
   const openSwipeableRef = useRef<SwipeableRef | null>(null);
   const closeSwipeTimeout = useRef<NodeJS.Timeout | null>(null);
-
+  
   const handleToggleStatus = (status: OrderStatusType) => {
-    const updatedStatuses = selectedStatuses.includes(status)
-      ? selectedStatuses.filter((selectedStatus) => selectedStatus !== status)
-      : [...selectedStatuses, status];
-
+    const updatedStatuses = selectedStatuses.includes(status) ? [] : [status];
     setSelectedStatuses(updatedStatuses);
     refresh();
   };
@@ -86,7 +83,7 @@ const OrdersScreen = () => {
       openSwipeableRef.current?.close();
       openSwipeableRef.current = null;
       closeSwipeTimeout.current = null;
-    }, 10000);
+    }, 5000);
   };
 
   useEffect(() => {
@@ -96,9 +93,9 @@ const OrdersScreen = () => {
       setSelectedStatuses(["processing"]);
     }
 
-    loadOrdersByStatuses(true);
+    fetchData(true);
 
-    return () => resetAll();
+    return () => reset();
   }, [isConnected]);
 
   return (
@@ -106,12 +103,13 @@ const OrdersScreen = () => {
       <Header
         title={t("screens.orders.header.title")}
         titleSize={18}
-        style={[
-          styles.header,
-          {
-            minHeight: 40,
-          },
-        ]}
+        style={{
+          minHeight: 40,
+          backgroundColor: colors.white,
+          borderBottomColor: colors.grayTint7,
+          borderBottomWidth: 1,
+          paddingHorizontal: 15,
+        }}
       />
 
       <View>
@@ -123,17 +121,20 @@ const OrdersScreen = () => {
             return (
               <TouchableOpacity
                 onPress={() => handleToggleStatus(item.value)}
-                style={[
-                  styles.status,
-                  {
-                    backgroundColor: !isConnected
-                      ? colors.grayTint7
-                      : isActive
-                        ? colors.orange
-                        : colorOptions[index % colorOptions.length],
-                    opacity: !isConnected ? 0.6 : 1,
-                  },
-                ]}
+                style={{
+                  backgroundColor: !isConnected
+                    ? colors.grayTint7
+                    : isActive
+                      ? colors.orange
+                      : colorOptions[index % colorOptions.length],
+                  opacity: !isConnected ? 0.6 : 1,
+                  borderRadius: 16,
+                  paddingHorizontal: 15,
+                  paddingVertical: 10,
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
                 disabled={!isConnected || isRefreshing}
               >
                 <Typography
@@ -149,17 +150,16 @@ const OrdersScreen = () => {
           keyExtractor={(item) => item.value}
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={[
-            styles.statusContainer,
-            {
-              paddingVertical: 10,
-              paddingHorizontal: 15,
-            },
-          ]}
+          contentContainerStyle={{
+            paddingVertical: 10,
+            paddingHorizontal: 15,
+            flexDirection: "row",
+            gap: 10,
+          }}
         />
       </View>
 
-      <View style={styles.content}>
+      <View style={{ flex: 1 }}>
         {!isConnected && (
           <ErrorNetwork 
             message={t("common.messages.errorNetwork.title")}
@@ -176,7 +176,7 @@ const OrdersScreen = () => {
             message={t("common.messages.errorWithRetry.title")}
             subMessage={t("common.messages.errorWithRetry.subtitle")}
             buttonText={t("common.buttons.errorWithRetry")}
-            onRetry={() => loadOrdersByStatuses(true)}
+            onRetry={() => fetchData(true)}
           />
         )}
 
@@ -192,8 +192,8 @@ const OrdersScreen = () => {
             data={orders}
             renderItem={({ item, index }) => (
               <Animated.View
-                key={index}
-                entering={FadeInDown.delay(index * 100)}
+                key={`order-${item.id}`}
+                entering={FadeInDown.delay(index * 75)}
               >
                 <OrderItem
                   ref={(ref) => {
@@ -202,8 +202,8 @@ const OrdersScreen = () => {
                     }
                   }}
                   item={item}
-                  onView={(orderId) => router.push(`/order/${orderId}`)}
-                  onEdit={(orderId) => router.push(`/edit-order/${orderId}`)}
+                  onView={(orderId) => router.push(`/(admin)/order/${orderId}`)}
+                  onEdit={(orderId) => router.push(`/(admin)/(modals)/edit-order/${orderId}`)}
                   labels={{
                     quantity: t("components.orderItem.labels.quantity"),
                     cost: t("components.orderItem.labels.cost"),
@@ -225,7 +225,7 @@ const OrdersScreen = () => {
             }}
             refreshing={isRefreshing}
             onRefresh={refresh}
-            onEndReached={ordersHasMore ? loadMore : undefined}
+            onEndReached={hasMore ? loadMore : undefined}
             onEndReachedThreshold={0.1}
             ListFooterComponent={isFetching ? <ListLoader /> : null}
           />
@@ -234,32 +234,5 @@ const OrdersScreen = () => {
     </ScreenWrapper>
   );
 };
-
-const styles = StyleSheet.create({
-  header: {
-    backgroundColor: colors.white,
-    borderBottomColor: colors.grayTint7,
-    borderBottomWidth: 1,
-    paddingHorizontal: 15,
-  },
-  statusContainer: {
-    flexDirection: "row",
-    gap: 10,
-  },
-  status: {
-    borderRadius: 16,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  content: {
-    flex: 1,
-  },
-  padded: {
-    padding: 15,
-  },
-});
 
 export default OrdersScreen;

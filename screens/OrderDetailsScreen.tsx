@@ -1,7 +1,13 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import * as Clipboard from "expo-clipboard";
-import { View, Alert, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Alert,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
 import { format } from "date-fns";
 import { orderHandler } from "@/helpers/orderHandler";
 import { useIsConnected } from "@/contexts/networkContext";
@@ -28,6 +34,18 @@ import ErrorNetwork from "@/components/ErrorNetwork";
 import ErrorWithRetry from "@/components/ErrorWithRetry";
 import Typography from "@/components/Typography";
 
+interface DetailsItem {
+  key: string;
+  label: string;
+  value: string;
+  isVisible?: boolean;
+}
+
+interface DetailsSection {
+  title: string;
+  items: DetailsItem[];
+}
+
 const OrderDetailsScreen = () => { 
   const router = useRouter();
   const { orderId } = useLocalSearchParams<{ orderId: string }>();
@@ -38,15 +56,15 @@ const OrderDetailsScreen = () => {
   const isAdmin = useAuthStore(selectIsAdmin);
 
   const currentOrder = useOrderStore(selectCurrentOrder);
-  const fetchOrderStatus = useOrderStore(selectFetchOrderStatus);
-  const fetchOrderResponse = useOrderStore(selectFetchOrderResponse);
+  const status = useOrderStore(selectFetchOrderStatus);
+  const response = useOrderStore(selectFetchOrderResponse);
 
   const setOrderById = useOrderStore(selectSetOrderById);
-  const loadOrderById = useOrderStore(selectLoadOrderById);
-  const resetCurrentOrder = useOrderStore(selectResetCurrentOrder);
+  const fetchData = useOrderStore(selectLoadOrderById);
+  const reset = useOrderStore(selectResetCurrentOrder);
 
-  const isLoading = fetchOrderStatus === "loading";
-  const isError = !isLoading && fetchOrderResponse?.status === "error";
+  const isLoading = status === "loading";
+  const isError = !isLoading && response?.status === "error";
 
   const handleCopyOrderId = async (value: string) => {
     await Clipboard.setStringAsync(value);
@@ -56,7 +74,7 @@ const OrderDetailsScreen = () => {
     );
   };
 
-  const sections = [
+  const sections: DetailsSection[] = [
     {
       title: t("screens.orderDetails.sections.contactDetails"),
       items: [
@@ -96,12 +114,14 @@ const OrderDetailsScreen = () => {
   ];
 
   useEffect(() => {
-    if (orderId && isConnected) {
+    const shouldFetch = orderId && isConnected;
+    if (shouldFetch) {
       setOrderById(orderId);
-      loadOrderById();
+      fetchData();
     }
-    return () => resetCurrentOrder();
-  }, [orderId, isConnected]);  
+
+    return () => reset();
+  }, [orderId, isConnected]);
 
   return (
     <ViewWrapper
@@ -130,11 +150,17 @@ const OrderDetailsScreen = () => {
 
       {isConnected && !isLoading && !isError && currentOrder && (
         <ScrollView 
-          contentContainerStyle={styles.scrollViewContainer}
+          contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.contentContainer}>
-            <View style={styles.sectionContainer}>
+            <View 
+              style={[
+                styles.sectionContainer, 
+                styles.paddedTop,
+                styles.paddedHorizontal,
+              ]}
+            >
               <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
                 {t("screens.orderDetails.sections.orderNumber")}
               </Typography>
@@ -164,7 +190,7 @@ const OrderDetailsScreen = () => {
               </View>
             </View>
 
-            <View style={styles.sectionContainer}>
+            <View style={[styles.sectionContainer, styles.paddedHorizontal]}>
               <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
                 {t("screens.orderDetails.sections.orderStatus")}
               </Typography>
@@ -204,7 +230,7 @@ const OrderDetailsScreen = () => {
               </View>
             </View>
 
-            <View style={styles.sectionContainer}>
+            <View style={[styles.sectionContainer, styles.paddedHorizontal]}>
               <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
                 {t("screens.orderDetails.sections.bookList")}
               </Typography>
@@ -297,7 +323,7 @@ const OrderDetailsScreen = () => {
               </View>
             </View>
 
-            <View style={styles.sectionContainer}>
+            <View style={[styles.sectionContainer, styles.paddedHorizontal]}>
               <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
                 {t("screens.orderDetails.sections.orderCost")}
               </Typography>
@@ -392,7 +418,7 @@ const OrderDetailsScreen = () => {
               </View>
             </View>
 
-            <View style={styles.sectionContainer}>
+            <View style={[styles.sectionContainer, styles.paddedHorizontal]}>
               <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
                 {t("screens.orderDetails.sections.payment")}
               </Typography>
@@ -455,19 +481,28 @@ const OrderDetailsScreen = () => {
               </View>
             </View>
 
-            {sections.map((section, sectionIdx) => (
-              <View
-                key={`section-${sectionIdx}`}
-                style={styles.sectionContainer}
-              >
-                <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
-                  {section.title}
-                </Typography>
+            {sections.map((section, sectionIndex) => {
+              const visibleItems = section.items.filter(item => item.isVisible !== false);
 
-                <View style={styles.sectionWrapper}>
-                  {section.items
-                    .filter((item) => item.isVisible !== false)
-                    .map((item, index, visibleItems) => (
+              if (visibleItems.length === 0) return null;
+
+              const isLastSection = sectionIndex === sections.length - 1;
+
+              return (
+                <View
+                  key={`section-${sectionIndex}`}
+                  style={[
+                    styles.sectionContainer,
+                    styles.paddedHorizontal,
+                    isLastSection && isAdmin && styles.paddedBottom,
+                  ]}
+                >
+                  <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
+                    {section.title}
+                  </Typography>
+
+                  <View style={styles.sectionWrapper}>
+                    {visibleItems.map((item, index, filteredItems) => (
                       <View key={`item-${index}`}>
                         <View style={styles.dataColumn}>
                           <Typography
@@ -490,7 +525,7 @@ const OrderDetailsScreen = () => {
                           </Typography>
                         </View>
 
-                        {index < visibleItems.length - 1 && (
+                        {index < filteredItems.length - 1 && (
                           <View
                             style={[
                               styles.divider,
@@ -502,12 +537,19 @@ const OrderDetailsScreen = () => {
                         )}
                       </View>
                     ))}
+                  </View>
                 </View>
-              </View>
-            ))}
+              );
+            })}
 
             {!isAdmin && (
-              <View style={styles.sectionContainer}>
+              <View 
+                style={[
+                  styles.sectionContainer,
+                  styles.paddedBottom, 
+                  styles.paddedHorizontal,
+                ]}
+              >
                 <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
                   {t("screens.orderDetails.sections.receipt")}
                 </Typography>
@@ -517,7 +559,7 @@ const OrderDetailsScreen = () => {
                     <TouchableOpacity
                       onPress={() => 
                         router.push({
-                          pathname: "/order-receipt/[receiptId]",
+                          pathname: "/(user)/(modals)/order-receipt/[receiptId]",
                           params: {
                             receiptId: currentOrder.receiptId || "defaultReceiptId",
                           },
@@ -546,10 +588,6 @@ const OrderDetailsScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  scrollViewContainer: {
-    flexGrow: 1,
-    padding: 15,
-  },
   contentContainer: {
     flexDirection: "column",
     gap: 15,
@@ -623,6 +661,18 @@ const styles = StyleSheet.create({
     height: 1.5,
     backgroundColor: colors.grayTint5,
     opacity: 0.3,
+  },
+  padded: {
+    padding: 15,
+  },
+  paddedTop: {
+    paddingTop: 15,
+  },
+  paddedBottom: {
+    paddingBottom: 15,
+  },
+  paddedHorizontal: {
+    paddingHorizontal: 15,
   },
 });
 

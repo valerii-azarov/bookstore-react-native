@@ -1,16 +1,18 @@
-import { useCallback, useEffect } from "react";
+import React, { useEffect } from "react";
 import { FlatList } from "react-native";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
 import { useCategoryBooksStore } from "@/stores/categoryBooksStore";
 import { useCartStore } from "@/stores/cartStore";
 import { useFavoritesStore } from "@/stores/favoritesStore";
-import { 
-  selectCategoryBooks, 
-  selectCategoryStatus, 
-  selectCategoryResponse, 
-  selectLoadCategoryBooks, 
+import {
+  selectCategoryBooks,
+  selectCategoryStatus,
+  selectCategoryResponse,
+  selectCategoryHasMore,
+  selectLoadCategoryBooks,
   selectSetCategory,
   selectLoadMoreCategoryBooks,
   selectResetCategory,
@@ -18,7 +20,6 @@ import {
 import { selectToggleCart } from "@/selectors/cartSelectors";
 import { selectToggleFavorite } from "@/selectors/favoritesSelectors";
 import { colors } from "@/constants/theme";
-import { Book } from "@/types";
 
 import ViewWrapper from "@/components/ViewWrapper";
 import CategoryBookItem from "@/components/CategoryBookItem";
@@ -36,53 +37,33 @@ const CategoryBooksScreen = () => {
   const isConnected = useIsConnected();
   
   const categoryBooks = useCategoryBooksStore(selectCategoryBooks);
-  const categoryStatus = useCategoryBooksStore(selectCategoryStatus);
-  const categoryResponse = useCategoryBooksStore(selectCategoryResponse);
+  const status = useCategoryBooksStore(selectCategoryStatus);
+  const response = useCategoryBooksStore(selectCategoryResponse);
+  const hasMore = useCategoryBooksStore(selectCategoryHasMore);
   
   const setCategory = useCategoryBooksStore(selectSetCategory);
-  const loadCategoryBooks = useCategoryBooksStore(selectLoadCategoryBooks);
-  const loadMoreCategoryBooks = useCategoryBooksStore(selectLoadMoreCategoryBooks);
-  const resetCategory = useCategoryBooksStore(selectResetCategory);
+  const fetchData = useCategoryBooksStore(selectLoadCategoryBooks);
+  const loadMore = useCategoryBooksStore(selectLoadMoreCategoryBooks);
+  const reset = useCategoryBooksStore(selectResetCategory);
 
   const toggleCart = useCartStore(selectToggleCart);
-
   const toggleFavorite = useFavoritesStore(selectToggleFavorite);
 
-  const isLoading = categoryStatus === "loading";
-  const isFetching = categoryStatus === "fetching";
+  const isLoading = status === "loading";
+  const isFetching = status === "fetching";
   const isEmpty = !isLoading && categoryBooks.length === 0;
-  const isError = !isLoading && categoryResponse?.status === "error";
-
-  const renderItem = useCallback(({ item }: { item: Book }) => {
-    return (
-      <CategoryBookItem
-        item={item}
-        mode="list"
-        onView={() => router.push(`/book/${item.id}`)}
-        onAddToFavorites={(bookId) => toggleFavorite(bookId)}
-        onAddToCart={(item) => toggleCart(item)}
-        labels={{
-          details: t("components.bookItem.buttons.details"),
-        }}
-      />
-    );
-  }, [router]);
-
-  const renderFooter = useCallback(() => {
-    if (isFetching) {
-      return <ListLoader />;
-    }
-    return null;
-  }, [isFetching]);
+  const isError = !isLoading && response?.status === "error";
 
   useEffect(() => {
-    if (category && isConnected) {
+    const shouldFetch = category && isConnected;
+    if (shouldFetch) {
       setCategory(category);
-      loadCategoryBooks(true);
+      fetchData(true);
     }
-    return () => resetCategory();
-  }, [category, isConnected]);
 
+    return () => reset();
+  }, [category, isConnected]);
+  
   return (
     <ViewWrapper 
       title= {t(`common.genres.${category}`)} 
@@ -117,16 +98,32 @@ const CategoryBooksScreen = () => {
       {isConnected && !isLoading && !isEmpty && !isError && (
         <FlatList
           data={categoryBooks}
-          renderItem={renderItem}
+          renderItem={({ item, index }) => (
+            <Animated.View
+              key={`book-${item.id}`}
+              entering={FadeInDown.delay(index * 75)}
+            >
+              <CategoryBookItem
+                item={item}
+                mode="list"
+                onView={(bookId) => router.push(`/(user)/book/${bookId}`)}
+                onAddToFavorites={(bookId) => toggleFavorite(bookId)}
+                onAddToCart={(item) => toggleCart(item)}
+                labels={{
+                  details: t("components.bookItem.buttons.details"),
+                }}
+              />
+            </Animated.View>
+          )}
           keyExtractor={(item) => item.id}
           numColumns={1}
           contentContainerStyle={{
             padding: 15,
             gap: 10,
           }}
-          onEndReached={loadMoreCategoryBooks}
+          onEndReached={hasMore ? loadMore : undefined}
           onEndReachedThreshold={0.1}
-          ListFooterComponent={renderFooter}
+          ListFooterComponent={isFetching ? <ListLoader /> : null}
         />
       )}
     </ViewWrapper>

@@ -20,7 +20,7 @@ type BookItemProps = Partial<SwipeableProps> & {
   item: BaseBook;
   isOwner?: boolean;
   disableSwipe?: boolean;
-  onView: () => void;
+  onView: (bookId: string) => void;
   onEdit?: (bookId: string) => void;
   onDelete?: (bookId: string) => void;
   labels?: {
@@ -77,7 +77,7 @@ const BookItem = forwardRef<SwipeableRef, BookItemProps>(
 
     const handlePress = () => {
       startAnimation();
-      setTimeout(onView, 500);
+      setTimeout(() => onView(item?.id), 500);
     };
 
     const renderRightActions = () => {

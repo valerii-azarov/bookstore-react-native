@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { orderHandler } from "@/helpers/orderHandler";
 import { useTranslation } from "@/contexts/translateContext";
@@ -17,37 +17,24 @@ const OrderStatusModal = () => {
 
   return (
     <ModalWrapper>
-      <Header 
+      <Header
         title={t("modals.orderStatus.header.title")}
         titleSize={18}
-        iconLeft={<BackButton />} 
-        style={[
-          styles.padded, 
-          {
-            marginBottom: 15,
-          }
-        ]}
+        iconLeft={<BackButton />}
+        style={{
+          paddingHorizontal: 15,
+          marginBottom: 10,
+        }}
       />
 
-      <View style={styles.content}>
+      <View style={{ flex: 1, padding: 15 }}>
         <Timeline 
           steps={orderSteps} 
-          style={{
-            paddingHorizontal: 15,
-          }}
+          scrollEnabled={false}
         />
       </View>
     </ModalWrapper>
   );
 };
-
-const styles = StyleSheet.create({
-  content: {
-    flex: 1,
-  },
-  padded: {
-    paddingHorizontal: 15,
-  },
-});
 
 export default OrderStatusModal;

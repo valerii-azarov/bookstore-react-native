@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Alert, StyleSheet } from "react-native";
+import { View, Alert } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { orderHandler } from "@/helpers/orderHandler";
 import { useIsConnected } from "@/contexts/networkContext";
@@ -46,9 +46,9 @@ const EditOrderModal = () => {
   const updateStatusResponse = useOrderStore(selectUpdateStatusResponse);
   
   const setOrderById = useOrderStore(selectSetOrderById);
-  const loadOrderById = useOrderStore(selectLoadOrderById);
+  const fetchData = useOrderStore(selectLoadOrderById);
   const updateStatus = useOrderStore(selectUpdateStatus);
-  const resetOrderOperationState = useOrderStore(selectResetOrderOperationState);
+  const resetState = useOrderStore(selectResetOrderOperationState);
 
   const isLoading = fetchOrderStatus === "loading";
   const isError = !isLoading && fetchOrderResponse?.status === "error";
@@ -93,11 +93,13 @@ const EditOrderModal = () => {
   }, [currentOrder?.status, currentOrder?.trackingNumber]);
 
   useEffect(() => {
-    if (orderId && isConnected) {
+    const shouldFetch = orderId && isConnected;
+    if (shouldFetch) {
       setOrderById(orderId);
-      loadOrderById();
+      fetchData();
     }
-    return () => resetOrderOperationState("fetch");
+
+    return () => resetState("fetch");
   }, [orderId, isConnected]);
 
   useEffect(() => {
@@ -116,7 +118,7 @@ const EditOrderModal = () => {
       );
     }
 
-    return () => resetOrderOperationState("updateStatus");
+    return () => resetState("updateStatus");
   }, [status, message, router]);
 
   const isShipped = newStatus === "shipped";
@@ -124,7 +126,7 @@ const EditOrderModal = () => {
   const isSaveDisabled = isUpdating || currentOrder?.status === newStatus || (isShipped && (!!trackingNumberError || !trackingNumber));
 
   const allowedStatuses = orderHandler.getAllowedStatusesForUpdate(currentOrder?.status ?? "processing");
-
+  
   return (
     <ModalWrapper>
       <KeyboardWrapper>
@@ -159,7 +161,7 @@ const EditOrderModal = () => {
 
         {isConnected && !isLoading && !isError && currentOrder && (
           <>
-            <View style={[styles.content, styles.padded]}>
+            <View style={{ flex: 1, padding: 15 }}>
               <View style={{ flexDirection: "column", gap: 15 }}>
                 {currentOrder?.status !== "received" && (
                   <View style={{ minHeight: 75 }}>
@@ -206,7 +208,13 @@ const EditOrderModal = () => {
               </View>  
             </View> 
 
-            <View style={styles.buttonContainer}>
+            <View
+              style={{
+                backgroundColor: colors.grayTint9,
+                padding: 10,
+                paddingHorizontal: 15,
+              }}
+            >
               <Button onPress={handleUpdate} loading={isUpdating} disabled={isSaveDisabled}>
                 <Typography fontSize={16} fontWeight="bold" color={colors.white}>
                   {t("modals.editOrder.buttons.save")}
@@ -219,22 +227,5 @@ const EditOrderModal = () => {
     </ModalWrapper>
   );
 };
-
-const styles = StyleSheet.create({
-  scrollViewContainer: {
-    flexGrow: 1,
-  },
-  content: {
-    flex: 1,
-  },
-  buttonContainer: {
-    backgroundColor: colors.grayTint9,
-    padding: 10,
-    paddingHorizontal: 15,
-  },
-  padded: {
-    padding: 15,
-  },
-});
 
 export default EditOrderModal;

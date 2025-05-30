@@ -31,6 +31,30 @@ export const orderApi = {
     };
 
     const batch = writeBatch(db);
+
+    for (const book of order.books) {
+      const bookRef = doc(db, "books", book.bookId);
+      const bookSnap = await getDoc(bookRef);
+
+      if (!bookSnap.exists()) {
+        throw new Error(
+          `InventoryError: Book "${book.title}" (ID: ${book.bookId}) not found in inventory.`
+        );
+      }
+
+      const { availableQuantity = 0 } = bookSnap.data();
+
+      if (availableQuantity < book.quantity) {
+        throw new Error(
+          `InventoryError: Not enough stock for "${book.title}". Available: ${availableQuantity}, Requested: ${book.quantity}`
+        );
+      }
+
+      batch.update(bookRef, {
+        availableQuantity: availableQuantity - book.quantity,
+      });
+    }
+
     batch.set(orderRef, order);
     batch.set(receiptRef, receipt);
 
@@ -43,14 +67,16 @@ export const orderApi = {
     if (!createdOrderDoc.exists()) {
       throw new Error("OrderError: Failed to fetch created order (orders/created-order-not-found)");
     }
-    
+
     const userDoc = await getDoc(userRef);
     if (!userDoc.exists()) {
       throw new Error("UserError: User not found (users/user-not-found)");
     }
 
-    await updateDoc(userRef, { orders: arrayUnion(createdOrderDoc.id) });
-    
+    await updateDoc(userRef, {
+      orders: arrayUnion(createdOrderDoc.id),
+    });
+
     return { id: createdOrderDoc.id, ...createdOrderDoc.data() } as Order;
   },
 

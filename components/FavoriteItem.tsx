@@ -15,15 +15,15 @@ import Typography from "./Typography";
 
 type FavoriteItemProps = {
   item: Favorite;
-  onViewDetails: () => void;
-  onToggleFavorite?: (item: Favorite) => void;
+  onView: (bookId: string) => void;
+  onAddToFavorites: (bookId: string) => void;
   labels?: { favorite: string; };
 };
 
 const FavoriteItem = ({ 
   item, 
-  onViewDetails, 
-  onToggleFavorite, 
+  onView, 
+  onAddToFavorites, 
   labels = {
     favorite: "Favorite"
   }
@@ -61,13 +61,13 @@ const FavoriteItem = ({
   
   const handleDetailsPress = () => {
     startImageAnimation();
-    setTimeout(onViewDetails, 500);
+    setTimeout(() => onView(item?.id), 500);
   };
 
   const handleFavoritePress = () => {
     const newFavoriteState = !item.isFavorite;
     startFavoriteAnimation(newFavoriteState);
-    onToggleFavorite?.({ ...item, isFavorite: newFavoriteState });
+    onAddToFavorites(item.id);
   };
 
   return (

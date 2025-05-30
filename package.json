@@ -1,5 +1,5 @@
 {
-  "name": "app-firebase-test",
+  "name": "app-bookstore",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
@@ -25,6 +25,7 @@
     "expo-clipboard": "^7.1.4",
     "expo-constants": "~17.1.6",
     "expo-crypto": "^14.1.4",
+    "expo-dev-client": "~5.1.8",
     "expo-font": "~13.3.1",
     "expo-haptics": "~14.1.4",
     "expo-image": "~2.1.7",
@@ -35,6 +36,7 @@
     "expo-status-bar": "~2.2.3",
     "expo-symbols": "~0.4.4",
     "expo-system-ui": "~5.0.7",
+    "expo-updates": "~0.28.13",
     "expo-web-browser": "~14.1.6",
     "firebase": "^11.7.3",
     "fuse.js": "^7.1.0",
@@ -59,5 +61,16 @@
     "eslint-config-expo": "~9.2.0",
     "typescript": "~5.8.3"
   },
-  "private": true
+  "private": true,
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": [
+          "react-native-element-dropdown",
+          "firebase",
+          "fuse.js"
+        ]
+      }
+    }
+  }
 }

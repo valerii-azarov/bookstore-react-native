@@ -56,42 +56,37 @@ const OrderReceiptModal = () => {
         title={t("modals.orderReceipt.header.title")}
         titleSize={18}
         iconLeft={<BackButton />}
-        style={[
-          styles.padded,
-          {
-            marginBottom: 15,
-          },
-        ]}
+        style={{
+          paddingHorizontal: 15,
+          marginBottom: 10,
+        }}
       />
+      {!isConnected && (
+        <ErrorNetwork 
+          message={t("common.messages.errorNetwork.title")}
+          subMessage={t("common.messages.errorNetwork.subtitle")}
+        />
+      )}
+      
+      {isConnected && isLoading && (
+        <Loading size="small" color={colors.orange} />
+      )}
 
-      <View style={[styles.content, styles.padded]}>
-        {!isConnected && (
-          <ErrorNetwork 
-            message={t("common.messages.errorNetwork.title")}
-            subMessage={t("common.messages.errorNetwork.subtitle")}
-          />
-        )}
-        
-        {isConnected && isLoading && (
-          <Loading size="small" color={colors.orange} />
-        )}
+      {isConnected && isError && !isLoading && (
+        <ErrorWithRetry
+          message={t("common.messages.errorWithRetry.title")}
+          subMessage={t("common.messages.errorWithRetry.subtitle")}
+          buttonText={t("common.buttons.errorWithRetry")}
+          onRetry={() => loadReceiptById()}
+        />
+      )}
 
-        {isConnected && isError && !isLoading && (
-          <View style={[styles.overlayContainer, styles.padded]}>
-            <ErrorWithRetry
-              message={t("common.messages.errorWithRetry.title")}
-              subMessage={t("common.messages.errorWithRetry.subtitle")}
-              buttonText={t("common.buttons.errorWithRetry")}
-              onRetry={() => loadReceiptById()}
-            />
-          </View>
-        )}
-
-        {isConnected && !isLoading && !isError && receipt && (
-          <ScrollView
-            contentContainerStyle={styles.scrollViewContainer}
-            showsVerticalScrollIndicator={false}
-          >            
+      {isConnected && !isLoading && !isError && receipt && (
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          showsVerticalScrollIndicator={false}
+        >   
+          <View style={{ flex: 1, padding: 15 }}>         
             <View style={styles.receiptContainer}>              
               <View style={[styles.receiptSection, { marginBottom: 15 }]}>
                 <Typography
@@ -394,7 +389,15 @@ const OrderReceiptModal = () => {
               </View>
             </View>
 
-            <View style={[styles.noticeContainer, { marginTop: 25 }]}>
+            <View 
+              style={{
+                backgroundColor: colors.orangeTint8,
+                borderRadius: 12,
+                paddingVertical: 15,
+                paddingHorizontal: 20,
+                marginTop: 25,
+              }}
+            >
               <Typography fontSize={16} fontWeight="bold" style={{ marginBottom: 5 }}>
                 {t("modals.orderReceipt.notice.title")}
               </Typography>
@@ -403,20 +406,14 @@ const OrderReceiptModal = () => {
                 {t("modals.orderReceipt.notice.subtitle")}
               </Typography>
             </View>
-          </ScrollView>
-        )}
-      </View>
+          </View>
+        </ScrollView>
+      )}
     </ModalWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  content: {
-    flex: 1,
-  },
-  scrollViewContainer: {
-    flexGrow: 1,
-  },
   receiptContainer: {
     backgroundColor: colors.white,
     paddingVertical: 25,
@@ -436,20 +433,6 @@ const styles = StyleSheet.create({
   itemRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-  },
-  noticeContainer: {
-    backgroundColor: colors.orangeTint8,
-    borderRadius: 12,
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-  },
-  overlayContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  padded: {
-    paddingHorizontal: 15,
   },
 });
 

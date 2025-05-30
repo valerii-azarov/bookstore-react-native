@@ -1,6 +1,18 @@
-import { useRef, useCallback, useEffect } from "react";
-import { View, FlatList, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard, StyleSheet } from "react-native";
-import { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
+import React, { useRef, useEffect } from "react";
+import {
+  View,
+  FlatList,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
+import Animated, { FadeInDown } from "react-native-reanimated";
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
@@ -19,7 +31,6 @@ import {
   selectResetAll,
 } from "@/selectors/booksSearchSelectors";
 import { colors } from "@/constants/theme";
-import { BaseBook } from "@/types";
 
 import ViewWrapper from "@/components/ViewWrapper";
 import BookItem from "@/components/BookItem";
@@ -38,23 +49,23 @@ const SearchBooksScreen = () => {
 
   const isAdmin = useAuthStore(selectIsAdmin);
 
-  const searchedBooks = useSearchedBooksStore(selectSearchedBooks);
-  const searchedBooksStatus = useSearchedBooksStore(selectSearchedBooksStatus);
-  const searchedBooksResponse =  useSearchedBooksStore(selectSearchedBooksResponse);
-  const searchedBooksHasMore = useSearchedBooksStore(selectSearchedBooksHasMore);
   const searchQuery = useSearchedBooksStore(selectSearchQuery);
-
+  const searchedBooks = useSearchedBooksStore(selectSearchedBooks);
+  const status = useSearchedBooksStore(selectSearchedBooksStatus);
+  const response =  useSearchedBooksStore(selectSearchedBooksResponse);
+  const hasMore = useSearchedBooksStore(selectSearchedBooksHasMore);
+  
   const setSearchQuery = useSearchedBooksStore(selectSetSearchQuery);
-  const loadSearchedBooks = useSearchedBooksStore(selectLoadSearchedBooks);
-  const loadMoreSearchedBooks = useSearchedBooksStore(selectLoadMoreSearchedBooks);
-  const resetAll = useSearchedBooksStore(selectResetAll);
+  const fetchData = useSearchedBooksStore(selectLoadSearchedBooks);
+  const loadMore = useSearchedBooksStore(selectLoadMoreSearchedBooks);
+  const reset = useSearchedBooksStore(selectResetAll);
 
   const inputRef = useRef<TextInput>(null);
 
-  const isLoading = searchedBooksStatus === "loading";
-  const isFetching = searchedBooksStatus === "fetching";
+  const isLoading = status === "loading";
+  const isFetching = status === "fetching";
   const isEmpty = !isLoading && searchQuery.trim().length > 0 && searchedBooks.length === 0;
-  const isError = !isLoading && searchedBooksResponse?.status === "error";
+  const isError = !isLoading && response?.status === "error";
 
   const isFocused = useSharedValue(false);
 
@@ -73,31 +84,6 @@ const SearchBooksScreen = () => {
     ),
   }));
 
-  const renderItem = useCallback(({ item }: { item: BaseBook }) => (
-    <BookItem
-      item={item}
-      isOwner={isAdmin}
-      disableSwipe
-      onView={() => router.push(`/book/${item.id}`)}
-      labels={{
-        available: t("components.bookItem.labels.availability.available"),
-        unavailable: t("components.bookItem.labels.availability.unavailable"),
-        article: t("components.bookItem.labels.article"),
-      }} 
-      actionLabels={{
-        edit: t("components.bookItem.actions.edit"),
-        delete: t("components.bookItem.actions.delete"),
-      }}
-    />
-  ), [isAdmin, router]);
-
-  const renderFooter = useCallback(() => {
-    if (isFetching) {
-      return <ListLoader />;
-    }
-    return null;
-  }, [isFetching]);
-  
   useEffect(() => {
     const timer = setTimeout(() => {
       if (isConnected) {
@@ -108,17 +94,21 @@ const SearchBooksScreen = () => {
     return () => clearTimeout(timer);
   }, [isConnected]);
 
-  useEffect(() => {
-    return () => resetAll();
-  }, []);
-  
   return (
     <ViewWrapper 
       title={t("screens.searchBooks.header.title")}
       onBackPress={() => router.back()}
       hideHeaderBorder
     >
-      <View style={styles.searchContainer}>
+      <View 
+        style={{
+          backgroundColor: colors.white,
+          borderBottomColor: colors.grayTint7,
+          borderBottomWidth: 1,
+          paddingBottom: 10,
+          paddingHorizontal: 15,
+        }}
+      >
         <Input
           ref={inputRef}
           placeholder={t(`screens.searchBooks.searchInput.title.${isAdmin ? "admin" : "user"}`)}
@@ -148,9 +138,13 @@ const SearchBooksScreen = () => {
           iconRight={
             searchQuery.length > 0 ? (
               <TouchableOpacity
-                style={styles.clearButton}
+                style={{
+                  backgroundColor: colors.grayTint8,
+                  borderRadius: 12,
+                  padding: 4,
+                }}
                 onPress={() => {
-                  resetAll();
+                  reset();
                   inputRef.current?.blur();
                   isFocused.value = false;
                 }}
@@ -174,7 +168,7 @@ const SearchBooksScreen = () => {
       </View>
 
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>    
-        <View style={styles.content}>
+        <View style={{ flex: 1 }}>
           {isConnected && isLoading && (
             <Loading size="small" color={colors.orange} />
           )}
@@ -184,7 +178,7 @@ const SearchBooksScreen = () => {
               message={t("common.messages.errorWithRetry.title")}
               subMessage={t("common.messages.errorWithRetry.subtitle")}
               buttonText={t("common.buttons.errorWithRetry")}
-              onRetry={() => loadSearchedBooks(true)}
+              onRetry={() => fetchData(true)}
             />
           )}
 
@@ -198,18 +192,37 @@ const SearchBooksScreen = () => {
           {isConnected && !isLoading && !isEmpty && !isError && (
             <FlatList
               data={searchedBooks}
-              renderItem={renderItem}
+              renderItem={({ item, index }) => (
+                <Animated.View
+                  key={`book-${item.id}`}
+                  entering={FadeInDown.delay(index * 75)}
+                >
+                  <BookItem
+                    item={item}
+                    isOwner={isAdmin}
+                    disableSwipe
+                    onView={(bookId) => router.push(`/book/${bookId}`)}
+                    labels={{
+                      available: t("components.bookItem.labels.availability.available"),
+                      unavailable: t("components.bookItem.labels.availability.unavailable"),
+                      article: t("components.bookItem.labels.article"),
+                    }} 
+                    actionLabels={{
+                      edit: t("components.bookItem.actions.edit"),
+                      delete: t("components.bookItem.actions.delete"),
+                    }}
+                  />
+                </Animated.View>
+              )}
               keyExtractor={(item) => item.id}
               numColumns={1}
               contentContainerStyle={{
                 padding: 15,
                 gap: 10,
               }}
-              onEndReached={
-                searchedBooksHasMore ? loadMoreSearchedBooks : undefined
-              }
+              onEndReached={hasMore ? loadMore : undefined}
               onEndReachedThreshold={0.1}
-              ListFooterComponent={renderFooter}
+              ListFooterComponent={isFetching ? <ListLoader /> : null}
               scrollEnabled={isConnected}
             />
           )}
@@ -218,23 +231,5 @@ const SearchBooksScreen = () => {
     </ViewWrapper>
   );
 };
-
-const styles = StyleSheet.create({
-  searchContainer: {
-    backgroundColor: colors.white,
-    borderBottomColor: colors.grayTint7,
-    borderBottomWidth: 1,
-    paddingBottom: 10,
-    paddingHorizontal: 15,
-  },
-  clearButton: {
-    backgroundColor: colors.grayTint8,
-    borderRadius: 12,
-    padding: 4,
-  },
-  content: {
-    flex: 1,
-  },
-});
 
 export default SearchBooksScreen;

@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { format, differenceInCalendarDays } from "date-fns";
 import { enUS, uk } from "date-fns/locale";
-import { View, ScrollView, StyleSheet } from "react-native";
+import { View, ScrollView } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import { useIsConnected } from "@/contexts/networkContext";
@@ -32,15 +32,15 @@ const ViewingHistoryScreen = () => {
   const isConnected = useIsConnected();
 
   const viewingHistory = useViewingHistoryStore(selectViewingHistory);
-  const viewingHistoryStatus = useViewingHistoryStore(selectViewingHistoryStatus);
-  const viewingHistoryResponse = useViewingHistoryStore(selectViewingHistoryResponse);
+  const status = useViewingHistoryStore(selectViewingHistoryStatus);
+  const response = useViewingHistoryStore(selectViewingHistoryResponse);
 
-  const loadViewingHistory = useViewingHistoryStore(selectLoadViewingHistory);
-  const resetViewingHistory = useViewingHistoryStore(selectResetViewingHistory);
+  const fetchData = useViewingHistoryStore(selectLoadViewingHistory);
+  const reset = useViewingHistoryStore(selectResetViewingHistory);
 
-  const isLoading = viewingHistoryStatus === "loading";
+  const isLoading = status === "loading";
   const isEmpty = !isLoading && viewingHistory.length === 0;
-  const isError = !isLoading && viewingHistoryResponse?.status === "error";
+  const isError = !isLoading && response?.status === "error";
 
   const transformToDateString = (date: string) => {
     const diffDays = differenceInCalendarDays(new Date(), new Date(date));
@@ -53,10 +53,14 @@ const ViewingHistoryScreen = () => {
 
   useEffect(() => {
     if (isConnected) {
-      loadViewingHistory();
+      fetchData();
     }
-    return () => resetViewingHistory();
+
+    return () => reset();
   }, [isConnected]);
+
+  const sectionDelayStep = 150;
+  const itemDelayStep = 75;
 
   return (
     <ViewWrapper 
@@ -90,46 +94,47 @@ const ViewingHistoryScreen = () => {
       )}
 
       {isConnected && !isLoading && !isEmpty && !isError && (
-        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-          {viewingHistory.map((history, index) => (
-            <Animated.View 
-              key={index}
-              entering={FadeInDown.delay(index * 100)}
-              style={{ 
-                marginBottom: index === viewingHistory.length - 1 ? 0 : 15 
-              }}
-            >
-              <Typography fontSize={16} fontWeight="bold" style={{ marginBottom: 5 }}>
-                {transformToDateString(history.date)}
-              </Typography>
-              
-              <View style={styles.historyList}>  
-                {history.books.map((book, index) => (
-                  <ViewingHistoryItem
-                    key={index}
-                    item={book}
-                    onViewDetails={() => 
-                      router.push(`/book/${book.id}`)
-                    }
-                  />
-                ))}
-              </View>
-            </Animated.View>
-          ))}
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={{ flex: 1, padding: 15 }}>
+            {viewingHistory.map((history, sectionIndex) => {
+              const sectionDelay = sectionIndex * (sectionDelayStep + history.books.length * itemDelayStep);
+
+              return (
+                <Animated.View
+                  key={`section-${history.date}`}
+                  entering={FadeInDown.delay(sectionDelay)}
+                  style={{
+                    marginBottom: sectionIndex === viewingHistory.length - 1 ? 0 : 15,
+                  }}
+                >
+                  <Typography fontSize={16} fontWeight="bold" style={{ marginBottom: 5 }}>
+                    {transformToDateString(history.date)}
+                  </Typography>
+
+                  <View style={{ flexDirection: "column", gap: 10 }}>
+                    {history.books.map((book, i) => (
+                      <Animated.View
+                        key={`book-${book.id}`}
+                        entering={FadeInDown.delay(sectionDelay + i * itemDelayStep)}
+                      >
+                        <ViewingHistoryItem
+                          item={book}
+                          onViewDetails={() => router.push(`/(user)/book/${book.id}`)}
+                        />
+                      </Animated.View>
+                    ))}
+                  </View>
+                </Animated.View>
+              );
+            })}
+          </View>
         </ScrollView>
       )}
     </ViewWrapper>
   );
 };
-
-const styles = StyleSheet.create({
-  scrollViewContainer: {
-    flexGrow: 1,
-    padding: 15,
-  },
-  historyList: {
-    gap: 10,
-  },
-});
 
 export default ViewingHistoryScreen;

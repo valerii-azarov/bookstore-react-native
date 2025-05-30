@@ -1,4 +1,4 @@
-import { View, Linking, StyleSheet } from "react-native";
+import { View, Linking } from "react-native";
 import { useTranslation } from "@/contexts/translateContext";
 import { useBookStore } from "@/stores/bookStore";
 import { selectCurrentBook } from "@/selectors/bookSelectors";
@@ -7,11 +7,17 @@ import { colors } from "@/constants/theme";
 import ModalTitleWrapper from "@/components/ModalTitleWrapper";
 import Typography from "@/components/Typography";
 
+interface ParameterItem {
+  key: string;
+  label: string;
+  value: string;
+}
+
 const BookCharacteristicsModal = () => {
   const t = useTranslation();
   const currentBook = useBookStore(selectCurrentBook);
 
-  const fields = [
+  const fields: ParameterItem[] = [
     {
       key: "pageCount",
       label: t("common.parameters.pageCount.label"),
@@ -78,10 +84,21 @@ const BookCharacteristicsModal = () => {
     <ModalTitleWrapper
       title={t("modals.bookCharacteristics.header.title")}
     >
-      <View style={styles.section}>
+      <View 
+        style={{
+          backgroundColor: colors.white,
+          borderRadius: 10,
+          padding: 15,
+        }}
+      >
         {fields.map((field, index) => (
           <View key={index}>
-            <View style={styles.parameterColumn}>
+            <View 
+              style={{
+                flexDirection: "column",
+                alignItems: "flex-start",
+              }}
+            >
               <Typography
                 fontSize={14}
                 fontWeight="medium"
@@ -104,20 +121,33 @@ const BookCharacteristicsModal = () => {
 
             {index < fields.length - 1 && (
               <View
-                style={[
-                  styles.divider,
-                  {
-                    marginVertical: 15,
-                  },
-                ]}
+                style={{
+                  height: 1.5,
+                  backgroundColor: colors.grayTint5,
+                  marginVertical: 15,
+                  opacity: 0.3,
+                }}
               />
             )}
           </View>
         ))}
       </View>
 
-      <View style={[styles.notice, { marginTop: 15 }]}>
-        <Typography fontSize={16} fontWeight="bold" color={colors.black} style={styles.noticeTitle}>
+      <View 
+        style={{ 
+          backgroundColor: colors.orangeTint8,
+          borderRadius: 10,
+          paddingVertical: 15,
+          paddingHorizontal: 20,
+          marginTop: 15,
+        }}
+      >
+        <Typography 
+          fontSize={16} 
+          fontWeight="bold" 
+          color={colors.black} 
+          style={{ marginBottom: 5 }}
+        >
           {t("modals.bookCharacteristics.reportIssue.title")}
         </Typography>
 
@@ -137,31 +167,5 @@ const BookCharacteristicsModal = () => {
     </ModalTitleWrapper>
   );
 };
-
-const styles = StyleSheet.create({
-  section: {
-    backgroundColor: colors.white,
-    borderRadius: 10,
-    padding: 15,
-  },
-  parameterColumn: {
-    flexDirection: "column",
-    alignItems: "flex-start",
-  },
-  divider: {
-    height: 1.5,
-    backgroundColor: colors.grayTint5,
-    opacity: 0.3,
-  },
-  notice: {
-    backgroundColor: colors.orangeTint8,
-    borderRadius: 10,
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-  },
-  noticeTitle: {
-    marginBottom: 5,
-  },
-});
 
 export default BookCharacteristicsModal;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { View } from "react-native";
 import { useRouter } from "expo-router";
 import { useIsConnected } from "@/contexts/networkContext";
@@ -20,7 +20,7 @@ import {
 } from "@/constants/book";
 import { colors } from "@/constants/theme";
 import { converter } from "@/helpers/converter";
-import { BookField, BookFormValues, DirectionType } from "@/types";
+import { BookField, BookFormValues, DirectionType, Step } from "@/types";
 
 import ModalWrapper from "@/components/ModalWrapper";
 import KeyboardWrapper from "@/components/KeyboardWrapper";
@@ -73,7 +73,7 @@ const CreateBookModal = () => {
   const createBookResponse = useBookStore(selectCreateBookResponse);
   
   const createBook = useBookStore(selectCreateBook);
-  const resetBookOperationState = useBookStore(selectResetBookOperationState);
+  const resetState = useBookStore(selectResetBookOperationState);
 
   const isCreating = createBookStatus === "creating";
   const status = createBookResponse?.status;
@@ -189,7 +189,7 @@ const CreateBookModal = () => {
     }));
   };
 
-  const steps = [
+  const steps: Step<BookFormValues>[] = [
     {
       title: t("modals.createBook.steps.step1.title"),
       component: (
@@ -704,7 +704,7 @@ const CreateBookModal = () => {
   }, [isCreating, isSecondToLastStep, createBookResponse]);
 
   useEffect(() => {
-    return () => resetBookOperationState("create");
+    return () => resetState("create");
   }, []);
 
   return (

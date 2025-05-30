@@ -1,5 +1,5 @@
-import { useRef, useState, useEffect } from "react";
-import { View, Alert, ScrollView, StyleSheet } from "react-native";
+import React, { useRef, useState, useEffect } from "react";
+import { View, Alert, ScrollView } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { isEqual } from "lodash";
 import { bookHandler } from "@/helpers/bookHandler";
@@ -56,7 +56,7 @@ const EditBookModal = () => {
   const updateBookResponse = useBookStore(selectUpdateBookResponse);
 
   const updateBook = useBookStore(selectUpdateBook);
-  const resetBookOperationState = useBookStore(selectResetBookOperationState);
+  const resetState = useBookStore(selectResetBookOperationState);
 
   const status = updateBookResponse?.status;
   const message = updateBookResponse?.message;
@@ -246,7 +246,7 @@ const EditBookModal = () => {
       );
     }    
 
-    return () => resetBookOperationState("update");
+    return () => resetState("update");
   }, [status, message]);
 
   const textFields: EditableBookField[] = ["title", "publisher", "size", "isbn", "sku"];
@@ -272,12 +272,12 @@ const EditBookModal = () => {
         />
         
         <ScrollView 
-          contentContainerStyle={styles.scrollViewContainer}
+          contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
         >
-          <View style={[styles.content, styles.padded]}>
+          <View style={{ flex: 1, padding: 15 }}>
             {typedField && newValue !== null && ( 
-              <View style={styles.field}>
+              <View style={{ minHeight: 75 }}>
                 {!hiddenLabelFields.includes(typedField) && (
                   <Typography
                     fontSize={typedField === "illustrations" ? 16 : 14}
@@ -486,7 +486,13 @@ const EditBookModal = () => {
           </View>
         </ScrollView>
 
-        <View style={styles.buttonContainer}>
+        <View 
+          style={{
+            backgroundColor: colors.grayTint9,
+            padding: 10,
+            paddingHorizontal: 15,
+          }}
+        >
           <Button onPress={handleUpdate} loading={isUpdating} disabled={isSaveDisabled}>
             <Typography fontSize={16} fontWeight="bold" color={colors.white}>
               {t("modals.editBook.buttons.save")}
@@ -497,25 +503,5 @@ const EditBookModal = () => {
     </ModalWrapper>
   );
 };
-
-const styles = StyleSheet.create({
-  scrollViewContainer: {
-    flexGrow: 1,
-  },
-  content: {
-    flex: 1,
-  },
-  field: { 
-    minHeight: 75,
-  },
-  buttonContainer: {
-    backgroundColor: colors.grayTint9,
-    padding: 10,
-    paddingHorizontal: 15,
-  },
-  padded: {
-    padding: 15,
-  },
-});
 
 export default EditBookModal;

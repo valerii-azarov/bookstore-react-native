@@ -1,5 +1,10 @@
-import { useEffect } from "react";
-import { View, FlatList, ScrollView, RefreshControl, StyleSheet } from "react-native";
+import React, { useEffect } from "react";
+import {
+  View,
+  FlatList,
+  ScrollView,
+  RefreshControl,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
@@ -13,10 +18,12 @@ import {
   selectLoadCategories,
   selectRefreshCategories,
 } from "@/selectors/categoriesSelectors";
-import { selectToggleCart, selectGetCartCount } from "@/selectors/cartSelectors";
+import {
+  selectToggleCart,
+  selectGetCartCount,
+} from "@/selectors/cartSelectors";
 import { selectToggleFavorite } from "@/selectors/favoritesSelectors";
 import { colors } from "@/constants/theme";
-import { Book } from "@/types";
 
 import ScreenWrapper from "@/components/ScreenWrapper";
 import CategoryBookItem from "@/components/CategoryBookItem";
@@ -36,69 +43,25 @@ const BooksUserScreen = () => {
   const isConnected = useIsConnected();
 
   const categories = useCategoriesStore(selectCategories);
-  const categoriesStatus = useCategoriesStore(selectCategoriesStatus);
-  const categoriesResponse = useCategoriesStore(selectCategoriesResponse);
+  const status = useCategoriesStore(selectCategoriesStatus);
+  const response = useCategoriesStore(selectCategoriesResponse);
 
-  const loadCategories = useCategoriesStore(selectLoadCategories);
-  const refreshCategories = useCategoriesStore(selectRefreshCategories);
+  const fetchData = useCategoriesStore(selectLoadCategories);
+  const refresh = useCategoriesStore(selectRefreshCategories);
 
+  const cartCount = useCartStore(selectGetCartCount)()
+  
   const toggleCart = useCartStore(selectToggleCart);
-  const getCartCount = useCartStore(selectGetCartCount);
-
   const toggleFavorite = useFavoritesStore(selectToggleFavorite);
 
-  const isLoading = categoriesStatus === "loading";
-  const isRefreshing = categoriesStatus === "refreshing";
+  const isLoading = status === "loading";
+  const isRefreshing = status === "refreshing";
   const isEmpty = !isLoading && Object.keys(categories).length === 0;
-  const isError = !isLoading && categoriesResponse?.status === "error";
-
-  const renderCategory = (category: string, index: number) => (
-    <View key={index} style={{ marginTop: 15 }}>
-      <View style={styles.categoryHeader}>
-        <Typography fontSize={18} fontWeight="bold" color={colors.black}>
-          {t(`common.genres.${category}`)}
-        </Typography>
-
-        <RedirectButton
-          title={t("screens.books.buttons.showAll")}
-          onPress={() =>
-            router.push({
-              pathname: "/category-books/[category]",
-              params: { category },
-            })
-          }
-        />
-      </View>
-
-      <FlatList
-        data={categories[category]}
-        renderItem={({ item }: { item: Book }) => (
-          <CategoryBookItem
-            item={item}
-            mode="horizontal"
-            onView={() => router.push(`/book/${item.id}`)}
-            onAddToFavorites={(bookId) => toggleFavorite(bookId)}
-            onAddToCart={(item) => toggleCart(item)}
-            labels={{
-              details: t("components.bookItem.buttons.details"),
-            }}
-          />
-        )}
-        keyExtractor={(item: Book) => item.id}
-        horizontal
-        contentContainerStyle={{
-          paddingVertical: 10,
-          paddingHorizontal: 15,
-          gap: 15,
-        }}
-        showsHorizontalScrollIndicator={false}
-      />
-    </View>
-  );
+  const isError = !isLoading && response?.status === "error";
 
   useEffect(() => {
     if (isConnected) {
-      loadCategories();
+      fetchData();
     }
   }, [isConnected]);
 
@@ -109,27 +72,28 @@ const BooksUserScreen = () => {
         titleSize={18}
         iconRight={
           <IconBadge
-            badgeCount={getCartCount()}
+            badgeCount={cartCount}
             badgeIconSet="MaterialIcons"
             badgeIconName="shopping-cart"
-            onPress={() => router.push("/cart")}
+            onPress={() => router.push("/(user)/(modals)/cart")}
           />
         }
-        style={[
-          styles.header, 
-          { 
-            minHeight: 40,
-          }
-        ]}
+        style={{ 
+          minHeight: 40,
+          backgroundColor: colors.white,
+          borderBottomColor: colors.grayTint7,
+          borderBottomWidth: 1,
+          paddingHorizontal: 15,
+        }}
       />
       
       <ScrollView
-        contentContainerStyle={styles.scrollViewContainer}
+        contentContainerStyle={{ flexGrow: 1 }}
         refreshControl={
           isConnected ? (
             <RefreshControl
               refreshing={isRefreshing}
-              onRefresh={refreshCategories}
+              onRefresh={refresh}
             />
           ) : undefined
         }
@@ -149,7 +113,7 @@ const BooksUserScreen = () => {
             message={t("common.messages.errorWithRetry.title")}
             subMessage={t("common.messages.errorWithRetry.subtitle")}
             buttonText={t("common.buttons.errorWithRetry")}
-            onRetry={() => loadCategories()}
+            onRetry={() => fetchData()}
           />
         )}
 
@@ -161,29 +125,60 @@ const BooksUserScreen = () => {
         )}
 
         {isConnected && !isLoading && !isEmpty && !isError && (
-          Object.keys(categories).map(renderCategory)
+          Object.keys(categories).map((category, index) => (
+            <View key={index} style={{ marginTop: 15 }}>
+              <View 
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  paddingHorizontal: 15,
+                }}
+              >
+                <Typography fontSize={18} fontWeight="bold" color={colors.black}>
+                  {t(`common.genres.${category}`)}
+                </Typography>
+
+                <RedirectButton
+                  title={t("screens.books.buttons.showAll")}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/category-books/[category]",
+                      params: { category },
+                    })
+                  }
+                />
+              </View>
+
+              <FlatList
+                data={categories[category]}
+                renderItem={({ item }) => (
+                  <CategoryBookItem
+                    item={item}
+                    mode="horizontal"
+                    onView={(bookId) => router.push(`/(user)/book/${bookId}`)}
+                    onAddToFavorites={(bookId) => toggleFavorite(bookId)}
+                    onAddToCart={(item) => toggleCart(item)}
+                    labels={{
+                      details: t("components.bookItem.buttons.details"),
+                    }}
+                  />
+                )}
+                keyExtractor={(item) => item.id}
+                horizontal
+                contentContainerStyle={{
+                  paddingVertical: 10,
+                  paddingHorizontal: 15,
+                  gap: 15,
+                }}
+                showsHorizontalScrollIndicator={false}
+              />
+            </View>
+          ))
         )}
       </ScrollView>
     </ScreenWrapper>
   );
 };
-
-const styles = StyleSheet.create({
-  header: {
-    backgroundColor: colors.white,
-    borderBottomColor: colors.grayTint7,
-    borderBottomWidth: 1,
-    paddingHorizontal: 15,
-  },
-  scrollViewContainer: {
-    flexGrow: 1,
-  },
-  categoryHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 15,
-  },
-});
 
 export default BooksUserScreen;

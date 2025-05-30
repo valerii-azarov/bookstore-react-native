@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
+import { View, TouchableOpacity, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
@@ -9,6 +9,13 @@ import { colors } from "@/constants/theme";
 import ViewWrapper from "@/components/ViewWrapper";
 import Typography from "@/components/Typography";
 
+interface FieldItem {
+  key: string;
+  label: string;
+  value: string;
+  isEditable: boolean;
+}
+
 const ProfileScreen = () => {  
   const router = useRouter();   
   
@@ -17,7 +24,7 @@ const ProfileScreen = () => {
 
   const user = useAuthStore(selectUser);
 
-  const fields = [
+  const fields: FieldItem[] = [
     {
       key: "firstName",
       label: t("screens.profile.fields.firstName.label"),
@@ -45,15 +52,12 @@ const ProfileScreen = () => {
       hideFooter
     >
       <ScrollView
-        contentContainerStyle={styles.scrollViewContainer}
+        contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
       > 
-        <View style={[styles.content, styles.padded]}>
+        <View style={{ flex: 1, padding: 15 }}>
           {fields.map((field, index) => (
-            <View 
-              key={index} 
-              style={styles.field}
-            >
+            <View key={index} style={{ marginBottom: 15 }}>
               <Typography
                 fontSize={14}
                 fontWeight="medium"
@@ -64,7 +68,13 @@ const ProfileScreen = () => {
                 {field.label}
               </Typography>
 
-              <View style={styles.fieldRow}>
+              <View 
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                }}
+              >
                 <Typography
                   fontSize={16}
                   fontWeight="bold"
@@ -109,25 +119,5 @@ const ProfileScreen = () => {
     </ViewWrapper>
   );
 };
-
-const styles = StyleSheet.create({
-  scrollViewContainer: {
-    flexGrow: 1,
-  },
-  content: {
-    flex: 1,
-  },
-  field: {
-    marginBottom: 15,
-  },
-  fieldRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-  },
-  padded: {
-    padding: 15,
-  },
-});
 
 export default ProfileScreen;

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { FlatList } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useRouter } from "expo-router";
@@ -29,22 +29,23 @@ const FavoritesScreen = () => {
   const isConnected = useIsConnected();
 
   const favoriteBooks = useFavoritesStore(selectFavoriteBooks);
-  const fetchFavoritesStatus = useFavoritesStore(selectFetchFavoritesStatus);
-  const fetchFavoritesResponse = useFavoritesStore(selectFetchFavoritesResponse);
+  const status = useFavoritesStore(selectFetchFavoritesStatus);
+  const response = useFavoritesStore(selectFetchFavoritesResponse);
 
-  const loadFavoriteBooks = useFavoritesStore(selectLoadFavoriteBooks);
+  const fetchData = useFavoritesStore(selectLoadFavoriteBooks);
   const toggleFavorite = useFavoritesStore(selectToggleFavorite);
-  const resetFavorites = useFavoritesStore(selectResetFavorites);
+  const reset = useFavoritesStore(selectResetFavorites);
 
-  const isLoading = fetchFavoritesStatus === "loading";
+  const isLoading = status === "loading";
   const isEmpty = !isLoading && favoriteBooks.length === 0;
-  const isError = !isLoading && fetchFavoritesResponse?.status === "error";
+  const isError = !isLoading && response?.status === "error";
 
   useEffect(() => {
     if (isConnected) {
-      loadFavoriteBooks();
+      fetchData();
     }
-    return () => resetFavorites();
+
+    return () => reset();
   }, [isConnected]);
 
   return (
@@ -83,16 +84,13 @@ const FavoritesScreen = () => {
           data={favoriteBooks}
           renderItem={({ item, index }) => (  
             <Animated.View
-              entering={FadeInDown.delay(index * 100)}
+              key={`book-${item.id}`}
+              entering={FadeInDown.delay(index * 75)}
             >
               <FavoriteItem
                 item={item}
-                onViewDetails={() => {
-                  if (isConnected) {
-                    router.push(`/book/${item.id}`);
-                  }
-                }}
-                onToggleFavorite={() => toggleFavorite(item.id)}
+                onView={(bookId) => router.push(`/book/${bookId}`)}
+                onAddToFavorites={(bookId) => toggleFavorite(bookId)}
                 labels={{
                   favorite: t("components.favoriteBookItem.buttons.favorite"),
                 }}

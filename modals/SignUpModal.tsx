@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { View, TextInput, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { useIsConnected } from "@/contexts/networkContext";
@@ -11,17 +11,15 @@ import {
   selectSetIsRegisteringProgress,
   selectResetAuthOperationState,
 } from "@/selectors/authSelectors";
-import { 
-  emailRegex, 
-  passwordRegex 
-} from "@/constants/regex";
+import { emailRegex, passwordRegex } from "@/constants/regex";
 import { colors } from "@/constants/theme";
 import {
   SignUpField,
-  SignUpFormValues, 
-  PasswordVisibility, 
-  PasswordValidations, 
-  DirectionType 
+  SignUpFormValues,
+  PasswordVisibility,
+  PasswordValidations,
+  DirectionType,
+  Step,
 } from "@/types";
 
 import ModalWrapper from "@/components/ModalWrapper";
@@ -52,8 +50,8 @@ const SignUpModal = () => {
   const registerResponse = useAuthStore(selectRegisterResponse);
 
   const register = useAuthStore(selectRegister);
-  const setIsRegisteringProgress = useAuthStore(selectSetIsRegisteringProgress);
-  const resetAuthOperationState = useAuthStore(selectResetAuthOperationState);
+  const setIsProgress = useAuthStore(selectSetIsRegisteringProgress);
+  const resetState = useAuthStore(selectResetAuthOperationState);
 
   const isRegistering = registerStatus === "registering";
   const status = registerResponse?.status;
@@ -110,7 +108,7 @@ const SignUpModal = () => {
     }));
   };
 
-  const steps = [
+  const steps: Step<SignUpFormValues>[] = [
     {
       title: t("modals.signUp.steps.step1.title"),
       component: (
@@ -403,11 +401,11 @@ const SignUpModal = () => {
   const handleNext = () => {
     setDirection("forward");
     if (isLastStep) {
-      setIsRegisteringProgress(false);
+      setIsProgress(false);
       return status === "error" ? router.back() : router.replace("/(user)/(tabs)/books");
     }
     if (isSecondToLastStep && !isRegistering && isConnected) {
-      setIsRegisteringProgress(true);
+      setIsProgress(true);
       register(formValues);
       return;
     }
@@ -437,8 +435,8 @@ const SignUpModal = () => {
 
   useEffect(() => {
     return () => {
-      setIsRegisteringProgress(false);
-      resetAuthOperationState("register");
+      setIsProgress(false);
+      resetState("register");
     }
   }, []);
 

@@ -1,9 +1,9 @@
 import {
+  View,
   Keyboard,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   ViewStyle,
-  StyleSheet,
   Platform,
 } from "react-native";
 
@@ -14,21 +14,22 @@ type KeyboardWrapperProps = {
 
 const KeyboardWrapper = ({ children, style }: KeyboardWrapperProps) => {
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <KeyboardAvoidingView
-        style={[styles.keyboardAvoidingView, style]}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        {children}
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={[{ flex: 1 }, style]}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "space-around",
+          }}
+        >
+          {children}
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  keyboardAvoidingView: {
-    flex: 1,
-  },
-});
 
 export default KeyboardWrapper;

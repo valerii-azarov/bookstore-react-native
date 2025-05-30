@@ -1,4 +1,4 @@
-import { View, Linking, StyleSheet } from "react-native";
+import { View, Linking } from "react-native";
 import { useTranslation } from "@/contexts/translateContext";
 import { useBookStore } from "@/stores/bookStore";
 import { selectCurrentBook } from "@/selectors/bookSelectors";
@@ -15,14 +15,33 @@ const BookDescriptionModal = () => {
     <ModalTitleWrapper
       title={t("modals.bookDescription.header.title")}
     >
-      <View style={styles.section}>
+      <View 
+        style={{
+          backgroundColor: colors.white,
+          borderRadius: 10,
+          padding: 15,
+        }}
+      >
         <Typography fontSize={16} fontWeight="medium" color={colors.black}>
           {currentBook?.description}
         </Typography>
       </View>
 
-      <View style={[styles.notice, { marginTop: 15 }]}>
-        <Typography fontSize={16} fontWeight="bold" color={colors.black} style={styles.noticeTitle}>
+      <View 
+        style={{ 
+          backgroundColor: colors.orangeTint8,
+          borderRadius: 10,
+          paddingVertical: 15,
+          paddingHorizontal: 20,
+          marginTop: 15,
+        }}
+      >
+        <Typography 
+          fontSize={16} 
+          fontWeight="bold" 
+          color={colors.black} 
+          style={{ marginBottom: 5 }}
+        >
           {t("modals.bookDescription.reportIssue.title")}
         </Typography>
 
@@ -42,22 +61,5 @@ const BookDescriptionModal = () => {
     </ModalTitleWrapper>
   );
 };
-
-const styles = StyleSheet.create({
-  section: {
-    backgroundColor: colors.white,
-    borderRadius: 10,
-    padding: 15,
-  },
-  notice: {
-    backgroundColor: colors.orangeTint8,
-    borderRadius: 10,
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-  },
-  noticeTitle: {
-    marginBottom: 5,
-  },
-});
 
 export default BookDescriptionModal;

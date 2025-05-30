@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 import { View, FlatList, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useRouter } from "expo-router";
@@ -55,21 +55,20 @@ const CartModal = () => {
       />
 
       <View 
-        style={[
-          styles.content,
-          isEmpty && {
-            justifyContent: "center",
-            alignItems: "center",
-          },
-        ]}
+        style={{
+          flex: 1,
+          justifyContent: isEmpty ? "center" : undefined,
+          alignItems: isEmpty ? "center" : undefined,
+        }}
       >
         {isHasItems && (
-          <View style={styles.listContainer}>
+          <View style={{ flex: 1 }}>
             <FlatList
               data={cartBooks}
               renderItem={({ item, index }) => (  
                 <Animated.View
-                  entering={FadeInDown.delay(index * 100)}
+                  key={`book-${item.id}`}
+                  entering={FadeInDown.delay(index * 75)}
                 >  
                   <CartItem
                     ref={(ref) => {
@@ -78,12 +77,12 @@ const CartModal = () => {
                       }
                     }}
                     item={item}
-                    onViewDetails={() => router.push(`/book/${item.id}`)}
-                    onRemoveFromCart={() => {
+                    onView={(bookId) => router.push(`/(user)/book/${bookId}`)}
+                    onRemoveFromCart={(bookId) => {
                       if (swipeableRefs.current[index]) {
                         swipeableRefs.current[index]?.close();
                       }
-                      setTimeout(() => removeFromCart(item.id), 500);
+                      setTimeout(() => removeFromCart(bookId), 500);
                     }}
                     onUpdateQuantity={updateQuantity}
                     alerts={{
@@ -111,7 +110,7 @@ const CartModal = () => {
                 fontWeight="bold" 
                 color={colors.black} 
                 numberOfLines={1}
-                style={styles.totalTitle}
+                style={{ marginBottom: 10 }}
               >
                 {t("modals.cart.labels.order")}
               </Typography>
@@ -133,7 +132,7 @@ const CartModal = () => {
                   fontWeight="bold"
                   color={colors.black}
                   numberOfLines={1} 
-                  style={styles.totalValue}
+                  style={{ maxWidth: 200 }}
                 >
                   {subtotal.toFixed(2)}₴
                 </Typography>
@@ -150,7 +149,7 @@ const CartModal = () => {
                     fontWeight="bold" 
                     color={colors.red}
                     numberOfLines={1}  
-                    style={styles.totalValue}
+                    style={{ maxWidth: 200 }}
                   >
                     -{discountAmount.toFixed(2)}₴
                   </Typography>
@@ -158,13 +157,13 @@ const CartModal = () => {
               )}
 
               <View
-                style={[
-                  styles.divider,
-                  {
-                    marginTop: 15,
-                    marginBottom: 10,
-                  },
-                ]}
+                style={{
+                  height: 1.5,
+                  backgroundColor: colors.grayTint5,
+                  marginTop: 15,
+                  marginBottom: 10,
+                  opacity: 0.3,
+                }}
               />
 
               <View style={styles.totalRow}>
@@ -177,17 +176,23 @@ const CartModal = () => {
                   fontWeight="bold" 
                   numberOfLines={1}
                   color={colors.black} 
-                  style={styles.totalValue}
+                  style={{ maxWidth: 200 }}
                 >
                   {total.toFixed(2)}₴
                 </Typography>
               </View>
             </View>
 
-            <View style={styles.buttonContainer}>
+            <View 
+              style={{
+                backgroundColor: colors.grayTint9,
+                padding: 10,
+                paddingHorizontal: 15,
+              }}
+            >
               <Button
                 onPress={() => {
-                  router.push("/checkout");
+                  router.push("/(user)/(modals)/checkout");
                 }}
                 disabled={!isConnected || isEmpty}
               >
@@ -210,12 +215,6 @@ const CartModal = () => {
 };
 
 const styles = StyleSheet.create({
-  content: {
-    flex: 1,
-  },
-  listContainer: {
-    flex: 1,
-  },
   totalContainer: {
     backgroundColor: colors.white,
     borderRadius: 10,
@@ -223,26 +222,10 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginHorizontal: 15,
   },
-  totalTitle: {
-    marginBottom: 10,
-  },
   totalRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-end",
-  },
-  totalValue: {
-    maxWidth: 200,
-  },
-  divider: {
-    height: 1.5,
-    backgroundColor: colors.grayTint5,
-    opacity: 0.3,
-  },
-  buttonContainer: {
-    backgroundColor: colors.grayTint9,
-    padding: 10,
-    paddingHorizontal: 15,
   },
 });
 

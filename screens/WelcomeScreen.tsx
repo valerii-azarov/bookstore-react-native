@@ -1,5 +1,5 @@
-import { useState, useMemo, useEffect } from "react";
-import { View, FlatList, TouchableOpacity, StyleSheet, Platform } from "react-native";
+import React, { useState, useMemo, useEffect } from "react";
+import { View, FlatList, TouchableOpacity } from "react-native";
 import { Link } from "expo-router";
 import { useIsConnected } from "@/contexts/networkContext";
 import {
@@ -8,11 +8,11 @@ import {
   useTranslation,
 } from "@/contexts/translateContext";
 import { useImagesStore } from "@/stores/imagesStore";
-import { 
+import {
   selectCoverImages,
   selectCoverImagesStatus,
   selectCoverImagesResponse,
-  selectLoadCoverImages, 
+  selectLoadCoverImages,
 } from "@/selectors/imagesSelectors";
 import { colors } from "@/constants/theme";
 
@@ -37,7 +37,10 @@ const WelcomeScreen = () => {
   const isLoading = coverImagesStatus === "loading";
   const isError = !isLoading && coverImagesResponse?.status === "error";
 
-  const [contentSize, setContentSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+  const [contentSize, setContentSize] = useState<{
+    width: number;
+    height: number;
+  }>({ width: 0, height: 0 });
 
   const maxImages = Math.min(coverImages.length, 9);
 
@@ -45,53 +48,71 @@ const WelcomeScreen = () => {
   const numRows = maxImages > 0 ? Math.ceil(maxImages / numColumns) : 1;
 
   const margin = 5;
-  
+
   const adjustedWidth = contentSize.width - 2 * margin * (numColumns + 1);
   const adjustedHeight = contentSize.height - 2 * margin * (numRows + 1);
-  
+
   const imageWidth = numColumns > 0 ? adjustedWidth / numColumns : adjustedWidth;
   const imageHeight = numRows > 0 ? adjustedHeight / numRows : adjustedHeight;
 
   const shuffledImages = useMemo(() => {
     return [...coverImages].sort(() => Math.random() - 0.5).slice(0, maxImages);
   }, [coverImages]);
-  
+
   useEffect(() => {
     if (isConnected) {
       loadCoverImages();
     }
   }, [isConnected]);
-  
+
   return (
-    <ScreenWrapper 
+    <ScreenWrapper
       containerStyle={{ backgroundColor: colors.white }}
-      hideStatusBarBackground
       hideStatusBarBorder
       enableFooter
     >
-      <View style={styles.langContainer}>
-        <TouchableOpacity 
+      <View
+        style={{
+          position: "absolute",
+          top: 5,
+          right: 10,
+        }}
+      >
+        <TouchableOpacity
           onPress={() => {
             setLanguage(language === "uk" ? "en" : "uk");
           }}
-          style={styles.langButton}
+          style={{
+            padding: 10,
+            borderRadius: 15,
+            borderCurve: "continuous",
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: colors.grayTint7,
+            zIndex: 1,
+          }}
           activeOpacity={0.7}
         >
-          <Typography fontSize={14} fontWeight="bold" color={colors.black} style={{ marginRight: 5 }}>
+          <Typography
+            fontSize={14}
+            fontWeight="bold"
+            color={colors.black}
+            style={{ marginRight: 5 }}
+          >
             {language === "uk" ? "UA" : "ENG"}
           </Typography>
 
           <Icon 
             iconSet="MaterialIcons"
-            iconName="language"
+            iconName="language" 
             iconSize={18} 
             iconColor={colors.black} 
           />
         </TouchableOpacity>
       </View>
-      
-      <View 
-        style={styles.content} 
+
+      <View
+        style={{ flex: 1 }}
         onLayout={(event) => {
           const { width, height } = event.nativeEvent.layout;
           setContentSize({ width, height });
@@ -103,17 +124,21 @@ const WelcomeScreen = () => {
             keyExtractor={(item, index) => `${item}-${index}`}
             numColumns={numColumns}
             renderItem={({ item }) => (
-              <Image 
-                source={{ uri: item }}  
+              <Image
+                source={{ uri: item }}
                 style={{
                   width: imageWidth,
                   height: imageHeight,
                   margin: 5,
-                }} 
-                resizeMode="cover" 
+                }}
+                resizeMode="cover"
               />
             )}
-            contentContainerStyle={styles.imageContainer}
+            contentContainerStyle={{
+              width: "100%",
+              height: "100%",
+              alignItems: "center",
+            }}
             scrollEnabled={false}
             initialNumToRender={maxImages}
             windowSize={5}
@@ -121,31 +146,62 @@ const WelcomeScreen = () => {
         )}
       </View>
 
-      <View style={styles.footer}>
+      <View
+        style={{
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
         <View style={{ flexDirection: "row" }}>
-          <Typography fontSize={32} fontWeight="bold" color={colors.orange}>
+          <Typography
+            fontSize={32}
+            fontWeight="bold"
+            color={colors.orange}
+          >
             {t("screens.welcome.header.title.first")}
           </Typography>
 
-          <Typography fontSize={32} fontWeight="bold" color={colors.black}>
+          <Typography
+            fontSize={32}
+            fontWeight="bold"
+            color={colors.black}
+          >
             {t("screens.welcome.header.title.remaining")}
           </Typography>
         </View>
 
-        <Typography fontSize={14} fontWeight="regular" color={colors.gray} style={styles.subtitle}>
+        <Typography
+          fontSize={14}
+          fontWeight="regular"
+          color={colors.gray}
+          style={{
+            textAlign: "center",
+            marginBottom: 15,
+          }}
+        >
           {t("screens.welcome.header.subtitle")}
         </Typography>
-        
+
         <Link href="/sign-in" asChild>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={{
-              ...styles.startButton,
-              ...(isConnected ? styles.startButtonEnabled : styles.startButtonDisabled),
+              height: 50,
+              paddingHorizontal: 30,
+              borderRadius: 30,
+              borderCurve: "continuous",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: isConnected ? colors.orange : colors.grayTint5,
+              opacity: isConnected ? 1 : 0.6,
             }}
             activeOpacity={0.7}
             disabled={!isConnected}
           >
-            <Typography fontSize={16} fontWeight="bold" color={colors.white}>
+            <Typography
+              fontSize={16}
+              fontWeight="bold"
+              color={colors.white}
+            >
               {t("screens.welcome.buttons.start")}
             </Typography>
           </TouchableOpacity>
@@ -154,58 +210,5 @@ const WelcomeScreen = () => {
     </ScreenWrapper>
   );
 };
-
-const styles = StyleSheet.create({
-  langContainer: {
-    position: "absolute",
-    top: 5,
-    right: 10,
-  },
-  langButton: {
-    backgroundColor: colors.grayTint7,
-    borderRadius: 15,
-    borderCurve: "continuous",
-    padding: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    zIndex: 1,
-  },
-  content: {
-    flex: 1,
-  },
-  imageContainer: {
-    width: "100%",
-    height: "100%",
-    alignItems: "center",
-  },
-  footer: {
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  title: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  subtitle: {
-    marginBottom: 15,
-    textAlign: "center",
-  },
-  startButton: {
-    height: 50,
-    paddingHorizontal: 30,
-    borderRadius: 30,
-    borderCurve: "continuous",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  startButtonEnabled: {
-    backgroundColor: colors.orange,
-    opacity: 1,
-  },
-  startButtonDisabled: {
-    backgroundColor: colors.grayTint5,
-    opacity: 0.6,
-  },  
-});
 
 export default WelcomeScreen;

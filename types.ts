@@ -306,26 +306,6 @@ export interface Step<T> {
   scrollEnabled?: boolean;
 }
 
-export interface MenuItem {
-  key: string;
-  label: string;
-  iconSet: keyof typeof IconSets;
-  iconName: string;
-  iconSize?: number;
-  iconColor?: string;
-  textColor?: string;
-  route?: AppRoute;
-  onPress?: () => void;
-  component?: React.ReactNode;
-  hideChevron?: boolean;
-  isVisible?: boolean;
-}
-
-export interface MenuSection {
-  title: string;
-  items: MenuItem[];
-}
-
 export interface IconType {
   iconSet: keyof typeof IconSets;
   iconName: string;

@@ -1,6 +1,6 @@
 export const cloudinaryConfig = {
-  cloudName: "dzpmzxss6",
-  apiKey: "159988319351254",
-  apiSecret: "70VEgISpRQCaQUQaZtcUdPER_mU",
-  uploadPreset: "images",
+  cloudName: process.env.EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  apiKey: process.env.EXPO_PUBLIC_CLOUDINARY_API_KEY,
+  apiSecret: process.env.EXPO_PUBLIC_CLOUDINARY_API_SECRET,
+  uploadPreset: process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
 };

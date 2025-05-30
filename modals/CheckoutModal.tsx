@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { View } from "react-native";
 import { useRouter } from "expo-router";
 import { useIsConnected } from "@/contexts/networkContext";
@@ -27,7 +27,7 @@ import {
   selectResetOrderOperationState,
 } from "@/selectors/orderSelectors";
 import { colors } from "@/constants/theme";
-import { OrderFormValues, Option, DirectionType } from "@/types";
+import { OrderFormValues, Option, DirectionType, Step } from "@/types";
 
 import ModalWrapper from "@/components/ModalWrapper";
 import KeyboardWrapper from "@/components/KeyboardWrapper";
@@ -58,12 +58,12 @@ const CheckoutModal = () => {
   const total = useCartStore(selectGetTotal)();
 
   const cities = useNovaPostStore(selectCities);
-  const fetchCitiesStatus = useNovaPostStore(selectFetchCitiesStatus);
-  const fetchCitiesResponse = useNovaPostStore(selectFetchCitiesResponse);
+  const citiesStatus = useNovaPostStore(selectFetchCitiesStatus);
+  const citiesResponse = useNovaPostStore(selectFetchCitiesResponse);
   
   const warehouses = useNovaPostStore(selectWarehouses);
-  const fetchWarehousesStatus = useNovaPostStore(selectFetchWarehousesStatus);
-  const fetchWarehousesResponse = useNovaPostStore(selectFetchWarehousesResponse);
+  const warehousesStatus = useNovaPostStore(selectFetchWarehousesStatus);
+  const warehousesResponse = useNovaPostStore(selectFetchWarehousesResponse);
   
   const searchCities = useNovaPostStore(selectSearchCities);
   const searchWarehouses = useNovaPostStore(selectSearchWarehouses);
@@ -74,15 +74,15 @@ const CheckoutModal = () => {
   const createOrderResponse = useOrderStore(selectCreateOrderResponse);
 
   const createOrder = useOrderStore(selectCreateOrder);
-  const resetOrderOperationState = useOrderStore(selectResetOrderOperationState);
+  const resetState = useOrderStore(selectResetOrderOperationState);
 
-  const isLoadingCities = fetchCitiesStatus === "loading";
+  const isLoadingCities = citiesStatus === "loading";
   const isEmptyCities = !isLoadingCities && cities.length === 0;
-  const isErrorCities = !isLoadingCities && fetchCitiesResponse?.status === "error";
+  const isErrorCities = !isLoadingCities && citiesResponse?.status === "error";
 
-  const isLoadingWarehouses = fetchWarehousesStatus === "loading";
+  const isLoadingWarehouses = warehousesStatus === "loading";
   const isEmptyWarehouses = !isLoadingWarehouses && warehouses.length === 0;
-  const isErrorWarehouses = !isLoadingWarehouses && fetchWarehousesResponse?.status === "error";
+  const isErrorWarehouses = !isLoadingWarehouses && warehousesResponse?.status === "error";
 
   const isCreating = createOrderStatus === "creating";
   const status = createOrderResponse?.status;
@@ -157,7 +157,7 @@ const CheckoutModal = () => {
     setFormValues((prev) => ({ ...prev, warehouse: selectedOption?.label || "" }));
   };
 
-  const steps = [
+  const steps: Step<OrderFormValues>[] = [
     {
       title: t("modals.checkout.steps.step1.title"),
       component: (
@@ -467,7 +467,7 @@ const CheckoutModal = () => {
   const handleNext = () => {
     setDirection("forward");
     if (isLastStep) {
-      return status === "error" ? router.back() : router.dismissAll();
+      return status === "error" ? router.back() : router.dismiss();
     }
     if (isSecondToLastStep && !isCreating && isConnected) {
       createOrder(formValues);
@@ -491,7 +491,7 @@ const CheckoutModal = () => {
     return () => {
       resetCities();
       resetWarehouses();
-      resetOrderOperationState("create")
+      resetState("create")
     };
   }, []);
 

@@ -1,5 +1,5 @@
-import { useRef, useState, useEffect } from "react";
-import { View, Alert, StyleSheet } from "react-native";
+import React, { useRef, useState, useEffect } from "react";
+import { View, Alert } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
@@ -36,7 +36,7 @@ const EditProfileModal = () => {
   const profileResponse = useProfileStore(selectProfileResponse);
   
   const updateProfile = useProfileStore(selectUpdateProfile);
-  const resetProfile = useProfileStore(selectResetProfile);
+  const reset = useProfileStore(selectResetProfile);
 
   const status = profileResponse?.status;
   const message = profileResponse?.message;
@@ -100,7 +100,7 @@ const EditProfileModal = () => {
       );
     }
 
-    return () => resetProfile();
+    return () => reset();
   }, [status]);
   
   const isUpdating = profileStatus === "updating";
@@ -119,9 +119,14 @@ const EditProfileModal = () => {
           }}
         />
 
-        <View style={[styles.content, styles.padded]}>
-          <View style={styles.field}>
-            <Typography fontSize={14} fontWeight="medium" color={colors.black} style={{ marginBottom: 5 }}>
+        <View style={{ flex: 1, padding: 15 }}>
+          <View style={{ minHeight: 75 }}>
+            <Typography 
+              fontSize={14} 
+              fontWeight="medium" 
+              color={colors.black} 
+              style={{ marginBottom: 5 }}
+            >
               {t(`modals.editProfile.fields.${field}.label`)}
             </Typography>
       
@@ -137,7 +142,13 @@ const EditProfileModal = () => {
           </View>
         </View> 
 
-        <View style={styles.buttonContainer}>
+        <View 
+          style={{
+            backgroundColor: colors.grayTint9,
+            padding: 10,
+            paddingHorizontal: 15,
+          }}
+        >
           <Button onPress={handleUpdate} loading={isUpdating} disabled={isSaveDisabled}>
             <Typography fontSize={16} fontWeight="bold" color={colors.white}>
               {t("modals.editProfile.buttons.save")}
@@ -148,26 +159,5 @@ const EditProfileModal = () => {
     </ModalWrapper>
   );
 };
-
-const styles = StyleSheet.create({
-  scrollViewContainer: {
-    flexGrow: 1,
-  },
-  content: {
-    flex: 1,
-  },
-  field: {
-    flex: 1, 
-    minHeight: 75,
-  },
-  buttonContainer: {
-    backgroundColor: colors.grayTint9,
-    padding: 10,
-    paddingHorizontal: 15,
-  },
-  padded: {
-    padding: 15,
-  },
-});
 
 export default EditProfileModal;

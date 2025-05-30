@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, StyleSheet } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { useIsConnected } from "@/contexts/networkContext";
 import { useTranslation } from "@/contexts/translateContext";
@@ -16,7 +16,15 @@ const SearchScreen = () => {
 
   return (
     <ScreenWrapper hideStatusBarBorder>
-      <View style={styles.header}>
+      <View 
+        style={{
+          backgroundColor: colors.white,
+          borderBottomColor: colors.grayTint7,
+          borderBottomWidth: 1,
+          paddingVertical: 10,
+          paddingHorizontal: 15,
+        }}
+      >
         <Typography 
           fontSize={24} 
           fontWeight="bold" 
@@ -27,13 +35,19 @@ const SearchScreen = () => {
         </Typography>
 
         <TouchableOpacity
-          style={[
-            styles.searchInput,
-            !isConnected && { backgroundColor: colors.grayTint7 },
-          ]}
+          style={{
+            height: 50,
+            backgroundColor: isConnected ? colors.grayTint9 : colors.grayTint7,
+            borderColor: colors.grayTint5,
+            borderRadius: 16,
+            borderWidth: 1,
+            paddingHorizontal: 15,
+            flexDirection: "row",
+            alignItems: "center",
+          }}
           onPress={() => {
             if (isConnected) {
-              router.push("/books-search");
+              router.push("/(user)/books-search");
             }
           }}
           activeOpacity={0.7}
@@ -57,12 +71,22 @@ const SearchScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <View style={[styles.content, styles.padded]}>
+      <View 
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 15,
+        }}
+      >
         <Typography
           fontSize={24}
           fontWeight="bold"
           color={colors.black}
-          style={{ marginBottom: 10, textAlign: "center" }}
+          style={{ 
+            textAlign: "center",
+            marginBottom: 10, 
+          }}
         >
           {t(`screens.search.startPrompt.title`)}
         </Typography>
@@ -79,33 +103,5 @@ const SearchScreen = () => {
     </ScreenWrapper>
   );
 };
-
-const styles = StyleSheet.create({
-  header: {
-    backgroundColor: colors.white,
-    borderBottomColor: colors.grayTint7,
-    borderBottomWidth: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-  },
-  searchInput: {
-    height: 50,
-    backgroundColor: colors.grayTint9,
-    borderColor: colors.grayTint5,
-    borderRadius: 16,
-    borderWidth: 1,
-    paddingHorizontal: 15,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  content: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  padded: {
-    padding: 15,
-  },
-});
 
 export default SearchScreen;

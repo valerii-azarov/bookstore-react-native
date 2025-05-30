@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { View, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
 import Animated, {
@@ -37,6 +37,27 @@ import ErrorNetwork from "@/components/ErrorNetwork";
 import ErrorWithRetry from "@/components/ErrorWithRetry";
 import Typography from "@/components/Typography";
 
+type DetailsType = "attribute" | "text";
+
+interface DetailsItem {
+  key: string;
+  label: string;
+  value: string;
+}
+
+interface DetailsButton {
+  label: string;
+  onPress: () => void;
+}
+
+interface DetailsSection {
+  type: DetailsType;
+  title: string;
+  items: DetailsItem[];
+  button?: DetailsButton;
+  isVisibleItems?: boolean;
+}
+
 const BookDetailsScreen = () => {
   const router = useRouter();
   const { bookId } = useLocalSearchParams<{ bookId: string }>();  
@@ -47,22 +68,21 @@ const BookDetailsScreen = () => {
   const isAdmin = useAuthStore(selectIsAdmin);
 
   const currentBook = useBookStore(selectCurrentBook);
-  const fetchBookStatus = useBookStore(selectFetchBookStatus);
-  const fetchBookResponse = useBookStore(selectFetchBookResponse);
+  const status = useBookStore(selectFetchBookStatus);
+  const response = useBookStore(selectFetchBookResponse);
   
   const setBookById = useBookStore(selectSetBookById);
-  const fetchBookById = useBookStore(selectFetchBookById);
-  const resetCurrentBook = useBookStore(selectResetCurrentBook);
+  const fetchData = useBookStore(selectFetchBookById);
+  const reset = useBookStore(selectResetCurrentBook);
 
-  const toggleCart = useCartStore(selectToggleCart);
   const buyNow = useCartStore(selectBuyNow);
-
+  const toggleCart = useCartStore(selectToggleCart);
   const toggleFavorite = useFavoritesStore(selectToggleFavorite);
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const isLoading = fetchBookStatus === "loading";
-  const isError = !isLoading && fetchBookResponse?.status === "error";
+  const isLoading = status === "loading";
+  const isError = !isLoading && response?.status === "error";
 
   const buyScale = useSharedValue(1);
   const cartScale = useSharedValue(1);
@@ -114,7 +134,7 @@ const BookDetailsScreen = () => {
         );
   };
 
-  const sections = [
+  const sections: DetailsSection[] = [
     {
       type: "attribute",
       title: t("screens.bookDetails.sections.details"),
@@ -195,11 +215,13 @@ const BookDetailsScreen = () => {
   ];
   
   useEffect(() => {
-    if (bookId && isConnected) {
+    const shouldFetch = bookId && isConnected;
+    if (shouldFetch) {
       setBookById(bookId);
-      fetchBookById();
+      fetchData();
     }
-    return () => resetCurrentBook();
+
+    return () => reset();
   }, [bookId, isConnected]);
 
   return (
@@ -229,7 +251,7 @@ const BookDetailsScreen = () => {
 
       {isConnected && !isLoading && !isError && currentBook !== null && (
         <ScrollView 
-          contentContainerStyle={styles.scrollViewContainer}
+          contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.contentContainer}>
@@ -238,7 +260,10 @@ const BookDetailsScreen = () => {
                 style={[
                   styles.sectionWrapper, 
                   { 
-                    backgroundColor: currentBook.backgroundColor ? colorConverter.lighterHexColor(currentBook.backgroundColor) : colors.grayTint5,
+                    backgroundColor: 
+                      currentBook.backgroundColor 
+                        ? colorConverter.lighterHexColor(currentBook.backgroundColor) 
+                        : colors.grayTint5,
                     borderRadius: 0,
                   }
                 ]}
@@ -363,7 +388,7 @@ const BookDetailsScreen = () => {
                             startBuyAnimation();
                             setTimeout(() => {
                               buyNow(currentBook, 1);
-                              router.push("/cart");
+                              router.push("/(user)/(modals)/cart");
                             }, 500);
                           }}                     
                           style={[
@@ -440,7 +465,11 @@ const BookDetailsScreen = () => {
               return (
                 <View 
                   key={`section-${sectionIndex}`}
-                  style={[styles.sectionContainer, styles.paddedHorizontal]}
+                  style={[
+                    styles.sectionContainer,
+                    styles.paddedHorizontal,
+                    sectionIndex === sections.length - 1 && styles.paddedBottom,
+                  ]}
                 >
                   <Typography fontSize={16} fontWeight="bold" style={styles.sectionTitle}>
                     {section.title}
@@ -533,12 +562,20 @@ const BookDetailsScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  scrollViewContainer: {
-    flexGrow: 1,
-  },
   contentContainer: {
     flexDirection: "column",
     gap: 15,
+  },
+  sectionContainer: {
+    flex: 1,
+  },
+  sectionWrapper: { 
+    backgroundColor: colors.white,
+    borderRadius: 10,
+    padding: 15,
+  },
+  sectionTitle: { 
+    marginBottom: 5,
   },
   coverImageContainer: {
     alignItems: "center",
@@ -571,17 +608,6 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     paddingHorizontal: 6,
   },
-  sectionContainer: {
-    flex: 1,
-  },
-  sectionWrapper: { 
-    backgroundColor: colors.white,
-    borderRadius: 10,
-    padding: 15,
-  },
-  sectionTitle: { 
-    marginBottom: 5,
-  },
   priceAndActionsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -612,8 +638,8 @@ const styles = StyleSheet.create({
   padded: {
     padding: 15,
   },
-  paddedVertical: {
-    paddingVertical: 15,
+  paddedBottom: {
+    paddingBottom: 15,
   },
   paddedHorizontal: {
     paddingHorizontal: 15,

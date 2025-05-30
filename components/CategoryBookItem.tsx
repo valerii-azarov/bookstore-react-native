@@ -11,7 +11,7 @@ import Typography from "./Typography";
 type CategoryBookItemProps = {
   item: Book;
   mode: ModeType;
-  onView: () => void;
+  onView: (bookId: string) => void;
   onAddToFavorites?: (bookId: string) => void;
   onAddToCart?: (item: Book) => void;
   labels?: { details: string; };
@@ -167,7 +167,7 @@ const CategoryBookItem = ({
 
           <RedirectButton 
             title={labels.details}
-            onPress={onView}
+            onPress={() => onView(item?.id)}
             style={[
               styles.detailButton,
               { 
