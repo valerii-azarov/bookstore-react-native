@@ -44,3 +44,32 @@ npx expo start --go
 This will display a QR code for launching the app directly in Expo Go on a physical device.
 
 ---
+
+## 🖼️ Screenshots
+
+### 1. Welcome Screen
+
+![welcome_screen.png](https://gitlab.com/valerii.azarov/bookstore-react-native/-/blob/development/screenshots/screenshot_1.jpg)
+
+### 2. Books Screen
+
+![books_screen.png](https://gitlab.com/valerii.azarov/bookstore-react-native/-/blob/development/screenshots/screenshot_4.jpg)
+
+### 3. Book Details Screen
+
+![book_details_screen.png](https://gitlab.com/valerii.azarov/bookstore-react-native/-/blob/development/screenshots/screenshot_6.jpg)
+
+### 4. Search Screen
+
+![search_screen.png](https://gitlab.com/valerii.azarov/bookstore-react-native/-/blob/development/screenshots/screenshot_10.jpg)
+
+### 5. Order History Screen
+
+![order_history_screen.png](https://gitlab.com/valerii.azarov/bookstore-react-native/-/blob/development/screenshots/screenshot_12.jpg)
+
+### 6. Menu Screen
+
+![menu_screen.png](https://gitlab.com/valerii.azarov/bookstore-react-native/-/blob/development/screenshots/screenshot_17.jpg)
+
+More screenshots can be viewed [here](https://gitlab.com/valerii.azarov/bookstore-react-native/-/tree/development/screenshots).
+
