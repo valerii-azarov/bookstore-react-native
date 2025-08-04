@@ -48,21 +48,21 @@ This will display a QR code for launching the app directly in Expo Go on a physi
 ## 🖼️ Screenshots
 
 ### 1. Welcome Screen
-<img src="https://gitlab.com/valerii.azarov/bookstore-react-native/-/raw/development/screenshots/screenshot_1.jpg" alt="Welcome Screen" width="300"/>
+<img src="https://raw.githubusercontent.com/valerii-azarov/bookstore-react-native/refs/heads/development/screenshots/screenshot_1.jpg" alt="Welcome Screen" width="300"/>
 
 ### 2. Books Screen
-<img src="https://gitlab.com/valerii.azarov/bookstore-react-native/-/raw/development/screenshots/screenshot_4.jpg" alt="Books Screen" width="300"/>
+<img src="https://raw.githubusercontent.com/valerii-azarov/bookstore-react-native/refs/heads/development/screenshots/screenshot_4.jpg" alt="Books Screen" width="300"/>
 
 ### 3. Book Details Screen
-<img src="https://gitlab.com/valerii.azarov/bookstore-react-native/-/raw/development/screenshots/screenshot_6.jpg" alt="Book Details Screen" width="300"/>
+<img src="https://raw.githubusercontent.com/valerii-azarov/bookstore-react-native/refs/heads/development/screenshots/screenshot_6.jpg" alt="Book Details Screen" width="300"/>
 
 ### 4. Search Screen
-<img src="https://gitlab.com/valerii.azarov/bookstore-react-native/-/raw/development/screenshots/screenshot_10.jpg" alt="Search Screen" width="300"/>
+<img src="https://raw.githubusercontent.com/valerii-azarov/bookstore-react-native/refs/heads/development/screenshots/screenshot_10.jpg" alt="Search Screen" width="300"/>
 
 ### 5. Order History Screen
-<img src="https://gitlab.com/valerii.azarov/bookstore-react-native/-/raw/development/screenshots/screenshot_12.jpg" alt="Order History Screen" width="300"/>
+<img src="https://raw.githubusercontent.com/valerii-azarov/bookstore-react-native/refs/heads/development/screenshots/screenshot_12.jpg" alt="Order History Screen" width="300"/>
 
 ### 6. Menu Screen
-<img src="https://gitlab.com/valerii.azarov/bookstore-react-native/-/raw/development/screenshots/screenshot_17.jpg" alt="Menu Screen" width="300"/>
+<img src="https://raw.githubusercontent.com/valerii-azarov/bookstore-react-native/refs/heads/development/screenshots/screenshot_17.jpg" alt="Menu Screen" width="300"/>
 
-More screenshots can be viewed [here](https://gitlab.com/valerii.azarov/bookstore-react-native/-/tree/development/screenshots).
+More screenshots can be viewed [here](https://github.com/valerii-azarov/bookstore-react-native/tree/development/screenshots).
